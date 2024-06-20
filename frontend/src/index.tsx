@@ -1,38 +1,30 @@
 import * as React from "react";
-import * as ReactDOM from "react-dom";
-import {
-  Route,
-  Routes,
-  HashRouter as Router,
-  Link 
-} from 'react-router-dom';
+import * as ReactDOM from "react-dom/client";
+import { Route, Routes, HashRouter, Link } from "react-router-dom";
+import { Game } from "./components/Game/Game";
+import { Menu } from "./components/Menu/Menu";
 
-import {
-  HelloOne,
-  HelloTwo
-} from './components';
-import './index.scss';
+import "./index.scss";
 
-class App extends React.Component {
-    render(): JSX.Element {
-      return (
-        <Router>
-          <div>
-            <nav>
-              <Link to="/">Home</Link>
-              <Link to="/Two/4242">Two/4242</Link>
-            </nav>
-            <Routes>
-              <Route path="/" element={<HelloOne/>} />
-              <Route path="/Two/:id" element={<HelloTwo/>} />
-            </Routes>
-          </div>
-        </Router>
-      );
-    }
-  }
+function App() {
+  return (
+    <HashRouter>
+      <div>
+        <Link to="/">Home</Link>
+        <Link to="/game/4242">Game 4242</Link>
+      </div>
+      <div background-color="red">
+        <Routes>
+          <Route path="/" element={<Menu />} />
+          <Route path="/game/:id" element={<Game />} />
+        </Routes>
+      </div>
+    </HashRouter>
+  );
+}
 
-ReactDOM.render(
-    <App />,
-    document.getElementById("app")
+ReactDOM.createRoot(document.getElementById("app")).render(
+  <React.StrictMode>
+    <App />
+  </React.StrictMode>
 );

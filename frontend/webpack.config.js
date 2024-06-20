@@ -16,9 +16,6 @@ module.exports = (env, argv) => {
       filename: "[contenthash].[name].js",
     },
 
-    // Enable sourcemaps for debugging webpack's output.
-    devtool: "source-map",
-
     resolve: {
       modules: ["node_modules"],
       // Add '.ts' and '.tsx' as resolvable extensions.
@@ -38,12 +35,6 @@ module.exports = (env, argv) => {
           test: /\.ts(x?)$/,
           exclude: /node_modules/,
           use: [{ loader: "ts-loader" }],
-        },
-        // All output '.js' files will have any sourcemaps re-processed by 'source-map-loader'.
-        {
-          enforce: "pre",
-          test: /\.js$/,
-          loader: "source-map-loader",
         },
         // The following loader rules are necessary for s/css modules
         {

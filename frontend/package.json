@@ -7,8 +7,8 @@
     "build-prod": "webpack --mode=production",
     "dev": "webpack serve --hot --port 8080;",
     "test": "",
-    "lint:fix": "prettier */*.js \"*/**/*{.js,.ts,.json}\" -w",
-    "lint": "prettier */*.js \"*/**/*{.js,.ts,.json}\" --check"
+    "lint:fix": "prettier \"*/**/*{.ts,.tsx,.json}\" -w",
+    "lint": "prettier \"*/**/*{.ts,.tsx,.json}\" --check"
   },
   "devDependencies": {
     "@types/react": "18.2.21",
@@ -22,7 +22,6 @@
     "prettier": "^3.3.2",
     "sass": "1.67.0",
     "sass-loader": "13.3.2",
-    "source-map-loader": "4.0.1",
     "style-loader": "3.3.3",
     "ts-loader": "9.4.4",
     "typescript": "5.2.2",
@@ -32,6 +31,7 @@
     "webpack-dev-server": "4.15.1"
   },
   "dependencies": {
+    "@solana/web3.js": "^1.93.0",
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "react-router-dom": "6.16.0"
