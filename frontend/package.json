@@ -1,7 +1,6 @@
 {
   "name": "solana-generals-frontend",
-  "version": "1.0.0",
-  "description": "",
+  "license": "MIT",
   "main": "index.js",
   "scripts": {
     "build-dev": "webpack --mode=development",
@@ -11,9 +10,6 @@
     "lint:fix": "prettier */*.js \"*/**/*{.js,.ts,.json}\" -w",
     "lint": "prettier */*.js \"*/**/*{.js,.ts,.json}\" --check"
   },
-  "keywords": [],
-  "author": "",
-  "license": "MIT",
   "devDependencies": {
     "@types/react": "18.2.21",
     "@types/react-dom": "18.2.7",

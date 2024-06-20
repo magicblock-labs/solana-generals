@@ -1,12 +1,12 @@
 [package]
-name = "movement"
+name = "tick"
 version = "0.1.6"
 description = "Created with Bolt"
 edition = "2021"
 
 [lib]
 crate-type = ["cdylib", "lib"]
-name = "movement"
+name = "tick"
 
 [features]
 no-entrypoint = []
@@ -20,4 +20,4 @@ idl-build = ["anchor-lang/idl-build"]
 bolt-lang = "0.1.6"
 anchor-lang = "0.30.0"
 serde = { version = "1.0", features = ["derive"] }
-position = { version = "0.1.6", path = "../../components/position", features = ["cpi"] }
+game = { path = "../../components/game", features = ["cpi"] }

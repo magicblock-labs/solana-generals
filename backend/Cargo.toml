@@ -1,9 +1,5 @@
 [workspace]
-members = [
-    "programs/*",
-    "programs-ecs/components/*",
-    "programs-ecs/systems/*"
-]
+members = ["programs-ecs/components/*", "programs-ecs/systems/*"]
 resolver = "2"
 
 [profile.release]

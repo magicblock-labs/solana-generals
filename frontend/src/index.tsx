@@ -11,6 +11,7 @@ import {
   HelloOne,
   HelloTwo
 } from './components';
+import './index.scss';
 
 class App extends React.Component {
     render(): JSX.Element {
@@ -19,11 +20,11 @@ class App extends React.Component {
           <div>
             <nav>
               <Link to="/">Home</Link>
-              <Link to="/Two">Two</Link>
+              <Link to="/Two/4242">Two/4242</Link>
             </nav>
             <Routes>
               <Route path="/" element={<HelloOne/>} />
-              <Route path="/Two" element={<HelloTwo someProp='blah'/>} />
+              <Route path="/Two/:id" element={<HelloTwo/>} />
             </Routes>
           </div>
         </Router>

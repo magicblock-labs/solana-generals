@@ -346,14 +346,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "0c4b4d0bd25bd0b74681c0ad21497610ce1b7c91b1022cd21c80c6fbdd9476b0"
 
 [[package]]
-name = "backend"
-version = "0.1.6"
-dependencies = [
- "anchor-lang",
- "bolt-lang",
-]
-
-[[package]]
 name = "base64"
 version = "0.12.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -807,6 +799,16 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "613afe47fcd5fac7ccf1db93babcb082c5994d996f20b8b159f2ad1658eb5724"
 
 [[package]]
+name = "command"
+version = "0.1.6"
+dependencies = [
+ "anchor-lang",
+ "bolt-lang",
+ "game",
+ "serde",
+]
+
+[[package]]
 name = "console_error_panic_hook"
 version = "0.1.7"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -966,6 +968,34 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "835a3dc7d1ec9e75e2b5fb4ba75396837112d2060b03f7d43bc1897c7f7211da"
 
 [[package]]
+name = "finish"
+version = "0.1.6"
+dependencies = [
+ "anchor-lang",
+ "bolt-lang",
+ "game",
+ "serde",
+]
+
+[[package]]
+name = "game"
+version = "0.1.6"
+dependencies = [
+ "anchor-lang",
+ "bolt-lang",
+]
+
+[[package]]
+name = "generate"
+version = "0.1.6"
+dependencies = [
+ "anchor-lang",
+ "bolt-lang",
+ "game",
+ "serde",
+]
+
+[[package]]
 name = "generic-array"
 version = "0.14.7"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1107,6 +1137,16 @@ dependencies = [
 ]
 
 [[package]]
+name = "join"
+version = "0.1.6"
+dependencies = [
+ "anchor-lang",
+ "bolt-lang",
+ "game",
+ "serde",
+]
+
+[[package]]
 name = "js-sys"
 version = "0.3.69"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1237,16 +1277,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "movement"
-version = "0.1.6"
-dependencies = [
- "anchor-lang",
- "bolt-lang",
- "position",
- "serde",
-]
-
-[[package]]
 name = "num-bigint"
 version = "0.4.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1333,14 +1363,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "216eaa586a190f0a738f2f918511eecfa90f13295abec0e457cdebcceda80cbd"
 dependencies = [
  "crypto-mac",
-]
-
-[[package]]
-name = "position"
-version = "0.1.6"
-dependencies = [
- "anchor-lang",
- "bolt-lang",
 ]
 
 [[package]]
@@ -1796,6 +1818,16 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "468aa43b7edb1f9b7b7b686d5c3aeb6630dc1708e86e31343499dd5c4d775183"
 
 [[package]]
+name = "start"
+version = "0.1.6"
+dependencies = [
+ "anchor-lang",
+ "bolt-lang",
+ "game",
+ "serde",
+]
+
+[[package]]
 name = "subtle"
 version = "2.5.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1853,6 +1885,16 @@ dependencies = [
  "proc-macro2",
  "quote",
  "syn 2.0.66",
+]
+
+[[package]]
+name = "tick"
+version = "0.1.6"
+dependencies = [
+ "anchor-lang",
+ "bolt-lang",
+ "game",
+ "serde",
 ]
 
 [[package]]
