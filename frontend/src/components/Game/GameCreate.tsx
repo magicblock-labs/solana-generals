@@ -1,30 +1,30 @@
 import * as React from "react";
 import { useNavigate } from "react-router-dom";
-import { gameCreate } from "../../state/gameCreate";
 import { PublicKey } from "@solana/web3.js";
-import { Generals } from "../../state/Generals";
-import { useConnection, useWallet } from "@solana/wallet-adapter-react";
+
+import { gameCreate } from "../../state/gameCreate";
+import { useMagicBlockEngine } from "../../engine/MagicBlockEngine";
 
 export function GameCreate() {
   const navigate = useNavigate();
-  const connection = useConnection();
-  const wallet = useWallet();
+  const engine = useMagicBlockEngine();
 
   React.useEffect(() => {
-    console.log("GameCreate", "useEffect", wallet);
-    if (!wallet.connected) {
+    console.log("GameCreate", "useEffect", engine.getWalletPayer()?.toBase58());
+    if (!engine.getConnected()) {
       return;
     }
-    const generals = new Generals(connection, wallet);
-    gameCreate(generals)
+    gameCreate(engine)
       .catch(console.error)
       .then((entityPda: PublicKey) => {
         console.log("entityPda", entityPda);
         if (entityPda) {
-          navigate("/game/" + entityPda.toString());
+          navigate("/game/play/" + entityPda.toString());
+        } else {
+          // TODO(vbrunet) - redirect to error page
         }
       });
-  }, [connection, wallet]);
+  }, [engine]);
 
   return <div>GameCreate</div>;
 }

@@ -1,25 +1,31 @@
 import { PublicKey } from "@solana/web3.js";
-import { Generals } from "./Generals";
+import { MagicBlockEngine } from "../engine/MagicBlockEngine";
+import { getComponentGame } from "./gamePrograms";
 
 export function gameListen(
-  generals: Generals,
-  id: string,
+  engine: MagicBlockEngine,
+  gamePda: PublicKey,
   setGame: ({}) => void
 ) {
-  try {
-    const entityPda = new PublicKey(id);
-    const connection = generals.getConnection();
-    const subscriptionId = connection.onAccountChange(
-      entityPda,
-      (account: {}) => {
-        console.log("account", account);
-        setGame(account);
-      }
-    );
-    return () => {
-      connection.removeAccountChangeListener(subscriptionId);
-    };
-  } catch (error) {
-    console.log("error", error);
-  }
+  const componentGame = getComponentGame(engine);
+
+  let cancelled = false;
+
+  const gameInitial = componentGame.account.game.fetchNullable(gamePda);
+  gameInitial.then((gameValue) => {
+    if (!cancelled) {
+      console.log("gameValue", gameValue);
+      setGame(gameValue);
+    }
+  });
+
+  const gameWatcher = componentGame.account.game.subscribe(gamePda);
+  gameWatcher.addListener("change", (param: any) => {
+    console.log("onChange", param);
+    setGame(param);
+  });
+  return () => {
+    cancelled = true;
+    gameWatcher.removeAllListeners();
+  };
 }

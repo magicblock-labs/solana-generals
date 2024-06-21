@@ -13,6 +13,7 @@ import { GameCreate } from "./components/game/GameCreate";
 
 import "./index.scss";
 import { clusterApiUrl } from "@solana/web3.js";
+import { MagicBlockEngineProvider } from "./engine/MagicBlockEngine";
 
 function App() {
   const network = WalletAdapterNetwork.Devnet;
@@ -22,14 +23,16 @@ function App() {
     <HashRouter>
       <ConnectionProvider endpoint={endpoint}>
         <WalletProvider wallets={[]} autoConnect>
-          <Menu />
-          <div>
-            <Routes>
-              <Route path="/" element={[]} />
-              <Route path="/game/create" element={<GameCreate />} />
-              <Route path="/game/play/:id" element={<GamePlay />} />
-            </Routes>
-          </div>
+          <MagicBlockEngineProvider>
+            <Menu />
+            <div>
+              <Routes>
+                <Route path="/" element={[]} />
+                <Route path="/game/create" element={<GameCreate />} />
+                <Route path="/game/play/:id" element={<GamePlay />} />
+              </Routes>
+            </div>
+          </MagicBlockEngineProvider>
         </WalletProvider>
       </ConnectionProvider>
     </HashRouter>

@@ -7,25 +7,30 @@ import {
   createInitializeRegistryInstruction,
 } from "@magicblock-labs/bolt-sdk";
 
-import { Generals } from "./Generals";
+import { MagicBlockEngine } from "../engine/MagicBlockEngine";
+import { getComponentGame } from "./gamePrograms";
 
-export async function gameCreate(generals: Generals) {
-  const connection = generals.getConnection();
-  const payer = generals.getPayer();
+export async function gameCreate(engine: MagicBlockEngine) {
+  const connection = engine.getConnection();
+  const payer = engine.getSessionPayer();
+
+  await engine.fundSession();
 
   // TODO(vbrunet) - predeploy a registry/world PDA
   // Registry
   const registryPda = FindWorldRegistryPda();
-  const initializeRegistryIx = createInitializeRegistryInstruction({
-    registry: registryPda,
-    payer: payer,
-  });
-  console.log(
-    "initializeRegistry",
-    await generals.processTransaction(
-      new Transaction().add(initializeRegistryIx)
-    )
-  );
+  if (await engine.isNewAccount(registryPda)) {
+    const initializeRegistryIx = createInitializeRegistryInstruction({
+      registry: registryPda,
+      payer: payer,
+    });
+    console.log(
+      "initializeRegistry",
+      await engine.processSessionTransaction(
+        new Transaction().add(initializeRegistryIx)
+      )
+    );
+  }
   console.log("registryPda", registryPda.toBase58());
 
   // World
@@ -34,9 +39,15 @@ export async function gameCreate(generals: Generals) {
     payer: payer,
   });
   console.log(
-    "initializeNewWorld",
-    await generals.processTransaction(initializeNewWorld.transaction)
+    "initializeNewWorld.worldId",
+    initializeNewWorld.worldId.toString()
   );
+  if (await engine.isNewAccount(initializeNewWorld.worldPda)) {
+    console.log(
+      "initializeNewWorld",
+      await engine.processSessionTransaction(initializeNewWorld.transaction)
+    );
+  }
   console.log(
     "initializeNewWorld.worldPda",
     initializeNewWorld.worldPda.toBase58()
@@ -48,23 +59,26 @@ export async function gameCreate(generals: Generals) {
     payer: payer,
     world: initializeNewWorld.worldPda,
   });
-  console.log(
-    "addEntity",
-    await generals.processTransaction(addEntity.transaction)
-  );
+  if (await engine.isNewAccount(addEntity.entityPda)) {
+    console.log(
+      "addEntity",
+      await engine.processSessionTransaction(addEntity.transaction)
+    );
+  }
   console.log("addEntity.entityPda", addEntity.entityPda.toBase58());
 
   // Component
   const initializeComponent = await InitializeComponent({
     payer: payer,
     entity: addEntity.entityPda,
-    componentId: generals.getComponentGame().programId,
+    componentId: getComponentGame(engine).programId,
   });
-  console.log(
-    "initializeComponent",
-    await generals.processTransaction(initializeComponent.transaction)
-  );
-
+  if (await engine.isNewAccount(initializeComponent.componentPda)) {
+    console.log(
+      "initializeComponent",
+      await engine.processSessionTransaction(initializeComponent.transaction)
+    );
+  }
   console.log(
     "initializeComponent.componentPda",
     initializeComponent.componentPda.toBase58()
