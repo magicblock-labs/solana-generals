@@ -4,15 +4,12 @@
 resolution = true
 skip-lint = false
 
-[programs.localnet]
-backend = "GtS13ueiNME8RJd3rmrXgmc6TbCEPCMRLS2soknGR3Yf"
+[programs.devnet]
 command = "EqGdRy5kD3kLhiY1NrNgpv144Z5GcL2FVSQsXDwjPD1o"
 finish = "8ukdUrzW4seE9MUXY5Lwazt3ydw4Wtbr72C6EaFq8jsC"
 game = "DcUL2DdypF14p5TZEBcEtpGSY843LM9vkokyoDahxWhk"
 generate = "CqZi8eYYnTp1C58rfZVw8fxr2YZ1yUi3TcTz3zjj7NAu"
 join = "FB4VQ795oSLE4q7D1RdyofkyA9LZNL4sLdoK4Py7VocG"
-movement = "4UUQYvhcciKcU1hqLV6en4gFwH648FToeL2FvD2v3R6a"
-position = "FZtB8og6w4rPmTS79xquutmNdLLrkzGKYeXSsc6g5FMU"
 start = "2WJu82jnjZEYMKBJpo8B6b4JwN2yZfm7LDXzKihFW8FP"
 tick = "EdCEZKUooqVVFxXfk6yHXq5En24ZYtrQQjLPr9x33M4k"
 
@@ -20,7 +17,7 @@ tick = "EdCEZKUooqVVFxXfk6yHXq5En24ZYtrQQjLPr9x33M4k"
 url = "https://api.apr.dev"
 
 [provider]
-cluster = "Localnet"
+cluster = "devnet"
 wallet = "~/.config/solana/id.json"
 
 [workspace]

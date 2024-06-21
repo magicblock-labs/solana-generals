@@ -1,29 +1,42 @@
 import * as React from "react";
-import * as ReactDOM from "react-dom/client";
-import { Route, Routes, HashRouter, Link } from "react-router-dom";
-import { Game } from "./components/Game/Game";
-import { Menu } from "./components/Menu/Menu";
+import { createRoot } from "react-dom/client";
+import { Route, Routes, HashRouter } from "react-router-dom";
+import {
+  ConnectionProvider,
+  WalletProvider,
+} from "@solana/wallet-adapter-react";
+import { WalletAdapterNetwork } from "@solana/wallet-adapter-base";
+
+import { Menu } from "./components/menu/Menu";
+import { GamePlay } from "./components/game/GamePlay";
+import { GameCreate } from "./components/game/GameCreate";
 
 import "./index.scss";
+import { clusterApiUrl } from "@solana/web3.js";
 
 function App() {
+  const network = WalletAdapterNetwork.Devnet;
+  const endpoint = React.useMemo(() => clusterApiUrl(network), [network]);
+
   return (
     <HashRouter>
-      <div>
-        <Link to="/">Home</Link>
-        <Link to="/game/4242">Game 4242</Link>
-      </div>
-      <div background-color="red">
-        <Routes>
-          <Route path="/" element={<Menu />} />
-          <Route path="/game/:id" element={<Game />} />
-        </Routes>
-      </div>
+      <ConnectionProvider endpoint={endpoint}>
+        <WalletProvider wallets={[]} autoConnect>
+          <Menu />
+          <div>
+            <Routes>
+              <Route path="/" element={[]} />
+              <Route path="/game/create" element={<GameCreate />} />
+              <Route path="/game/play/:id" element={<GamePlay />} />
+            </Routes>
+          </div>
+        </WalletProvider>
+      </ConnectionProvider>
     </HashRouter>
   );
 }
 
-ReactDOM.createRoot(document.getElementById("app")).render(
+createRoot(document.getElementById("app")).render(
   <React.StrictMode>
     <App />
   </React.StrictMode>

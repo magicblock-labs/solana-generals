@@ -1,0 +1,238 @@
+{
+  "address": "8ukdUrzW4seE9MUXY5Lwazt3ydw4Wtbr72C6EaFq8jsC",
+  "metadata": {
+    "name": "finish",
+    "version": "0.1.6",
+    "spec": "0.1.0",
+    "description": "Created with Bolt"
+  },
+  "instructions": [
+    {
+      "name": "execute",
+      "discriminator": [
+        130,
+        221,
+        242,
+        154,
+        13,
+        193,
+        189,
+        29
+      ],
+      "accounts": [
+        {
+          "name": "game"
+        },
+        {
+          "name": "authority",
+          "signer": true
+        }
+      ],
+      "args": [
+        {
+          "name": "_args",
+          "type": "bytes"
+        }
+      ]
+    }
+  ],
+  "accounts": [
+    {
+      "name": "Game",
+      "discriminator": [
+        27,
+        90,
+        166,
+        125,
+        74,
+        100,
+        121,
+        18
+      ]
+    }
+  ],
+  "types": [
+    {
+      "name": "BoltMetadata",
+      "docs": [
+        "Metadata for the component."
+      ],
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "authority",
+            "type": "pubkey"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Game",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "status",
+            "type": {
+              "defined": {
+                "name": "GameStatus"
+              }
+            }
+          },
+          {
+            "name": "size_x",
+            "type": "u8"
+          },
+          {
+            "name": "size_y",
+            "type": "u8"
+          },
+          {
+            "name": "players",
+            "type": {
+              "array": [
+                {
+                  "defined": {
+                    "name": "GamePlayer"
+                  }
+                },
+                2
+              ]
+            }
+          },
+          {
+            "name": "cells",
+            "type": {
+              "array": [
+                {
+                  "defined": {
+                    "name": "GameCell"
+                  }
+                },
+                128
+              ]
+            }
+          },
+          {
+            "name": "growth_next_slot",
+            "type": "u64"
+          },
+          {
+            "name": "bolt_metadata",
+            "type": {
+              "defined": {
+                "name": "BoltMetadata"
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "GameCell",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "kind",
+            "type": {
+              "defined": {
+                "name": "GameCellKind"
+              }
+            }
+          },
+          {
+            "name": "owner",
+            "type": {
+              "defined": {
+                "name": "GameCellOwner"
+              }
+            }
+          },
+          {
+            "name": "strength",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "GameCellKind",
+      "type": {
+        "kind": "enum",
+        "variants": [
+          {
+            "name": "Field"
+          },
+          {
+            "name": "City"
+          },
+          {
+            "name": "Capital"
+          },
+          {
+            "name": "Montain"
+          }
+        ]
+      }
+    },
+    {
+      "name": "GameCellOwner",
+      "type": {
+        "kind": "enum",
+        "variants": [
+          {
+            "name": "Player",
+            "fields": [
+              "u8"
+            ]
+          },
+          {
+            "name": "Nobody"
+          }
+        ]
+      }
+    },
+    {
+      "name": "GamePlayer",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "ready",
+            "type": "bool"
+          },
+          {
+            "name": "authority",
+            "type": "pubkey"
+          },
+          {
+            "name": "action_next_slot",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "GameStatus",
+      "type": {
+        "kind": "enum",
+        "variants": [
+          {
+            "name": "Generate"
+          },
+          {
+            "name": "Lobby"
+          },
+          {
+            "name": "Playing"
+          },
+          {
+            "name": "Finished"
+          }
+        ]
+      }
+    }
+  ]
+}

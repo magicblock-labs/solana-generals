@@ -1,4 +1,5 @@
 const path = require("path");
+const webpack = require('webpack');
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const HTMLWebpackPlugin = require("html-webpack-plugin");
 const { CleanWebpackPlugin } = require("clean-webpack-plugin");
@@ -19,7 +20,7 @@ module.exports = (env, argv) => {
     resolve: {
       modules: ["node_modules"],
       // Add '.ts' and '.tsx' as resolvable extensions.
-      extensions: [".js", ".ts", ".tsx", ".js", ".css", ".scss"],
+      extensions: [".json", ".js", ".ts", ".tsx", ".js", ".css", ".scss"],
     },
 
     devServer: {
@@ -27,6 +28,9 @@ module.exports = (env, argv) => {
         directory: path.join(__dirname, "dist/"),
       },
       historyApiFallback: true,
+      headers: {
+        "Access-Control-Allow-Origin": "*",
+      }
     },
 
     module: {
@@ -91,6 +95,11 @@ module.exports = (env, argv) => {
       }),
       new HTMLWebpackPlugin({
         template: path.join(__dirname, "./src/index.html"),
+      }),
+      // Shims necessary
+      new webpack.ProvidePlugin({
+        Buffer: ['buffer', 'Buffer'],
+        process: 'process/browser',
       }),
     ],
   };
