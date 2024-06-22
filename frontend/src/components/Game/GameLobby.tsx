@@ -4,8 +4,8 @@ import {
   useMagicBlockEngine,
 } from "../../engine/MagicBlockEngine";
 import { PublicKey } from "@solana/web3.js";
-import { gameJoin } from "../../states/gameJoin";
-import { gameStart } from "../../states/gameStart";
+import { gameSystemJoin } from "../../states/gameSystemJoin";
+import { gameSystemStart } from "../../states/gameSystemStart";
 
 function doJoin(
   engine: MagicBlockEngine,
@@ -13,13 +13,13 @@ function doJoin(
   playerIndex: number,
   join: boolean
 ) {
-  gameJoin(engine, entityPda, playerIndex, join).then(() => {
+  gameSystemJoin(engine, entityPda, playerIndex, join).then(() => {
     console.log("Join done");
   });
 }
 
 function doStart(engine: MagicBlockEngine, entityPda: PublicKey) {
-  gameStart(engine, entityPda).then(() => {
+  gameSystemStart(engine, entityPda).then(() => {
     console.log("Start done");
   });
 }

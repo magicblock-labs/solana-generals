@@ -7,13 +7,10 @@ import { getComponentGame } from "./gamePrograms";
 const WORLD_PDA = new PublicKey("12MArv4fDwYMJNFXtPjQWuWJaVmKCqLyqz8fZmDQArpd");
 
 export async function gameCreate(engine: MagicBlockEngine) {
-  const connection = engine.getConnection();
-  const payer = engine.getSessionPayer();
-
   // Create a new Entity
   const addEntity = await AddEntity({
-    connection: connection,
-    payer: payer,
+    connection: engine.getConnection(),
+    payer: engine.getSessionPayer(),
     world: WORLD_PDA,
   });
   console.log(
@@ -21,10 +18,9 @@ export async function gameCreate(engine: MagicBlockEngine) {
     addEntity.entityPda.toBase58(),
     await engine.processSessionTransaction(addEntity.transaction)
   );
-
   // Create a new Component
   const initializeComponent = await InitializeComponent({
-    payer: payer,
+    payer: engine.getSessionPayer(),
     entity: addEntity.entityPda,
     componentId: getComponentGame(engine).programId,
   });
@@ -33,7 +29,6 @@ export async function gameCreate(engine: MagicBlockEngine) {
     initializeComponent.componentPda.toBase58(),
     await engine.processSessionTransaction(initializeComponent.transaction)
   );
-
   // Done
   return addEntity.entityPda;
 }

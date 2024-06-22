@@ -2,23 +2,17 @@ import { PublicKey } from "@solana/web3.js";
 import { ApplySystem } from "@magicblock-labs/bolt-sdk";
 
 import { MagicBlockEngine } from "../engine/MagicBlockEngine";
-import { getComponentGame, getSystemJoin } from "./gamePrograms";
+import { getComponentGame, getSystemStart } from "./gamePrograms";
 
-export async function gameJoin(
+export async function gameSystemStart(
   engine: MagicBlockEngine,
-  entityPda: PublicKey,
-  playerIndex: number,
-  join: boolean
+  entityPda: PublicKey
 ) {
   const applySystem = await ApplySystem({
     authority: engine.getSessionPayer(),
-    system: getSystemJoin(engine).programId,
+    system: getSystemStart(engine).programId,
     entity: entityPda,
     components: [getComponentGame(engine).programId],
-    args: {
-      player_index: playerIndex,
-      join,
-    },
   });
   await engine.processSessionTransaction(applySystem.transaction);
 }

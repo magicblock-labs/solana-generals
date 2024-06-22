@@ -6,12 +6,13 @@ import { FindComponentPda } from "@magicblock-labs/bolt-sdk";
 import { useMagicBlockEngine } from "../../engine/MagicBlockEngine";
 
 import { gameListen } from "../../states/gameListen";
-import { gameGenerate } from "../../states/gameGenerate";
+import { gameSystemGenerate } from "../../states/gameSystemGenerate";
 
 import { GameGrid } from "./GameGrid";
-import { getComponentGame } from "../../states/gamePrograms";
 import { GameLobby } from "./GameLobby";
-import { gameTick } from "../../states/gameTick";
+
+import { getComponentGame } from "../../states/gamePrograms";
+import { gameSystemTick } from "../../states/gameSystemTick";
 
 export function GamePlay() {
   const params = useParams();
@@ -38,7 +39,7 @@ export function GamePlay() {
       return;
     }
     console.log("Game needs generate");
-    gameGenerate(engine, pdas.entityPda).then(() => {
+    gameSystemGenerate(engine, pdas.entityPda).then(() => {
       console.log("success generate");
     });
   }, [engine, pdas, game]);
@@ -50,7 +51,7 @@ export function GamePlay() {
     }
     const interval = setInterval(() => {
       console.log("Game needs tick", game.growthNextSlot.toString());
-      gameTick(engine, pdas.entityPda).then(() => {
+      gameSystemTick(engine, pdas.entityPda).then(() => {
         console.log("success tick");
 
         engine.getSlot().then((slot) => {
