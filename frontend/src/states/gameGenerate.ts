@@ -6,21 +6,13 @@ import { getComponentGame, getSystemGenerate } from "./gamePrograms";
 
 export async function gameGenerate(
   engine: MagicBlockEngine,
-  entityPda: PublicKey,
-  playerSlot: number,
-  join: boolean
+  entityPda: PublicKey
 ) {
   const applySystem = await ApplySystem({
     authority: engine.getSessionPayer(),
     system: getSystemGenerate(engine).programId,
     entity: entityPda,
     components: [getComponentGame(engine).programId],
-    args: {
-      playerSlot,
-      join,
-    },
   });
-
-  await engine.fundSession();
   await engine.processSessionTransaction(applySystem.transaction);
 }

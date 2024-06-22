@@ -63,6 +63,10 @@ export class MagicBlockEngine {
     return accountInfo == null;
   }
 
+  async getSlot() {
+    return this.connectionContext.connection.getSlot();
+  }
+
   async processWalletTransaction(transaction: Transaction): Promise<string> {
     const signature = await this.walletContext.sendTransaction(
       transaction,

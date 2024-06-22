@@ -5,12 +5,13 @@ import { FindComponentPda } from "@magicblock-labs/bolt-sdk";
 
 import { useMagicBlockEngine } from "../../engine/MagicBlockEngine";
 
-import { gameListen } from "../../state/gameListen";
-import { gameGenerate } from "../../state/gameGenerate";
+import { gameListen } from "../../states/gameListen";
+import { gameGenerate } from "../../states/gameGenerate";
 
 import { GameGrid } from "./GameGrid";
-import { getComponentGame } from "../../state/gamePrograms";
+import { getComponentGame } from "../../states/gamePrograms";
 import { GameLobby } from "./GameLobby";
+import { gameTick } from "../../states/gameTick";
 
 export function GamePlay() {
   const params = useParams();
@@ -33,14 +34,40 @@ export function GamePlay() {
 
   // If the game hasn't been generated yet, generate it
   React.useEffect(() => {
-    if (game && game.status.generate !== undefined) {
-      console.log("Game needs generate");
-      const result = gameGenerate(engine, pdas.entityPda);
-      result.then(() => {
-        console.log("success generate");
-      });
+    if (!game || !game.status.generate) {
+      return;
     }
+    console.log("Game needs generate");
+    gameGenerate(engine, pdas.entityPda).then(() => {
+      console.log("success generate");
+    });
   }, [engine, pdas, game]);
+
+  // Constantly tick the game the game is playing
+  React.useEffect(() => {
+    if (!game || !game.status.playing) {
+      return;
+    }
+    const interval = setInterval(() => {
+      console.log("Game needs tick", game.growthNextSlot.toString());
+      gameTick(engine, pdas.entityPda).then(() => {
+        console.log("success tick");
+
+        engine.getSlot().then((slot) => {
+          console.log("get slot", slot);
+        });
+      });
+    }, 1000);
+
+    return () => {
+      clearInterval(interval);
+    };
+  }, [engine, pdas, game]);
+
+  // If the game doesn't exist, display error
+  if (game == null) {
+    return <div>No Game ?</div>;
+  }
 
   // Render the game
   console.log("pdas.entityPda", pdas.entityPda.toBase58());
@@ -49,8 +76,8 @@ export function GamePlay() {
   return (
     <>
       Game: {params.id.toString()}
-      <GameLobby game={game}></GameLobby>
-      <GameGrid game={game}></GameGrid>
+      <GameLobby entityPda={pdas.entityPda} game={game}></GameLobby>
+      <GameGrid entityPda={pdas.entityPda} game={game}></GameGrid>
     </>
   );
 }

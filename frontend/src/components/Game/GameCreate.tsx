@@ -2,7 +2,7 @@ import * as React from "react";
 import { useNavigate } from "react-router-dom";
 import { PublicKey } from "@solana/web3.js";
 
-import { gameCreate } from "../../state/gameCreate";
+import { gameCreate } from "../../states/gameCreate";
 import { useMagicBlockEngine } from "../../engine/MagicBlockEngine";
 
 export function GameCreate() {

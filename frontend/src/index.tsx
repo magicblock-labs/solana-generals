@@ -6,14 +6,15 @@ import {
   WalletProvider,
 } from "@solana/wallet-adapter-react";
 import { WalletAdapterNetwork } from "@solana/wallet-adapter-base";
+import { clusterApiUrl } from "@solana/web3.js";
+
+import { MagicBlockEngineProvider } from "./engine/MagicBlockEngine";
 
 import { Menu } from "./components/menu/Menu";
 import { GamePlay } from "./components/game/GamePlay";
 import { GameCreate } from "./components/game/GameCreate";
 
 import "./index.scss";
-import { clusterApiUrl } from "@solana/web3.js";
-import { MagicBlockEngineProvider } from "./engine/MagicBlockEngine";
 
 function App() {
   const network = WalletAdapterNetwork.Devnet;

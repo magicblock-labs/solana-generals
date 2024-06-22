@@ -1,6 +1,13 @@
+import { PublicKey } from "@solana/web3.js";
 import * as React from "react";
 
-export function GameGrid({ game }: { game: any }) {
+export function GameGrid({
+  entityPda,
+  game,
+}: {
+  entityPda: PublicKey;
+  game: any;
+}) {
   if (!game) {
     return <div>No game</div>;
   }

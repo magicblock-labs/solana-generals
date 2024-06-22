@@ -10,9 +10,7 @@ export function gameListen(
   const componentGame = getComponentGame(engine);
 
   let cancelled = false;
-
-  const gameInitial = componentGame.account.game.fetchNullable(gamePda);
-  gameInitial.then((gameValue) => {
+  componentGame.account.game.fetchNullable(gamePda).then((gameValue) => {
     if (!cancelled) {
       console.log("gameValue", gameValue);
       setGame(gameValue);
