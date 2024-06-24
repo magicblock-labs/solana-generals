@@ -6,51 +6,48 @@ import { Wallet } from "@solana/wallet-adapter-react";
 
 import "./MenuKeys.scss";
 
-function KeyWallet() {
+function KeyWalletSelector() {
   const engine = useMagicBlockEngine();
-
-  const [selecting, setSelecting] = React.useState(false);
-  const onConnect = () => {
-    setSelecting(true);
-  };
+  const wallets = engine.listWallets();
+  if (wallets.length <= 0) {
+    return <>No wallets!</>;
+  }
   const onSelect = (wallet: Wallet) => {
     engine.selectWallet(wallet);
-    setSelecting(false);
   };
+  console.log("wallets", wallets);
+  return (
+    <>
+      wallets:
+      {wallets.map((wallet) => {
+        const name = wallet.adapter.name;
+        return (
+          <div
+            key={name}
+            onClick={() => {
+              onSelect(wallet);
+            }}
+          >
+            {wallet.adapter.name.toString()}
+            <img src={wallet.adapter.icon} />
+          </div>
+        );
+      })}
+    </>
+  );
+}
 
-  if (engine.getWalletPayer() == null) {
-    if (selecting) {
-      const wallets = engine.listWallets();
-      if (wallets.length <= 0) {
-        return <>No wallets!</>;
-      }
-      console.log("wallets", wallets);
-      return (
-        <>
-          wallets:
-          {wallets.map((wallet) => {
-            const name = wallet.adapter.name;
-            return (
-              <div
-                key={name}
-                onClick={() => {
-                  onSelect(wallet);
-                }}
-              >
-                {wallet.adapter.name.toString()}
-                <img src={wallet.adapter.icon} />
-              </div>
-            );
-          })}
-        </>
-      );
-    }
-    return (
-      <>
-        <button onClick={onConnect}>Connect</button>
-      </>
-    );
-  }
+function KeyWalletReady() {
+  const engine = useMagicBlockEngine();
+
+  const publicKey = engine.getWalletPayer();
+
+  const [lamports, setLamports] = React.useState(0);
+  React.useEffect(() => {
+    return engine.listeToAccountInfo(publicKey, (accountInfo) => {
+      setLamports(accountInfo?.lamports ?? 0);
+    });
+  });
 
   const onDisconnect = () => {
     engine.selectWallet(null);
@@ -58,9 +55,31 @@ function KeyWallet() {
   return (
     <div>
       <div className="Key">Wallet: {engine.getWalletPayer()?.toBase58()}</div>
+      <div className="Lamports">{lamports / 1_000_000_000} SOL</div>
       <button onClick={onDisconnect}>Disconnect</button>
     </div>
   );
+}
+
+function KeyWallet() {
+  const engine = useMagicBlockEngine();
+
+  const [selecting, setSelecting] = React.useState(false);
+  const onConnect = () => {
+    setSelecting(true);
+  };
+
+  if (engine.getWalletPayer() == null) {
+    if (selecting) {
+      return <KeyWalletSelector />;
+    }
+    return (
+      <>
+        <button onClick={onConnect}>Connect</button>
+      </>
+    );
+  }
+  return <KeyWalletReady />;
 }
 
 function KeySession() {
@@ -75,17 +94,35 @@ function KeySession() {
     });
   });
 
-  let fundButton;
+  const buttons = [];
   if (engine.getConnected() && lamports < engine.getSessionMinimalLamports()) {
     const onFund = () => {
-      engine.fundSession();
+      engine.fundSession().then(() => {
+        console.log("funded");
+      });
     };
-    fundButton = <button onClick={onFund}>Fund</button>;
+    buttons.push(
+      <button key="fund" onClick={onFund}>
+        Fund
+      </button>
+    );
+  }
+  if (engine.getConnected() && lamports > 5_000) {
+    const onDefund = () => {
+      engine.defundSession().then(() => {
+        console.log("defunded");
+      });
+    };
+    buttons.push(
+      <button key="defund" onClick={onDefund}>
+        Defund
+      </button>
+    );
   }
 
   return (
     <>
-      {fundButton}
+      {buttons}
       <div className="Lamports">{lamports / 1_000_000_000} SOL</div>
       <div className="Key">Session: {publicKey.toBase58()}</div>
     </>

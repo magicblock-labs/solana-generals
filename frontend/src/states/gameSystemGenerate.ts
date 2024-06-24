@@ -14,5 +14,5 @@ export async function gameSystemGenerate(
     entity: entityPda,
     components: [getComponentGame(engine).programId],
   });
-  await engine.processSessionTransaction(applySystem.transaction);
+  await engine.processSessionTransaction(applySystem.transaction, true);
 }

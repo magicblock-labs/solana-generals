@@ -14,15 +14,20 @@ import {
   PublicKey,
   SystemProgram,
   Transaction,
+  clusterApiUrl,
 } from "@solana/web3.js";
 
 const ENDPOINT_RPC = "https://devnet.magicblock.app";
-const ENDPOINT_WSS = "wss://devnet.magicblock.app:8900";
+const ENDPOINT_WS = "wss://devnet.magicblock.app:8900";
+
+const ephemeral = new Connection(ENDPOINT_RPC, {
+  wsEndpoint: ENDPOINT_WS,
+});
 
 const SESSION_KEY_LOCAL_STORAGE = "magicblock-session-key";
 
 const SESSION_KEY_MIN_LAMPORTS = 0.01 * 1_000_000_000;
-const SESSION_KEY_MAX_LAMPORTS = 0.02 * 1_000_000_000;
+const SESSION_KEY_MAX_LAMPORTS = 0.05 * 1_000_000_000;
 
 const TRANSACTION_COST_LAMPORTS = 5000;
 
@@ -82,35 +87,42 @@ export class MagicBlockEngine {
       transaction,
       this.connectionContext.connection
     );
-    await this.waitSignatureConfirmation(signature);
-    return signature;
-  }
-
-  async processSessionTransaction(transaction: Transaction): Promise<string> {
-    const signature = await this.connectionContext.connection.sendTransaction(
-      transaction,
-      [this.sessionKey]
+    await this.waitSignatureConfirmation(
+      this.connectionContext.connection,
+      signature
     );
-    await this.waitSignatureConfirmation(signature);
     return signature;
   }
 
-  async waitSignatureConfirmation(signature: string): Promise<void> {
+  async processSessionTransaction(
+    transaction: Transaction,
+    routedToEphemeral: boolean
+  ): Promise<string> {
+    const connection = routedToEphemeral
+      ? ephemeral
+      : this.connectionContext.connection;
+    const signature = await connection.sendTransaction(transaction, [
+      this.sessionKey,
+    ]);
+    await this.waitSignatureConfirmation(connection, signature);
+    return signature;
+  }
+
+  async waitSignatureConfirmation(
+    connection: Connection,
+    signature: string
+  ): Promise<void> {
+    console.log("transaction started:", signature);
     return new Promise((resolve, reject) => {
-      const subscription = this.connectionContext.connection.onSignature(
-        signature,
-        (result) => {
-          this.connectionContext.connection.removeSignatureListener(
-            subscription
-          );
-          console.log("transaction result:", signature, result);
-          if (result.err) {
-            reject(result.err);
-          } else {
-            resolve();
-          }
+      const subscription = connection.onSignature(signature, (result) => {
+        connection.removeSignatureListener(subscription);
+        console.log("transaction result:", signature, result);
+        if (result.err) {
+          reject(result.err);
+        } else {
+          resolve();
         }
-      );
+      });
     });
   }
 
@@ -149,7 +161,8 @@ export class MagicBlockEngine {
             toPubkey: this.getWalletPayer(),
             lamports: transferableLamports,
           })
-        )
+        ),
+        false
       );
     }
   }
@@ -238,8 +251,10 @@ function MagicBlockEngineProviderInner({
       }),
     };
     */
+    const endpoint = clusterApiUrl("devnet");
+    console.log("endpoint", endpoint);
     const connectionContext = {
-      connection: new Connection("https://api.devnet.solana.com"),
+      connection: new Connection(endpoint),
     };
 
     const sessionKeyString = localStorage.getItem(SESSION_KEY_LOCAL_STORAGE);

@@ -49,7 +49,7 @@ export function GameGridRows({
   else {
     for (let x = 0; x < game.sizeX; x++) {
       const cells = [];
-      for (let y = 0; y < game.sizeY; y++) {
+      for (let y = game.sizeY - 1; y >= 0; y--) {
         const cell = game.cells[y * game.sizeX + x];
         cells.push(
           <GameGridCell

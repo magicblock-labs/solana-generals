@@ -20,5 +20,5 @@ export async function gameSystemJoin(
       join,
     },
   });
-  await engine.processSessionTransaction(applySystem.transaction);
+  await engine.processSessionTransaction(applySystem.transaction, true);
 }

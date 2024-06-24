@@ -28,5 +28,5 @@ export async function gameSystemCommand(
       strength: strength,
     },
   });
-  await engine.processSessionTransaction(applySystem.transaction);
+  await engine.processSessionTransaction(applySystem.transaction, true);
 }
