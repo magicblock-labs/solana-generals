@@ -5,25 +5,24 @@ import { getComponentGame } from "./gamePrograms";
 export function gameListen(
   engine: MagicBlockEngine,
   gamePda: PublicKey,
-  setGame: ({}) => void
+  setGame: (game: any) => void
 ) {
   const componentGame = getComponentGame(engine);
 
   let cancelled = false;
-  componentGame.account.game.fetchNullable(gamePda).then((gameValue) => {
-    if (!cancelled) {
-      console.log("gameValue", gameValue);
-      setGame(gameValue);
-    }
-  });
+  componentGame.account.game
+    .fetchNullable(gamePda)
+    .catch(console.error)
+    .then((game) => {
+      if (!cancelled) {
+        setGame(game);
+      }
+    });
 
   const gameWatcher = componentGame.account.game.subscribe(gamePda);
-  gameWatcher.addListener("change", (param: any) => {
-    console.log("onChange", param);
-    setGame(param);
-  });
+  gameWatcher.addListener("change", setGame);
   return () => {
     cancelled = true;
-    gameWatcher.removeAllListeners();
+    gameWatcher.removeListener(setGame);
   };
 }

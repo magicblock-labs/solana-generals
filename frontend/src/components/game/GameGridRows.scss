@@ -1,0 +1,10 @@
+.GameGridRows {
+  display: flex;
+  flex-direction: column;
+  border: 2px solid rgba(127, 127, 127, 0.3);
+
+  .Row {
+    display: flex;
+    flex-direction: row;
+  }
+}

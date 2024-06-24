@@ -1,20 +1,22 @@
 import * as React from "react";
+
 import { useParams } from "react-router-dom";
 import { PublicKey } from "@solana/web3.js";
 import { FindComponentPda } from "@magicblock-labs/bolt-sdk";
 
 import { useMagicBlockEngine } from "../../engine/MagicBlockEngine";
 
+import { getComponentGame } from "../../states/gamePrograms";
 import { gameListen } from "../../states/gameListen";
 import { gameSystemGenerate } from "../../states/gameSystemGenerate";
-
-import { GameGrid } from "./GameGrid";
-import { GameLobby } from "./GameLobby";
-
-import { getComponentGame } from "../../states/gamePrograms";
 import { gameSystemTick } from "../../states/gameSystemTick";
 
-export function GamePlay() {
+import { GameGridRoot } from "../game/GameGridRoot";
+import { GamePlayers } from "../game/GamePlayers";
+
+import "./PageGamePlay.scss";
+
+export function PageGamePlay() {
   const params = useParams();
   const engine = useMagicBlockEngine();
 
@@ -39,27 +41,27 @@ export function GamePlay() {
       return;
     }
     console.log("Game needs generate");
-    gameSystemGenerate(engine, pdas.entityPda).then(() => {
-      console.log("success generate");
-    });
+    gameSystemGenerate(engine, pdas.entityPda)
+      .catch(console.error)
+      .then(() => {
+        console.log("success generate");
+      });
   }, [engine, pdas, game]);
 
   // Constantly tick the game the game is playing
   React.useEffect(() => {
+    return;
     if (!game || !game.status.playing) {
       return;
     }
     const interval = setInterval(() => {
       console.log("Game needs tick", game.growthNextSlot.toString());
-      gameSystemTick(engine, pdas.entityPda).then(() => {
-        console.log("success tick");
-
-        engine.getSlot().then((slot) => {
-          console.log("get slot", slot);
+      gameSystemTick(engine, pdas.entityPda)
+        .catch(console.error)
+        .then(() => {
+          console.log("success tick");
         });
-      });
     }, 1000);
-
     return () => {
       clearInterval(interval);
     };
@@ -71,14 +73,11 @@ export function GamePlay() {
   }
 
   // Render the game
-  console.log("pdas.entityPda", pdas.entityPda.toBase58());
-  console.log("pdas.gamePda", pdas.gamePda.toBase58());
-  console.log("game", game);
   return (
-    <>
+    <div className="PageGamePlay">
       Game: {params.id.toString()}
-      <GameLobby entityPda={pdas.entityPda} game={game}></GameLobby>
-      <GameGrid entityPda={pdas.entityPda} game={game}></GameGrid>
-    </>
+      <GamePlayers entityPda={pdas.entityPda} game={game} />
+      <GameGridRoot entityPda={pdas.entityPda} game={game} />
+    </div>
   );
 }

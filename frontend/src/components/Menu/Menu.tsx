@@ -2,12 +2,12 @@ import * as React from "react";
 
 import { Link } from "react-router-dom";
 
-import { Connect } from "./Connect";
+import { MenuKeys } from "./MenuKeys";
 
 export function Menu() {
   return (
     <div>
-      <Connect />
+      <MenuKeys />
       <div>
         <Link to="/">Home</Link>
         <Link to="/dudu">dudu</Link>

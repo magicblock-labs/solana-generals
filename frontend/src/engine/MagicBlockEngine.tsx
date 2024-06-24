@@ -2,11 +2,13 @@ import * as React from "react";
 import { Idl, Program } from "@coral-xyz/anchor";
 import {
   ConnectionContextState,
+  Wallet,
   WalletContextState,
-  useConnection,
+  WalletProvider,
   useWallet,
 } from "@solana/wallet-adapter-react";
 import {
+  AccountInfo,
   Connection,
   Keypair,
   PublicKey,
@@ -14,25 +16,35 @@ import {
   Transaction,
 } from "@solana/web3.js";
 
-const LOCAL_STORAGE_KEY = "magicblock-session-key";
+const ENDPOINT_RPC = "https://devnet.magicblock.app";
+const ENDPOINT_WSS = "wss://devnet.magicblock.app:8900";
+
+const SESSION_KEY_LOCAL_STORAGE = "magicblock-session-key";
+
+const SESSION_KEY_MIN_LAMPORTS = 0.01 * 1_000_000_000;
+const SESSION_KEY_MAX_LAMPORTS = 0.02 * 1_000_000_000;
+
+const TRANSACTION_COST_LAMPORTS = 5000;
 
 export class MagicBlockEngine {
   connectionContext: ConnectionContextState;
   walletContext: WalletContextState;
   sessionKey: Keypair;
+  sessionMinimalLamports: number;
+  sessionMaximalLamports: number;
 
   constructor(
     connectionContext: ConnectionContextState,
     walletContext: WalletContextState,
-    sessionKey: Keypair
+    sessionKey: Keypair,
+    sessionMinimalLamports: number = SESSION_KEY_MIN_LAMPORTS,
+    sessionMaximalLamports: number = SESSION_KEY_MAX_LAMPORTS
   ) {
     this.connectionContext = connectionContext;
     this.walletContext = walletContext;
     this.sessionKey = sessionKey;
-  }
-
-  getConnected() {
-    return this.walletContext.connected;
+    this.sessionMinimalLamports = sessionMinimalLamports;
+    this.sessionMaximalLamports = sessionMaximalLamports;
   }
 
   getProgram<T extends Idl>(idl: {}): Program<T> {
@@ -43,6 +55,14 @@ export class MagicBlockEngine {
     return this.connectionContext.connection;
   }
 
+  getConnected() {
+    return this.walletContext.connected;
+  }
+
+  getConnecting() {
+    return this.walletContext.connecting;
+  }
+
   getWalletPayer(): PublicKey {
     return this.walletContext.publicKey;
   }
@@ -51,20 +71,10 @@ export class MagicBlockEngine {
     return this.sessionKey.publicKey;
   }
 
-  async isLiveAccount(key: PublicKey): Promise<boolean> {
-    const accountInfo =
-      await this.connectionContext.connection.getAccountInfo(key);
-    return accountInfo != null;
-  }
-
   async isNewAccount(key: PublicKey): Promise<boolean> {
     const accountInfo =
       await this.connectionContext.connection.getAccountInfo(key);
     return accountInfo == null;
-  }
-
-  async getSlot() {
-    return this.connectionContext.connection.getSlot();
   }
 
   async processWalletTransaction(transaction: Transaction): Promise<string> {
@@ -104,16 +114,13 @@ export class MagicBlockEngine {
     });
   }
 
-  async fundSession(
-    minimalLamports: number = 0.01 * 1_000_000_000,
-    maximalLamports: number = 0.02 * 1_000_000_000
-  ): Promise<void> {
+  async fundSession() {
     const accountInfo = await this.connectionContext.connection.getAccountInfo(
       this.getSessionPayer()
     );
-    if (!accountInfo || accountInfo.lamports < minimalLamports) {
+    if (!accountInfo || accountInfo.lamports < this.sessionMinimalLamports) {
       const existingLamports = accountInfo?.lamports ?? 0;
-      const missingLamports = maximalLamports - existingLamports;
+      const missingLamports = this.sessionMaximalLamports - existingLamports;
       console.log("fundSession.existingLamports", existingLamports);
       console.log("fundSession.missingLamports", missingLamports);
       await this.processWalletTransaction(
@@ -133,7 +140,8 @@ export class MagicBlockEngine {
       this.getSessionPayer()
     );
     if (accountInfo && accountInfo.lamports > 0) {
-      const transferableLamports = accountInfo.lamports - 5_000;
+      const transferableLamports =
+        accountInfo.lamports - TRANSACTION_COST_LAMPORTS;
       await this.processSessionTransaction(
         new Transaction().add(
           SystemProgram.transfer({
@@ -144,6 +152,52 @@ export class MagicBlockEngine {
         )
       );
     }
+  }
+
+  listeToAccountInfo(
+    address: PublicKey,
+    onAccountChange: (accountInfo?: AccountInfo<Buffer>) => void
+  ) {
+    let cancelled = false;
+    this.connectionContext.connection
+      .getAccountInfo(address)
+      .then((accountInfo) => {
+        if (!cancelled) {
+          onAccountChange(accountInfo);
+        }
+      });
+    const subscription = this.connectionContext.connection.onAccountChange(
+      address,
+      (accountInfo) => {
+        onAccountChange(accountInfo);
+      }
+    );
+    return () => {
+      cancelled = true;
+      this.connectionContext.connection.removeAccountChangeListener(
+        subscription
+      );
+    };
+  }
+
+  listWallets(): Wallet[] {
+    return this.walletContext.wallets;
+  }
+
+  selectWallet(wallet: Wallet | null) {
+    if (wallet) {
+      return this.walletContext.select(wallet.adapter.name);
+    } else {
+      return this.walletContext.disconnect();
+    }
+  }
+
+  getSessionMinimalLamports(): number {
+    return this.sessionMinimalLamports;
+  }
+
+  getSessionMaximalLamports(): number {
+    return this.sessionMaximalLamports;
   }
 }
 
@@ -160,13 +214,35 @@ export function MagicBlockEngineProvider({
 }: {
   children: React.ReactNode;
 }) {
-  const connection = useConnection();
-  const wallet = useWallet();
+  return (
+    <WalletProvider wallets={[]} autoConnect>
+      <MagicBlockEngineProviderInner>{children}</MagicBlockEngineProviderInner>
+    </WalletProvider>
+  );
+}
+
+function MagicBlockEngineProviderInner({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  const walletContext = useWallet();
 
   const engine = React.useMemo(() => {
     let sessionKey;
 
-    const sessionKeyString = localStorage.getItem(LOCAL_STORAGE_KEY);
+    /*
+    const connectionContext = {
+      connection: new Connection(ENDPOINT_RPC, {
+        wsEndpoint: ENDPOINT_WSS,
+      }),
+    };
+    */
+    const connectionContext = {
+      connection: new Connection("https://api.devnet.solana.com"),
+    };
+
+    const sessionKeyString = localStorage.getItem(SESSION_KEY_LOCAL_STORAGE);
     if (sessionKeyString) {
       sessionKey = Keypair.fromSecretKey(
         Uint8Array.from(JSON.parse(sessionKeyString))
@@ -174,13 +250,13 @@ export function MagicBlockEngineProvider({
     } else {
       sessionKey = Keypair.generate();
       localStorage.setItem(
-        LOCAL_STORAGE_KEY,
+        SESSION_KEY_LOCAL_STORAGE,
         JSON.stringify(Array.from(sessionKey.secretKey))
       );
     }
 
-    return new MagicBlockEngine(connection, wallet, sessionKey);
-  }, [connection, wallet]);
+    return new MagicBlockEngine(connectionContext, walletContext, sessionKey);
+  }, [walletContext]);
 
   return (
     <MagicBlockEngineContext.Provider value={engine}>

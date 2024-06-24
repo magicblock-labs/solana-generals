@@ -1,0 +1,10 @@
+.GamePlayer {
+  padding: 5px;
+
+  &.Player0 {
+    background-color: rgba(0, 0, 255, 0.3);
+  }
+  &.Player1 {
+    background-color: rgba(255, 0, 0, 0.3);
+  }
+}

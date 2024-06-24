@@ -18,6 +18,7 @@ export async function gameCreate(engine: MagicBlockEngine) {
     addEntity.entityPda.toBase58(),
     await engine.processSessionTransaction(addEntity.transaction)
   );
+
   // Create a new Component
   const initializeComponent = await InitializeComponent({
     payer: engine.getSessionPayer(),
@@ -29,6 +30,7 @@ export async function gameCreate(engine: MagicBlockEngine) {
     initializeComponent.componentPda.toBase58(),
     await engine.processSessionTransaction(initializeComponent.transaction)
   );
+
   // Done
   return addEntity.entityPda;
 }

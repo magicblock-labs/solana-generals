@@ -2,15 +2,17 @@ import * as React from "react";
 import { useNavigate } from "react-router-dom";
 import { PublicKey } from "@solana/web3.js";
 
-import { gameCreate } from "../../states/gameCreate";
 import { useMagicBlockEngine } from "../../engine/MagicBlockEngine";
 
-export function GameCreate() {
+import { gameCreate } from "../../states/gameCreate";
+
+import "./PageGameCreate.scss";
+
+export function PageGameCreate() {
   const navigate = useNavigate();
   const engine = useMagicBlockEngine();
 
   React.useEffect(() => {
-    console.log("GameCreate", "useEffect", engine.getWalletPayer()?.toBase58());
     if (!engine.getConnected()) {
       return;
     }
@@ -26,5 +28,5 @@ export function GameCreate() {
       });
   }, [engine]);
 
-  return <div>GameCreate</div>;
+  return <div className="PageGameCreate">PageGameCreate</div>;
 }

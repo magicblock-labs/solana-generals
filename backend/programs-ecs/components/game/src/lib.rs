@@ -43,7 +43,7 @@ pub enum GameCellKind {
     Field,
     City,
     Capital,
-    Montain,
+    Montain, // TODO(vbrunet) - typo "Mountain"
 }
 
 #[component_deserialize]
