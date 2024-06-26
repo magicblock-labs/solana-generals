@@ -1,0 +1,20 @@
+.MenuSession {
+  display: flex;
+  align-items: center;
+
+  > * {
+    margin: 4px;
+  }
+
+  .Label {
+    font-weight: bold;
+  }
+  .Key {
+    background-color: black;
+    color: white;
+  }
+
+  .Warning {
+    color: rgb(255, 150, 150);
+  }
+}

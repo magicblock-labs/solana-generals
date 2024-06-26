@@ -1,0 +1,41 @@
+.MenuWalletConnected {
+  display: flex;
+  align-items: center;
+
+  > * {
+    margin: 4px;
+  }
+
+  .Label {
+    font-weight: bold;
+  }
+  .Key {
+    background-color: black;
+    color: white;
+  }
+}
+
+.MenuWalletDisconnected {
+  display: flex;
+  align-items: center;
+
+  > * {
+    margin: 4px;
+  }
+
+  .Adapter {
+    background-color: black;
+    color: white;
+    display: flex;
+    align-items: center;
+    .Name {
+      margin-left: 8px;
+    }
+    .Icon {
+      width: 24px;
+    }
+  }
+
+  .Placeholder {
+  }
+}

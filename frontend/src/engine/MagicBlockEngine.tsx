@@ -14,6 +14,7 @@ import {
   SystemProgram,
   Transaction,
 } from "@solana/web3.js";
+import { WalletName } from "@solana/wallet-adapter-base";
 
 const ENDPOINT_CHAIN_RPC = "https://api.devnet.solana.com";
 const ENDPOINT_CHAIN_WS = "ws://api.devnet.solana.com";
@@ -37,6 +38,11 @@ const connectionChain = new Connection(ENDPOINT_CHAIN_RPC, {
 interface SessionConfig {
   minLamports: number;
   maxLamports: number;
+}
+
+interface WalletAdapter {
+  name: string;
+  icon: string;
 }
 
 export class MagicBlockEngine {
@@ -191,13 +197,18 @@ export class MagicBlockEngine {
     };
   }
 
-  listWallets(): Wallet[] {
-    return this.walletContext.wallets;
+  listWalletAdapters(): WalletAdapter[] {
+    return this.walletContext.wallets.map((wallet) => {
+      return {
+        name: wallet.adapter.name,
+        icon: wallet.adapter.icon,
+      };
+    });
   }
 
-  selectWallet(wallet: Wallet | null) {
+  selectWalletAdapter(wallet: WalletAdapter | null) {
     if (wallet) {
-      return this.walletContext.select(wallet.adapter.name);
+      return this.walletContext.select(wallet.name as WalletName);
     } else {
       return this.walletContext.disconnect();
     }

@@ -1,4 +1,26 @@
 body {
-    background-color:black;
-    color: white;
+  background-color: black;
+  color: white;
+}
+
+* {
+  box-sizing: border-box;
+  border: 0;
+  margin: 0;
+  padding: 0;
+  font-size: 16px;
+  font-family: "Courier New", monospace;
+  flex-shrink: 0;
+  flex-grow: 0;
+}
+
+button {
+  padding: 0 12px;
+  height: 40px;
+  border: 1px solid grey;
+  border-radius: 8px;
+  cursor: pointer;
+  &:active {
+    background-color: grey;
+  }
 }

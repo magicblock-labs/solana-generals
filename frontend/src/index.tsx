@@ -1,10 +1,10 @@
 import * as React from "react";
 import { createRoot } from "react-dom/client";
-import { Route, Routes, HashRouter } from "react-router-dom";
+import { Route, Routes, HashRouter, Link } from "react-router-dom";
 
 import { MagicBlockEngineProvider } from "./engine/MagicBlockEngine";
 
-import { Menu } from "./components/menu/Menu";
+import { MenuBar } from "./components/menu/MenuBar";
 
 import { PageGamePlay } from "./components/page/PageGamePlay";
 import { PageGameCreate } from "./components/page/PageGameCreate";
@@ -15,7 +15,12 @@ function App() {
   return (
     <HashRouter>
       <MagicBlockEngineProvider>
-        <Menu />
+        <MenuBar />
+        <div>
+          <Link to="/">Home</Link>
+          <Link to="/dudu">dudu</Link>
+          <Link to="/game/create">Game Create</Link>
+        </div>
         <div>
           <Routes>
             <Route path="/" element={[]} />
