@@ -95,7 +95,10 @@ function KeySession() {
   });
 
   const buttons = [];
-  if (engine.getConnected() && lamports < engine.getSessionMinimalLamports()) {
+  if (
+    engine.getWalletConnected() &&
+    lamports < engine.getSessionMinLamports()
+  ) {
     const onFund = () => {
       engine.fundSession().then(() => {
         console.log("funded");
@@ -107,7 +110,7 @@ function KeySession() {
       </button>
     );
   }
-  if (engine.getConnected() && lamports > 5_000) {
+  if (engine.getWalletConnected() && lamports > 5_000) {
     const onDefund = () => {
       engine.defundSession().then(() => {
         console.log("defunded");

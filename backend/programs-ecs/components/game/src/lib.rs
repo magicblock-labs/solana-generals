@@ -2,7 +2,7 @@ use bolt_lang::*;
 
 declare_id!("DcUL2DdypF14p5TZEBcEtpGSY843LM9vkokyoDahxWhk");
 
-#[component]
+#[component(delegate)]
 pub struct Game {
     pub status: GameStatus,
     pub size_x: u8,

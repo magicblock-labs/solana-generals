@@ -10,9 +10,21 @@ export async function gameSystemGenerate(
 ) {
   const applySystem = await ApplySystem({
     authority: engine.getSessionPayer(),
-    system: getSystemGenerate(engine).programId,
-    entity: entityPda,
-    components: [getComponentGame(engine).programId],
+    systemId: getSystemGenerate(engine).programId,
+    entities: [
+      {
+        entity: entityPda,
+        components: [
+          {
+            componentId: getComponentGame(engine).programId,
+          },
+        ],
+      },
+    ],
   });
-  await engine.processSessionTransaction(applySystem.transaction, true);
+  await engine.processSessionTransaction(
+    "SystemGenerate",
+    applySystem.transaction,
+    false
+  );
 }

@@ -13,9 +13,6 @@ export function PageGameCreate() {
   const engine = useMagicBlockEngine();
 
   React.useEffect(() => {
-    if (!engine.getConnected()) {
-      return;
-    }
     gameCreate(engine)
       .catch(console.error)
       .then((entityPda: PublicKey) => {

@@ -12,13 +12,25 @@ export async function gameSystemJoin(
 ) {
   const applySystem = await ApplySystem({
     authority: engine.getSessionPayer(),
-    system: getSystemJoin(engine).programId,
-    entity: entityPda,
-    components: [getComponentGame(engine).programId],
+    systemId: getSystemJoin(engine).programId,
+    entities: [
+      {
+        entity: entityPda,
+        components: [
+          {
+            componentId: getComponentGame(engine).programId,
+          },
+        ],
+      },
+    ],
     args: {
       player_index: playerIndex,
       join,
     },
   });
-  await engine.processSessionTransaction(applySystem.transaction, true);
+  await engine.processSessionTransaction(
+    "SystemJoin",
+    applySystem.transaction,
+    false
+  );
 }

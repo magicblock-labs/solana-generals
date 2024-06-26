@@ -16,9 +16,17 @@ export async function gameSystemCommand(
 ) {
   const applySystem = await ApplySystem({
     authority: engine.getSessionPayer(),
-    system: getSystemCommand(engine).programId,
-    entity: entityPda,
-    components: [getComponentGame(engine).programId],
+    systemId: getSystemCommand(engine).programId,
+    entities: [
+      {
+        entity: entityPda,
+        components: [
+          {
+            componentId: getComponentGame(engine).programId,
+          },
+        ],
+      },
+    ],
     args: {
       player_index: playerIndex,
       source_x: sourceX,
@@ -28,5 +36,9 @@ export async function gameSystemCommand(
       strength: strength,
     },
   });
-  await engine.processSessionTransaction(applySystem.transaction, true);
+  await engine.processSessionTransaction(
+    "SystemCommand",
+    applySystem.transaction,
+    false
+  );
 }

@@ -10,9 +10,21 @@ export async function gameSystemTick(
 ) {
   const applySystem = await ApplySystem({
     authority: engine.getSessionPayer(),
-    system: getSystemTick(engine).programId,
-    entity: entityPda,
-    components: [getComponentGame(engine).programId],
+    systemId: getSystemTick(engine).programId,
+    entities: [
+      {
+        entity: entityPda,
+        components: [
+          {
+            componentId: getComponentGame(engine).programId,
+          },
+        ],
+      },
+    ],
   });
-  await engine.processSessionTransaction(applySystem.transaction, true);
+  await engine.processSessionTransaction(
+    "SystemTick",
+    applySystem.transaction,
+    false
+  );
 }

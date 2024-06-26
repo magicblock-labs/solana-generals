@@ -28,8 +28,4 @@ function App() {
   );
 }
 
-createRoot(document.getElementById("app")).render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>
-);
+createRoot(document.getElementById("app")).render(<App />);

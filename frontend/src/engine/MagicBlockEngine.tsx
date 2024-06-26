@@ -1,7 +1,6 @@
 import * as React from "react";
 import { Idl, Program } from "@coral-xyz/anchor";
 import {
-  ConnectionContextState,
   Wallet,
   WalletContextState,
   WalletProvider,
@@ -14,57 +13,62 @@ import {
   PublicKey,
   SystemProgram,
   Transaction,
-  clusterApiUrl,
 } from "@solana/web3.js";
 
-const ENDPOINT_RPC = "https://devnet.magicblock.app";
-const ENDPOINT_WS = "wss://devnet.magicblock.app:8900";
+const ENDPOINT_CHAIN_RPC = "https://api.devnet.solana.com";
+const ENDPOINT_CHAIN_WS = "ws://api.devnet.solana.com";
 
-const ephemeral = new Connection(ENDPOINT_RPC, {
-  wsEndpoint: ENDPOINT_WS,
-});
+const ENDPOINT_EPHEMERAL_RPC = "https://devnet.magicblock.app";
+const ENDPOINT_EPHEMERAL_WS = "wss://devnet.magicblock.app:8900";
 
-const SESSION_KEY_LOCAL_STORAGE = "magicblock-session-key";
-
-const SESSION_KEY_MIN_LAMPORTS = 0.01 * 1_000_000_000;
-const SESSION_KEY_MAX_LAMPORTS = 0.05 * 1_000_000_000;
+const SESSION_LOCAL_STORAGE = "magicblock-session-key";
+const SESSION_MIN_LAMPORTS = 0.01 * 1_000_000_000;
+const SESSION_MAX_LAMPORTS = 0.05 * 1_000_000_000;
 
 const TRANSACTION_COST_LAMPORTS = 5000;
 
+const connectionEphemeral = new Connection(ENDPOINT_EPHEMERAL_RPC, {
+  wsEndpoint: ENDPOINT_EPHEMERAL_WS,
+});
+const connectionChain = new Connection(ENDPOINT_CHAIN_RPC, {
+  wsEndpoint: ENDPOINT_CHAIN_WS,
+});
+
+interface SessionConfig {
+  minLamports: number;
+  maxLamports: number;
+}
+
 export class MagicBlockEngine {
-  connectionContext: ConnectionContextState;
   walletContext: WalletContextState;
   sessionKey: Keypair;
-  sessionMinimalLamports: number;
-  sessionMaximalLamports: number;
+  sessionConfig: SessionConfig;
 
   constructor(
-    connectionContext: ConnectionContextState,
     walletContext: WalletContextState,
     sessionKey: Keypair,
-    sessionMinimalLamports: number = SESSION_KEY_MIN_LAMPORTS,
-    sessionMaximalLamports: number = SESSION_KEY_MAX_LAMPORTS
+    sessionConfig: SessionConfig
   ) {
-    this.connectionContext = connectionContext;
     this.walletContext = walletContext;
     this.sessionKey = sessionKey;
-    this.sessionMinimalLamports = sessionMinimalLamports;
-    this.sessionMaximalLamports = sessionMaximalLamports;
+    this.sessionConfig = sessionConfig;
   }
 
   getProgram<T extends Idl>(idl: {}): Program<T> {
-    return new Program<T>(idl as T, this.connectionContext);
+    return new Program<T>(idl as T, { connection: connectionChain });
   }
 
-  getConnection(): Connection {
-    return this.connectionContext.connection;
+  getConnectionChain(): Connection {
+    return connectionChain;
+  }
+  getConnectionEphemeral(): Connection {
+    return connectionEphemeral;
   }
 
-  getConnected() {
+  getWalletConnected() {
     return this.walletContext.connected;
   }
-
-  getConnecting() {
+  getWalletConnecting() {
     return this.walletContext.connecting;
   }
 
@@ -76,47 +80,43 @@ export class MagicBlockEngine {
     return this.sessionKey.publicKey;
   }
 
-  async isNewAccount(key: PublicKey): Promise<boolean> {
-    const accountInfo =
-      await this.connectionContext.connection.getAccountInfo(key);
-    return accountInfo == null;
-  }
-
-  async processWalletTransaction(transaction: Transaction): Promise<string> {
+  async processWalletTransaction(
+    name: string,
+    transaction: Transaction
+  ): Promise<string> {
     const signature = await this.walletContext.sendTransaction(
       transaction,
-      this.connectionContext.connection
+      connectionChain
     );
-    await this.waitSignatureConfirmation(
-      this.connectionContext.connection,
-      signature
-    );
+    await this.waitSignatureConfirmation(connectionChain, name, signature);
     return signature;
   }
 
   async processSessionTransaction(
+    name: string,
     transaction: Transaction,
-    routedToEphemeral: boolean
+    routedToEphemeral: boolean // TODO(vbrunet) - clean that up, it should be automatic
   ): Promise<string> {
     const connection = routedToEphemeral
-      ? ephemeral
-      : this.connectionContext.connection;
+      ? connectionEphemeral
+      : connectionChain;
     const signature = await connection.sendTransaction(transaction, [
       this.sessionKey,
     ]);
-    await this.waitSignatureConfirmation(connection, signature);
+    await this.waitSignatureConfirmation(connection, name, signature);
     return signature;
   }
 
   async waitSignatureConfirmation(
     connection: Connection,
+    name: string,
     signature: string
   ): Promise<void> {
-    console.log("transaction started:", signature);
+    console.log("transaction started:", name, signature);
     return new Promise((resolve, reject) => {
       const subscription = connection.onSignature(signature, (result) => {
         connection.removeSignatureListener(subscription);
-        console.log("transaction result:", signature, result);
+        console.log("transaction finilized:", name, signature, result.err);
         if (result.err) {
           reject(result.err);
         } else {
@@ -127,15 +127,16 @@ export class MagicBlockEngine {
   }
 
   async fundSession() {
-    const accountInfo = await this.connectionContext.connection.getAccountInfo(
+    const accountInfo = await connectionChain.getAccountInfo(
       this.getSessionPayer()
     );
-    if (!accountInfo || accountInfo.lamports < this.sessionMinimalLamports) {
+    if (!accountInfo || accountInfo.lamports < this.sessionConfig.minLamports) {
       const existingLamports = accountInfo?.lamports ?? 0;
-      const missingLamports = this.sessionMaximalLamports - existingLamports;
+      const missingLamports = this.sessionConfig.maxLamports - existingLamports;
       console.log("fundSession.existingLamports", existingLamports);
       console.log("fundSession.missingLamports", missingLamports);
       await this.processWalletTransaction(
+        "FundSession",
         new Transaction().add(
           SystemProgram.transfer({
             fromPubkey: this.getWalletPayer(),
@@ -148,13 +149,14 @@ export class MagicBlockEngine {
   }
 
   async defundSession() {
-    const accountInfo = await this.connectionContext.connection.getAccountInfo(
+    const accountInfo = await connectionChain.getAccountInfo(
       this.getSessionPayer()
     );
     if (accountInfo && accountInfo.lamports > 0) {
       const transferableLamports =
         accountInfo.lamports - TRANSACTION_COST_LAMPORTS;
       await this.processSessionTransaction(
+        "DefundSession",
         new Transaction().add(
           SystemProgram.transfer({
             fromPubkey: this.getSessionPayer(),
@@ -172,14 +174,12 @@ export class MagicBlockEngine {
     onAccountChange: (accountInfo?: AccountInfo<Buffer>) => void
   ) {
     let cancelled = false;
-    this.connectionContext.connection
-      .getAccountInfo(address)
-      .then((accountInfo) => {
-        if (!cancelled) {
-          onAccountChange(accountInfo);
-        }
-      });
-    const subscription = this.connectionContext.connection.onAccountChange(
+    connectionChain.getAccountInfo(address).then((accountInfo) => {
+      if (!cancelled) {
+        onAccountChange(accountInfo);
+      }
+    });
+    const subscription = connectionChain.onAccountChange(
       address,
       (accountInfo) => {
         onAccountChange(accountInfo);
@@ -187,9 +187,7 @@ export class MagicBlockEngine {
     );
     return () => {
       cancelled = true;
-      this.connectionContext.connection.removeAccountChangeListener(
-        subscription
-      );
+      connectionChain.removeAccountChangeListener(subscription);
     };
   }
 
@@ -205,12 +203,12 @@ export class MagicBlockEngine {
     }
   }
 
-  getSessionMinimalLamports(): number {
-    return this.sessionMinimalLamports;
+  getSessionMinLamports(): number {
+    return this.sessionConfig.minLamports;
   }
 
   getSessionMaximalLamports(): number {
-    return this.sessionMaximalLamports;
+    return this.sessionConfig.maxLamports;
   }
 }
 
@@ -244,20 +242,7 @@ function MagicBlockEngineProviderInner({
   const engine = React.useMemo(() => {
     let sessionKey;
 
-    /*
-    const connectionContext = {
-      connection: new Connection(ENDPOINT_RPC, {
-        wsEndpoint: ENDPOINT_WSS,
-      }),
-    };
-    */
-    const endpoint = clusterApiUrl("devnet");
-    console.log("endpoint", endpoint);
-    const connectionContext = {
-      connection: new Connection(endpoint),
-    };
-
-    const sessionKeyString = localStorage.getItem(SESSION_KEY_LOCAL_STORAGE);
+    const sessionKeyString = localStorage.getItem(SESSION_LOCAL_STORAGE);
     if (sessionKeyString) {
       sessionKey = Keypair.fromSecretKey(
         Uint8Array.from(JSON.parse(sessionKeyString))
@@ -265,12 +250,15 @@ function MagicBlockEngineProviderInner({
     } else {
       sessionKey = Keypair.generate();
       localStorage.setItem(
-        SESSION_KEY_LOCAL_STORAGE,
+        SESSION_LOCAL_STORAGE,
         JSON.stringify(Array.from(sessionKey.secretKey))
       );
     }
 
-    return new MagicBlockEngine(connectionContext, walletContext, sessionKey);
+    return new MagicBlockEngine(walletContext, sessionKey, {
+      minLamports: SESSION_MIN_LAMPORTS,
+      maxLamports: SESSION_MAX_LAMPORTS,
+    });
   }, [walletContext]);
 
   return (
