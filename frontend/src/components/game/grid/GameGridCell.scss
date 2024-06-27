@@ -19,10 +19,9 @@
 
   > .Strength {
     position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
+    height: 100%;
+    width: 100%;
+    text-align: center;
     justify-content: center;
     font-weight: bold;
   }
@@ -54,7 +53,7 @@
     cursor: pointer;
   }
   &.Interactive:hover {
-    border-color: rgba(255, 255, 255, 0.3);
+    border-color: grey;
   }
   &.Interactive.Active {
     border-color: yellow;

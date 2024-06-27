@@ -2,8 +2,14 @@
   .Players {
     flex-direction: row;
     border: 2px solid rgba(255, 255, 255, 0.3);
+    .Player {
+      flex-grow: 1;
+    }
   }
   .Map {
-    border: 2px solid rgba(255, 255, 255, 0.3);
+    align-items: center;
+    .Grid {
+      border: 2px solid rgba(255, 255, 255, 0.3);
+    }
   }
 }

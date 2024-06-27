@@ -16,9 +16,10 @@ export function MenuSession() {
     });
   });
 
-  const needsFunding = sessionLamports
-    ? sessionLamports < engine.getSessionMinLamports()
-    : false;
+  const needsFunding =
+    sessionLamports !== undefined
+      ? sessionLamports < engine.getSessionMinLamports()
+      : true;
 
   const extras = [];
   if (engine.getWalletConnected() && needsFunding) {
@@ -40,9 +41,10 @@ export function MenuSession() {
     );
   }
 
-  const sessionBalance = sessionLamports
-    ? (sessionLamports / 1_000_000_000).toFixed(3)
-    : "????";
+  const sessionBalance =
+    sessionLamports !== undefined
+      ? (sessionLamports / 1_000_000_000).toFixed(3)
+      : "????";
 
   return (
     <div className="MenuSession HStack">

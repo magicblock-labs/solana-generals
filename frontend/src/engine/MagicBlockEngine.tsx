@@ -17,7 +17,7 @@ import {
 import { WalletName } from "@solana/wallet-adapter-base";
 
 const ENDPOINT_CHAIN_RPC = "https://api.devnet.solana.com";
-const ENDPOINT_CHAIN_WS = "ws://api.devnet.solana.com";
+const ENDPOINT_CHAIN_WS = "wss://api.devnet.solana.com";
 
 const ENDPOINT_EPHEMERAL_RPC = "https://devnet.magicblock.app";
 const ENDPOINT_EPHEMERAL_WS = "wss://devnet.magicblock.app:8900";

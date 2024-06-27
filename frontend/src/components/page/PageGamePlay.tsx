@@ -67,18 +67,22 @@ export function PageGamePlay() {
       <div className="Title"> Game: {params.id.toString()}</div>
       <div className="Players">
         {game.players.map((_: any, playerIndex: number) => (
-          <GamePlayer
-            key={playerIndex}
-            playerIndex={playerIndex}
-            entityPda={entityPda}
-            game={game}
-          />
+          <div className="Player">
+            <GamePlayer
+              key={playerIndex}
+              playerIndex={playerIndex}
+              entityPda={entityPda}
+              game={game}
+            />
+          </div>
         ))}
       </div>
       <div className="Map">
-        <PageGamePlayMap entityPda={entityPda} game={game} />
+        <div className="Grid">
+          <PageGamePlayMap entityPda={entityPda} game={game} />
+        </div>
       </div>
-      <div className="Status">{status}</div>
+      <div className="Title">{status}</div>
     </div>
   );
 }
@@ -105,8 +109,8 @@ function onPageStartup(
   // If the game has started playing, we need to run the ticks
   if (game.status.playing) {
     const interval = setInterval(async () => {
-      //await gameSystemTick(engine, entityPda);
-    }, 1000);
+      await gameSystemTick(engine, entityPda);
+    }, 5000);
     return () => {
       clearInterval(interval);
     };

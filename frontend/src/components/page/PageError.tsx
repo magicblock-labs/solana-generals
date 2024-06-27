@@ -5,15 +5,15 @@ import { useParams } from "react-router-dom";
 import "./PageError.scss";
 
 function ErrorSessionFail() {
-  return <div>Failed to fetch on-chain information</div>;
+  return <div className="Title">Failed to fetch on-chain information</div>;
 }
 
 function ErrorNoGame() {
-  return <div>Failed to find the game</div>;
+  return <div className="Title">Failed to find the game</div>;
 }
 
 function ErrorCreate() {
-  return <div>Failed to create the game</div>;
+  return <div className="Title">Failed to create the game</div>;
 }
 
 function PageErrorInner({ code }: { code: string }) {
@@ -34,7 +34,7 @@ function PageErrorInner({ code }: { code: string }) {
 export function PageError() {
   const params = useParams();
   return (
-    <div className="PageError">
+    <div className="PageError VStack">
       <PageErrorInner code={params.code} />
     </div>
   );

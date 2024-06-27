@@ -54,13 +54,6 @@ export function PageGameLobby() {
     return <></>;
   }
 
-  let canStart = !!game.status.lobby;
-  game.players.forEach((player: any) => {
-    if (!player.ready) {
-      canStart = false;
-    }
-  });
-
   // Hint on game status
   let status = "?";
   if (game.status.lobby) {
@@ -74,9 +67,8 @@ export function PageGameLobby() {
   }
 
   return (
-    <div className="PageGameLobby">
-      <button className="Title">Game ID: {params.id.toString()}</button>
-      Players:
+    <div className="PageGameLobby VStack">
+      <div className="Title">Game {params.id.toString()}</div>
       <div className="Players">
         {game.players.map((_: any, playerIndex: number) => (
           <PageGameLobbyPlayer
@@ -87,9 +79,11 @@ export function PageGameLobby() {
           />
         ))}
       </div>
-      Map:
+      <div className="Title">Map Preview</div>
       <div className="Map">
-        <GameGridRows mini={true} game={game} />
+        <div className="Grid">
+          <GameGridRows mini={true} game={game} />
+        </div>
       </div>
     </div>
   );
@@ -127,7 +121,7 @@ function PageGameLobbyPlayer({
           onClickJoin(engine, entityPda, playerIndex, false);
         }}
       >
-        <div>X</div>
+        <div>Leave</div>
       </button>
     );
   } else {
@@ -135,7 +129,7 @@ function PageGameLobbyPlayer({
   }
 
   return (
-    <div className="Player HStack">
+    <div className="Player">
       <GamePlayer
         key={playerIndex}
         playerIndex={playerIndex}
@@ -191,6 +185,23 @@ function onPageStartup(
   if (game.status.generate) {
     const timeout = setTimeout(async () => {
       await gameSystemGenerate(engine, entityPda);
+    }, 100);
+    return () => {
+      clearTimeout(timeout);
+    };
+  }
+  // If the game needs starting, do it
+  if (game.status.lobby) {
+    const timeout = setTimeout(async () => {
+      let canStart = !!game.status.lobby;
+      game.players.forEach((player: any) => {
+        if (!player.ready) {
+          canStart = false;
+        }
+      });
+      if (canStart) {
+        await gameSystemStart(engine, entityPda);
+      }
     }, 100);
     return () => {
       clearTimeout(timeout);

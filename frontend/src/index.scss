@@ -8,8 +8,9 @@
   flex-shrink: 1;
   flex-grow: 0;
   flex-wrap: wrap;
+
   flex-direction: column;
-  align-items: center;
+  align-items: stretch;
 
   line-height: 1.5;
   font-size: 16px;
@@ -32,13 +33,18 @@ body {
 }
 
 .Content {
-  max-width: 800px;
+  align-items: center;
 }
 
 .VStack {
   > * {
     margin: 4px 0;
   }
+}
+
+.Container,
+button {
+  padding: 4px 8px;
 }
 
 .HStack,
@@ -52,8 +58,6 @@ button {
 button {
   cursor: pointer;
   border-radius: 4px;
-
-  padding: 4px 8px;
 
   &:active {
     background-color: grey;
@@ -76,4 +80,10 @@ button {
     pointer-events: none;
     opacity: 0.5;
   }
+}
+
+.Title {
+  text-align: center;
+  font-weight: bold;
+  word-break: break-word;
 }

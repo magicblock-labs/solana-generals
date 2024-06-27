@@ -15,22 +15,25 @@ export function GamePlayer({
   const engine = useMagicBlockEngine();
   const player = game.players[playerIndex];
 
-  const indicator = player.ready ? "✅" : "⏳";
   const name = "Player " + (playerIndex + 1);
   let description;
   if (player.ready) {
     if (player.authority.equals(engine.getSessionPayer())) {
-      description = "You are playing 👑";
+      description = "You are the player";
     } else {
-      description = player.authority.toBase58().substring(0, 8) + "... 👑";
+      description =
+        "Owner: " + player.authority.toBase58().substring(0, 8) + "...";
     }
   } else {
     description = "Waiting for someone to join";
   }
 
   return (
-    <div className={["GamePlayer", "HStack", "P" + playerIndex].join(" ")}>
-      <div className="Indicator">{indicator}</div>
+    <div
+      className={["GamePlayer", "Container", "HStack", "P" + playerIndex].join(
+        " "
+      )}
+    >
       <div className="Name">{name}</div>
       <div className="Description">({description})</div>
     </div>

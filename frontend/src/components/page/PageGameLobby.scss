@@ -2,14 +2,19 @@
   > .Title {
     background-color: black;
     color: white;
+    text-align: center;
   }
 
   > .Players {
     > .Player {
+      flex-direction: row;
     }
   }
 
   > .Map {
-    border: 1px solid rgba(255, 255, 255, 0.3);
+    align-items: center;
+    > .Grid {
+      border: 1px solid rgba(255, 255, 255, 0.3);
+    }
   }
 }
