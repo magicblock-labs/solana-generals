@@ -1,0 +1,38 @@
+import * as React from "react";
+import { PublicKey } from "@solana/web3.js";
+import { useMagicBlockEngine } from "../../engine/MagicBlockEngine";
+
+import "./GamePlayer.scss";
+
+export function GamePlayer({
+  playerIndex,
+  game,
+}: {
+  entityPda: PublicKey;
+  playerIndex: number;
+  game: any;
+}) {
+  const engine = useMagicBlockEngine();
+  const player = game.players[playerIndex];
+
+  const indicator = player.ready ? "✅" : "⏳";
+  const name = "Player " + (playerIndex + 1);
+  let description;
+  if (player.ready) {
+    if (player.authority.equals(engine.getSessionPayer())) {
+      description = "You are playing 👑";
+    } else {
+      description = player.authority.toBase58().substring(0, 8) + "... 👑";
+    }
+  } else {
+    description = "Waiting for someone to join";
+  }
+
+  return (
+    <div className={["GamePlayer", "HStack", "P" + playerIndex].join(" ")}>
+      <div className="Indicator">{indicator}</div>
+      <div className="Name">{name}</div>
+      <div className="Description">({description})</div>
+    </div>
+  );
+}

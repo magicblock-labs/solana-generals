@@ -1,38 +1,36 @@
 import * as React from "react";
-import * as ReactDOM from "react-dom";
-import {
-  Route,
-  Routes,
-  HashRouter as Router,
-  Link 
-} from 'react-router-dom';
+import { createRoot } from "react-dom/client";
+import { Route, Routes, HashRouter, Link } from "react-router-dom";
 
-import {
-  HelloOne,
-  HelloTwo
-} from './components';
-import './index.scss';
+import { MagicBlockEngineProvider } from "./engine/MagicBlockEngine";
 
-class App extends React.Component {
-    render(): JSX.Element {
-      return (
-        <Router>
-          <div>
-            <nav>
-              <Link to="/">Home</Link>
-              <Link to="/Two/4242">Two/4242</Link>
-            </nav>
-            <Routes>
-              <Route path="/" element={<HelloOne/>} />
-              <Route path="/Two/:id" element={<HelloTwo/>} />
-            </Routes>
-          </div>
-        </Router>
-      );
-    }
-  }
+import { MenuBar } from "./components/menu/MenuBar";
 
-ReactDOM.render(
-    <App />,
-    document.getElementById("app")
-);
+import { PageHome } from "./components/page/PageHome";
+import { PageGamePlay } from "./components/page/PageGamePlay";
+import { PageGameLobby } from "./components/page/PageGameLobby";
+import { PageGameCreate } from "./components/page/PageGameCreate";
+import { PageError } from "./components/page/PageError";
+
+import "./index.scss";
+
+function App() {
+  return (
+    <HashRouter>
+      <MagicBlockEngineProvider>
+        <MenuBar />
+        <div className="Content">
+          <Routes>
+            <Route path="/" element={<PageHome />} />
+            <Route path="/game/create" element={<PageGameCreate />} />
+            <Route path="/game/lobby/:id" element={<PageGameLobby />} />
+            <Route path="/game/play/:id" element={<PageGamePlay />} />
+            <Route path="/error/:code" element={<PageError />} />
+          </Routes>
+        </div>
+      </MagicBlockEngineProvider>
+    </HashRouter>
+  );
+}
+
+createRoot(document.getElementById("app")).render(<App />);

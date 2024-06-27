@@ -7,8 +7,8 @@
     "build-prod": "webpack --mode=production",
     "dev": "webpack serve --hot --port 8080;",
     "test": "",
-    "lint:fix": "prettier */*.js \"*/**/*{.js,.ts,.json}\" -w",
-    "lint": "prettier */*.js \"*/**/*{.js,.ts,.json}\" --check"
+    "lint:fix": "prettier \"*/**/*{.ts,.tsx,.json}\" -w",
+    "lint": "prettier \"*/**/*{.ts,.tsx,.json}\" --check"
   },
   "devDependencies": {
     "@types/react": "18.2.21",
@@ -18,11 +18,9 @@
     "css-loader": "6.8.1",
     "file-loader": "6.2.0",
     "html-webpack-plugin": "5.5.3",
-    "mini-css-extract-plugin": "2.7.6",
     "prettier": "^3.3.2",
     "sass": "1.67.0",
     "sass-loader": "13.3.2",
-    "source-map-loader": "4.0.1",
     "style-loader": "3.3.3",
     "ts-loader": "9.4.4",
     "typescript": "5.2.2",
@@ -32,6 +30,12 @@
     "webpack-dev-server": "4.15.1"
   },
   "dependencies": {
+    "@coral-xyz/anchor": "^0.30.0",
+    "@magicblock-labs/bolt-sdk": "latest",
+    "@solana/wallet-adapter-base": "^0.9.23",
+    "@solana/wallet-adapter-react": "^0.15.35",
+    "@solana/web3.js": "^1.93.0",
+    "process": "^0.11.10",
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "react-router-dom": "6.16.0"

@@ -1,0 +1,79 @@
+* {
+  box-sizing: border-box;
+  border: 0;
+  margin: 0;
+  padding: 0;
+
+  display: flex;
+  flex-shrink: 1;
+  flex-grow: 0;
+  flex-wrap: wrap;
+  flex-direction: column;
+  align-items: center;
+
+  line-height: 1.5;
+  font-size: 16px;
+  font-family: "Courier New", monospace;
+}
+
+html,
+body,
+#app {
+  width: 100%;
+  height: 100%;
+}
+
+head {
+  display: none;
+}
+body {
+  background-color: black;
+  color: white;
+}
+
+.Content {
+  max-width: 800px;
+}
+
+.VStack {
+  > * {
+    margin: 4px 0;
+  }
+}
+
+.HStack,
+button {
+  flex-direction: row;
+  > * {
+    margin: 0 4px;
+  }
+}
+
+button {
+  cursor: pointer;
+  border-radius: 4px;
+
+  padding: 4px 8px;
+
+  &:active {
+    background-color: grey;
+  }
+
+  &.Soft {
+    background-color: transparent;
+    color: white;
+
+    border: 1px solid grey;
+    padding: 3px 7px; // regular padding with -1 for border
+
+    &:active {
+      background-color: rgba(255, 255, 255, 0.3);
+    }
+  }
+
+  &.Disabled {
+    cursor: not-allowed;
+    pointer-events: none;
+    opacity: 0.5;
+  }
+}

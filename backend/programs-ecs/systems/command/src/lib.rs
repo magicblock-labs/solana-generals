@@ -31,7 +31,7 @@ pub mod command {
         if slot < player.action_next_slot {
             return Err(GameError::PlayerNeedsToWait.into());
         }
-        player.action_next_slot = slot + 2;
+        player.action_next_slot = player.action_next_slot + 1; // TODO(vbrunet) - maybe need to remove this constraint ?
 
         // Read the cells involved in the transaction
         let source_cell_before = game.get_cell(args.source_x, args.source_y)?;
@@ -55,7 +55,7 @@ pub mod command {
         }
 
         // Make sure the target cell can be interacted with
-        if target_cell_before.kind == GameCellKind::Montain {
+        if target_cell_before.kind == GameCellKind::Mountain {
             return Err(GameError::CellIsNotWalkable.into());
         }
 

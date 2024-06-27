@@ -1,0 +1,15 @@
+.PageGameLobby {
+  > .Title {
+    background-color: black;
+    color: white;
+  }
+
+  > .Players {
+    > .Player {
+    }
+  }
+
+  > .Map {
+    border: 1px solid rgba(255, 255, 255, 0.3);
+  }
+}

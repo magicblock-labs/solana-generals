@@ -1,0 +1,15 @@
+.MenuWalletConnected {
+}
+
+.MenuWalletDisconnected {
+  > .Adapter {
+    > .Name {
+    }
+    > .Icon {
+      width: 16px;
+    }
+  }
+
+  > .Placeholder {
+  }
+}

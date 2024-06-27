@@ -1,0 +1,62 @@
+.GameGridCell {
+  position: relative;
+  user-select: none;
+
+  width: 40px;
+  height: 40px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  &.Mini {
+    width: 34px;
+    height: 34px;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+  }
+
+  > .Type {
+    position: absolute;
+    height: 100%;
+    width: 100%;
+  }
+
+  > .Strength {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    justify-content: center;
+    font-weight: bold;
+  }
+
+  > .Strength {
+    font-size: 16px;
+  }
+  &.Mini {
+    > .Strength {
+      font-size: 14px;
+    }
+  }
+
+  > .Strength {
+    background-color: rgba(127, 127, 127, 0.3);
+  }
+  &.Player0 {
+    > .Strength {
+      background-color: rgba(0, 0, 255, 0.3);
+    }
+  }
+  &.Player1 {
+    > .Strength {
+      background-color: rgba(255, 0, 0, 0.3);
+    }
+  }
+
+  &.Interactive {
+    cursor: pointer;
+  }
+  &.Interactive:hover {
+    border-color: rgba(255, 255, 255, 0.3);
+  }
+  &.Interactive.Active {
+    border-color: yellow;
+  }
+}
