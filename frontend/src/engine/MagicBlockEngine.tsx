@@ -175,16 +175,22 @@ export class MagicBlockEngine {
     }
   }
 
-  listeToAccountInfo(
+  subscribeToAccountInfo(
     address: PublicKey,
     onAccountChange: (accountInfo?: AccountInfo<Buffer>) => void
   ) {
     let cancelled = false;
-    connectionChain.getAccountInfo(address).then((accountInfo) => {
-      if (!cancelled) {
-        onAccountChange(accountInfo);
-      }
-    });
+    connectionChain
+      .getAccountInfo(address)
+      .then((accountInfo) => {
+        if (!cancelled) {
+          onAccountChange(accountInfo);
+        }
+      })
+      .catch((error) => {
+        console.log("Error fetching accountInfo", error);
+        onAccountChange(undefined);
+      });
     const subscription = connectionChain.onAccountChange(
       address,
       (accountInfo) => {

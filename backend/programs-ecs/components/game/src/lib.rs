@@ -43,7 +43,7 @@ pub enum GameCellKind {
     Field,
     City,
     Capital,
-    Montain, // TODO(vbrunet) - typo "Mountain"
+    Mountain,
 }
 
 #[component_deserialize]
@@ -113,9 +113,9 @@ impl GameCell {
             strength: 1,
         }
     }
-    pub fn montain() -> GameCell {
+    pub fn mountain() -> GameCell {
         GameCell {
-            kind: GameCellKind::Montain,
+            kind: GameCellKind::Mountain,
             owner: GameCellOwner::Nobody,
             strength: 0,
         }

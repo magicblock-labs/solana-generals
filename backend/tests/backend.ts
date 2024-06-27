@@ -252,7 +252,7 @@ describe("Backend", () => {
           parts.push("X");
         } else if (cell.kind.field !== undefined) {
           parts.push(" ");
-        } else if (cell.kind.montain !== undefined) {
+        } else if (cell.kind.mountain !== undefined) {
           parts.push("M");
         } else {
           parts.push("?");

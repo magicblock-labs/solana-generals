@@ -6,5 +6,6 @@
     "target": "es6",
     "jsx": "react",
     "resolveJsonModule": true
-  }
+  },
+  "include": ["src", "index.d.ts"]
 }

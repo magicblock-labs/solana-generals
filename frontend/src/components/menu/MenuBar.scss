@@ -1,15 +1,6 @@
 .MenuBar {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-
-  .TitleBar {
-    display: flex;
-    align-items: center;
-
-    height: 64px;
-
-    .Title {
+  > .TitleBar {
+    > .Title {
       font-size: 20px;
       font-weight: bold;
       text-align: center;
@@ -17,19 +8,8 @@
     }
   }
 
-  .Content {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-
-    width: 100%;
-    max-width: 1024px;
-
-    > * {
-      margin: 4px;
-    }
-
-    .Separator {
+  > .KeysBar {
+    > .Separator {
       flex-grow: 1;
     }
   }

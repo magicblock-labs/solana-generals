@@ -9,18 +9,19 @@ export function MenuSession() {
 
   const sessionPayer = engine.getSessionPayer();
 
-  const [sessionLamports, setSessionLamports] = React.useState(0);
+  const [sessionLamports, setSessionLamports] = React.useState(undefined);
   React.useEffect(() => {
-    return engine.listeToAccountInfo(sessionPayer, (accountInfo) => {
-      setSessionLamports(accountInfo?.lamports ?? 0);
+    return engine.subscribeToAccountInfo(sessionPayer, (accountInfo) => {
+      setSessionLamports(accountInfo?.lamports);
     });
   });
 
+  const needsFunding = sessionLamports
+    ? sessionLamports < engine.getSessionMinLamports()
+    : false;
+
   const extras = [];
-  if (
-    engine.getWalletConnected() &&
-    sessionLamports < engine.getSessionMinLamports()
-  ) {
+  if (engine.getWalletConnected() && needsFunding) {
     const onFund = () => {
       engine.fundSession().then(() => {
         console.log("funded");
@@ -31,7 +32,7 @@ export function MenuSession() {
         Fund
       </button>
     );
-  } else if (sessionLamports < engine.getSessionMinLamports()) {
+  } else if (needsFunding) {
     extras.push(
       <div key="warning" className="Warning">
         (Needs SOL!)
@@ -39,17 +40,22 @@ export function MenuSession() {
     );
   }
 
+  const sessionBalance = sessionLamports
+    ? (sessionLamports / 1_000_000_000).toFixed(3)
+    : "????";
+
   return (
-    <div className="MenuSession">
-      <div className="Label"></div>
+    <div className="MenuSession HStack">
       <button
-        className="Key"
+        className="Soft"
         onClick={() => {
           navigator.clipboard.writeText(sessionPayer.toBase58());
         }}
       >
-        Player: 🔗 {sessionPayer.toBase58().substring(0, 8)}... (
-        {(sessionLamports / 1_000_000_000).toFixed(4)} SOL)
+        <div>Player:</div>
+        <div>
+          🔗 {sessionPayer.toBase58().substring(0, 8)}... ({sessionBalance} SOL)
+        </div>
       </button>
       {extras}
     </div>

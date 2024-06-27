@@ -1,16 +1,10 @@
 import * as React from "react";
 import { PublicKey } from "@solana/web3.js";
-import {
-  MagicBlockEngine,
-  useMagicBlockEngine,
-} from "../../engine/MagicBlockEngine";
-
-import { gameSystemJoin } from "../../states/gameSystemJoin";
+import { useMagicBlockEngine } from "../../engine/MagicBlockEngine";
 
 import "./GamePlayer.scss";
 
 export function GamePlayer({
-  entityPda,
   playerIndex,
   game,
 }: {
@@ -21,54 +15,24 @@ export function GamePlayer({
   const engine = useMagicBlockEngine();
   const player = game.players[playerIndex];
 
-  const ready = player.ready ? "ready" : "empty";
-  const authority = player.authority.toBase58();
-
-  const buttons = [];
-  if (game.status.lobby) {
-    if (!player.ready) {
-      buttons.push(
-        <button
-          key="join:true"
-          onClick={() => {
-            onClickJoin(engine, entityPda, playerIndex, true);
-          }}
-        >
-          Join
-        </button>
-      );
+  const indicator = player.ready ? "✅" : "⏳";
+  const name = "Player " + (playerIndex + 1);
+  let description;
+  if (player.ready) {
+    if (player.authority.equals(engine.getSessionPayer())) {
+      description = "You are playing 👑";
+    } else {
+      description = player.authority.toBase58().substring(0, 8) + "... 👑";
     }
-    if (player.authority == engine.getSessionPayer()) {
-      buttons.push(
-        <button
-          key="join:false"
-          onClick={() => {
-            onClickJoin(engine, entityPda, playerIndex, false);
-          }}
-        >
-          Leave
-        </button>
-      );
-    }
+  } else {
+    description = "Waiting for someone to join";
   }
 
-  const classNames = ["GamePlayer", "Player" + playerIndex];
   return (
-    <div className={classNames.join(" ")}>
-      {ready} / {authority} {buttons}
+    <div className={["GamePlayer", "HStack", "P" + playerIndex].join(" ")}>
+      <div className="Indicator">{indicator}</div>
+      <div className="Name">{name}</div>
+      <div className="Description">({description})</div>
     </div>
   );
-}
-
-function onClickJoin(
-  engine: MagicBlockEngine,
-  entityPda: PublicKey,
-  playerIndex: number,
-  join: boolean
-) {
-  gameSystemJoin(engine, entityPda, playerIndex, join)
-    .catch(console.error)
-    .then(() => {
-      console.log("Join done");
-    });
 }

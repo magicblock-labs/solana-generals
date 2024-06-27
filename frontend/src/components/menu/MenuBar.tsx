@@ -8,7 +8,7 @@ import "./MenuBar.scss";
 export function MenuBar() {
   return (
     <div className="MenuBar">
-      <div className="Content">
+      <div className="KeysBar HStack">
         <MenuSession />
         <div className="Separator"></div>
         <MenuWallet />

@@ -1,10 +1,20 @@
 .GamePlayer {
-  padding: 5px;
+  flex-direction: row;
+  flex-grow: 1;
 
-  &.Player0 {
+  color: white;
+  height: 36px;
+
+  border: 2px solid rgba(255, 255, 255, 0.3);
+
+  &.P0 {
     background-color: rgba(0, 0, 255, 0.3);
   }
-  &.Player1 {
+  &.P1 {
     background-color: rgba(255, 0, 0, 0.3);
+  }
+
+  > .Description {
+    opacity: 0.5;
   }
 }

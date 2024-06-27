@@ -1,6 +1,5 @@
 const path = require("path");
 const webpack = require('webpack');
-const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const HTMLWebpackPlugin = require("html-webpack-plugin");
 const { CleanWebpackPlugin } = require("clean-webpack-plugin");
 
@@ -27,10 +26,6 @@ module.exports = (env, argv) => {
       static: {
         directory: path.join(__dirname, "dist/"),
       },
-      historyApiFallback: true,
-      headers: {
-        "Access-Control-Allow-Origin": "*",
-      }
     },
 
     module: {
@@ -40,34 +35,10 @@ module.exports = (env, argv) => {
           exclude: /node_modules/,
           use: [{ loader: "ts-loader" }],
         },
-        // The following loader rules are necessary for s/css modules
-        {
-          test: /\.module\.s(a|c)ss$/,
-          use: [
-            {
-              loader: isDevelopment
-                ? "style-loader"
-                : MiniCssExtractPlugin.loader,
-            },
-            {
-              loader: "css-loader",
-              // As of css-loader 4, the options have changed
-              // https://github.com/webpack-contrib/css-loader
-              options: {
-                modules: {
-                  localIdentName: "[folder]__[local]__[hash:base64:5]",
-                  exportLocalsConvention: "camelCase",
-                },
-              },
-            },
-            { loader: "sass-loader" },
-          ],
-        },
         {
           test: /\.scss$/,
-          exclude: /\.module.(s(a|c)ss)$/,
           use: [
-            isDevelopment ? "style-loader" : MiniCssExtractPlugin.loader,
+            "style-loader",
             "css-loader",
             "sass-loader",
           ],
@@ -75,12 +46,7 @@ module.exports = (env, argv) => {
         {
           test: /\.(png|jpe?g|gif|svg)$/,
           use: [
-            {
-              loader: "url-loader",
-              options: {
-                fallback: "file-loader",
-              },
-            },
+            "file-loader",
           ],
         },
       ],
@@ -88,11 +54,6 @@ module.exports = (env, argv) => {
 
     plugins: [
       new CleanWebpackPlugin(),
-      new MiniCssExtractPlugin({
-        // Options similar to the same options in webpackOptions.output
-        // both options are optional
-        filename: "[name].[contenthash].css",
-      }),
       new HTMLWebpackPlugin({
         template: path.join(__dirname, "./src/index.html"),
       }),

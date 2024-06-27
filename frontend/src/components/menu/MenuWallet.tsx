@@ -20,22 +20,26 @@ function MenuWalletConnected() {
 
   const [walletLamports, setWalletLamports] = React.useState(0);
   React.useEffect(() => {
-    return engine.listeToAccountInfo(walletPayer, (accountInfo) => {
-      setWalletLamports(accountInfo?.lamports ?? 0);
+    return engine.subscribeToAccountInfo(walletPayer, (accountInfo) => {
+      setWalletLamports(accountInfo?.lamports);
     });
   });
 
+  const walletBalance = walletLamports
+    ? (walletLamports / 1_000_000_000).toFixed(3)
+    : "????";
   return (
-    <div className="MenuWalletConnected">
-      <div className="Label"></div>
+    <div className="MenuWalletConnected HStack">
       <button
-        className="Key"
+        className="Soft"
         onClick={() => {
           navigator.clipboard.writeText(walletPayer.toBase58());
         }}
       >
-        Wallet: 🔗 {walletPayer.toBase58().substring(0, 8)}... (
-        {(walletLamports / 1_000_000_000).toFixed(4)} SOL)
+        <div>Wallet:</div>
+        <div>
+          🔗 {walletPayer.toBase58().substring(0, 8)}... ({walletBalance} SOL)
+        </div>
       </button>
       <button
         className="Disconnect"
@@ -43,7 +47,7 @@ function MenuWalletConnected() {
           engine.selectWalletAdapter(null);
         }}
       >
-        X
+        <div>X</div>
       </button>
     </div>
   );
@@ -55,7 +59,7 @@ function MenuWalletDisconnected() {
   const walletAdapters = engine.listWalletAdapters();
 
   return (
-    <div className="MenuWalletDisconnected">
+    <div className="MenuWalletDisconnected HStack">
       {walletAdapters.length > 0 ? (
         <>
           <div className="Label">Connect:</div>

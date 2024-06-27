@@ -1,6 +1,6 @@
 import * as React from "react";
 
-import { useParams } from "react-router-dom";
+import { NavigateFunction, useNavigate, useParams } from "react-router-dom";
 import { PublicKey } from "@solana/web3.js";
 import { FindComponentPda } from "@magicblock-labs/bolt-sdk";
 
@@ -11,18 +11,17 @@ import {
 
 import { getComponentGame } from "../../states/gamePrograms";
 
-import { GameGridRoot } from "../game/GameGridRoot";
-import { GamePlayers } from "../game/GamePlayers";
+import { GameGridRows } from "../game/grid/GameGridRows";
+import { GamePlayer } from "../game/GamePlayer";
 
-import { gameInitialize } from "../../states/gameInitialize";
-import { gameDelegate } from "../../states/gameDelegate";
 import { gameListen } from "../../states/gameListen";
-import { gameSystemGenerate } from "../../states/gameSystemGenerate";
 import { gameSystemTick } from "../../states/gameSystemTick";
+import { gameSystemCommand } from "../../states/gameSystemCommand";
 
 import "./PageGamePlay.scss";
 
 export function PageGamePlay() {
+  const navigate = useNavigate();
   const params = useParams();
   const engine = useMagicBlockEngine();
 
@@ -39,73 +38,188 @@ export function PageGamePlay() {
   }, [params]);
 
   // Listen to changes on the game PDA's data
-  const [game, setGame] = React.useState(null);
+  const [game, setGame] = React.useState(undefined);
   React.useEffect(() => {
     return gameListen(engine, gamePda, setGame);
   }, [engine, gamePda]);
 
-  // Start game systems
+  // When the page is loaded, run some logic
   React.useEffect(() => {
-    return setupPageEffects(engine, entityPda, gamePda, game);
-  }, [engine, entityPda, gamePda, game]);
+    return onPageStartup(navigate, engine, entityPda, gamePda, game);
+  }, [navigate, engine, entityPda, gamePda, game]);
 
   // Render the game
   if (game == null) {
-    return <div>No Game ?</div>;
+    return <></>;
   }
+
+  // Hint on game status
+  let status = "?";
+  if (game.status.playing) {
+    status = "The game is in progress!";
+  }
+  if (game.status.finished) {
+    status = "The game is finished.";
+  }
+
   return (
-    <div className="PageGamePlay">
-      Game: {params.id.toString()}
-      <GamePlayers entityPda={entityPda} game={game} />
-      <GameGridRoot entityPda={entityPda} game={game} />
+    <div className="PageGamePlay VStack">
+      <div className="Title"> Game: {params.id.toString()}</div>
+      <div className="Players">
+        {game.players.map((_: any, playerIndex: number) => (
+          <GamePlayer
+            key={playerIndex}
+            playerIndex={playerIndex}
+            entityPda={entityPda}
+            game={game}
+          />
+        ))}
+      </div>
+      <div className="Map">
+        <PageGamePlayMap entityPda={entityPda} game={game} />
+      </div>
+      <div className="Status">{status}</div>
     </div>
   );
 }
 
-function setupPageEffects(
+function onPageStartup(
+  navigate: NavigateFunction,
   engine: MagicBlockEngine,
   entityPda: PublicKey,
   gamePda: PublicKey,
   game: any
 ) {
-  console.log("setup", game);
-  // If the game doesn't exist, try to create it and that's it
-  if (!game) {
-    (async () => {
-      const accountInfo = await engine
-        .getConnectionChain()
-        .getAccountInfo(gamePda);
-      if (accountInfo == null) {
-        console.log("Game needs init");
-        return await gameInitialize(engine, entityPda);
-      }
-      /*
-      if (accountInfo.owner.equals(getComponentGame(engine).programId)) {
-        console.log("Game needs delegate");
-        return await gameDelegate(engine, entityPda, gamePda);
-      }
-        */
-    })();
+  // If we're still waiting for the game to load, nothing to do
+  if (game === undefined) {
     return;
   }
-  // If the game hasn't been generated yet, generate it and that's it
-  if (game.status.generate) {
-    (async () => {
-      console.log("Game needs generate");
-      await gameSystemGenerate(engine, entityPda);
-    })();
-    return;
+  // If there's no game, we have problem
+  if (game === null) {
+    return navigate("/error/play-no-game");
   }
-  // If the game has started playing, launch the ticking
+  // If the game is not playing yet, go back to lobby
+  if (game.status.generate || game.status.lobby) {
+    return navigate("/game/lobby/" + entityPda.toBase58());
+  }
+  // If the game has started playing, we need to run the ticks
   if (game.status.playing) {
-    /*
     const interval = setInterval(async () => {
-      console.log("Game needs tick", game.growthNextSlot.toString());
-      await gameSystemTick(engine, entityPda);
+      //await gameSystemTick(engine, entityPda);
     }, 1000);
     return () => {
       clearInterval(interval);
     };
-    */
   }
+}
+
+function PageGamePlayMap({
+  entityPda,
+  game,
+}: {
+  entityPda: PublicKey;
+  game: any;
+}) {
+  const engine = useMagicBlockEngine();
+
+  const [command, setCommand] = React.useState({
+    active: false,
+    sourceX: 0,
+    sourceY: 0,
+  });
+  const onCommand = (targetX: number, targetY: number, type: string) => {
+    switch (type) {
+      case "start": {
+        setCommand({ active: true, sourceX: targetX, sourceY: targetY });
+        break;
+      }
+      case "end": {
+        setCommand({ active: false, sourceX: targetX, sourceY: targetY });
+        break;
+      }
+      case "move": {
+        if (!command.active) {
+          break;
+        }
+
+        const sourceX = command.sourceX;
+        const sourceY = command.sourceY;
+        if (sourceX === targetX && sourceY === targetY) {
+          break;
+        }
+
+        const attack = computeAttack(engine, game, sourceX, sourceY);
+        if (attack !== undefined) {
+          gameSystemCommand(
+            engine,
+            entityPda,
+            attack.playerIndex,
+            sourceX,
+            sourceY,
+            targetX,
+            targetY,
+            attack.strength
+          )
+            .catch(console.error)
+            .then(() => {
+              console.log("Command success");
+            });
+        }
+
+        setCommand({
+          active: true,
+          sourceX: targetX,
+          sourceY: targetY,
+        });
+      }
+    }
+  };
+
+  let activity = undefined;
+  if (command.active) {
+    const sourceX = command.sourceX;
+    const sourceY = command.sourceY;
+    if (computeAttack(engine, game, sourceX, sourceY) !== undefined) {
+      activity = { x: sourceX, y: sourceY };
+    }
+  }
+
+  return (
+    <div className="GameGridRoot">
+      <GameGridRows
+        game={game}
+        mini={false}
+        activity={activity}
+        onCommand={onCommand}
+      />
+    </div>
+  );
+}
+
+function computeAttack(
+  engine: MagicBlockEngine,
+  game: any,
+  sourceX: number,
+  sourceY: number
+) {
+  const sourceCell = game.cells[sourceY * game.sizeX + sourceX];
+  if (!sourceCell.owner.player) {
+    return undefined;
+  }
+
+  const sourcePlayerIndex = sourceCell.owner.player[0];
+  const sourceAuthority = game.players[sourcePlayerIndex].authority;
+  if (!engine.getSessionPayer().equals(sourceAuthority)) {
+    return undefined;
+  }
+
+  const sourceStrength = sourceCell.strength - 1;
+  if (sourceStrength <= 0) {
+    return undefined;
+  }
+
+  return {
+    playerIndex: sourcePlayerIndex,
+    strength: sourceStrength,
+  };
 }

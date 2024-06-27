@@ -55,7 +55,7 @@ pub mod command {
         }
 
         // Make sure the target cell can be interacted with
-        if target_cell_before.kind == GameCellKind::Montain {
+        if target_cell_before.kind == GameCellKind::Mountain {
             return Err(GameError::CellIsNotWalkable.into());
         }
 

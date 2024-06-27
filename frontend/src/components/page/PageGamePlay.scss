@@ -1,6 +1,9 @@
 .PageGamePlay {
-  display: flex;
-  flex-direction: column;
-  justify-items: center;
-  align-items: center;
+  .Players {
+    flex-direction: row;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+  }
+  .Map {
+    border: 2px solid rgba(255, 255, 255, 0.3);
+  }
 }

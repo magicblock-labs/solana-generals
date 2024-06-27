@@ -4,22 +4,32 @@ import { GameGridCell } from "./GameGridCell";
 
 import "./GameGridRows.scss";
 
+const HORIZONTAL_WIDTH = 804;
+
 export function GameGridRows({
-  horizontal,
   game,
+  mini,
   activity,
   onCommand,
 }: {
-  horizontal: boolean;
   game: any;
+  mini: boolean;
   activity?: { x: number; y: number };
-  onCommand: (x: number, y: number, type: string) => void;
+  onCommand?: (x: number, y: number, type: string) => void;
 }) {
-  if (!game) {
-    return <div>No game</div>;
-  }
-
   const rows = [];
+
+  // Display the grid horizontally when we have enough space
+  const [horizontal, setHorizontal] = React.useState(
+    window.innerWidth > HORIZONTAL_WIDTH
+  );
+  React.useEffect(() => {
+    function onResize() {
+      setHorizontal(window.innerWidth > HORIZONTAL_WIDTH);
+    }
+    window.addEventListener("resize", onResize);
+    return () => window.removeEventListener("resize", onResize);
+  }, []);
 
   // If we want to render the game horizontally (for laptop/desktop)
   if (horizontal) {
@@ -32,8 +42,9 @@ export function GameGridRows({
             key={x}
             x={x}
             y={y}
-            activity={activity}
             cell={cell}
+            mini={mini}
+            active={activity ? activity.x == x && activity.y == y : false}
             onCommand={onCommand}
           />
         );
@@ -56,8 +67,9 @@ export function GameGridRows({
             key={y}
             x={x}
             y={y}
-            activity={activity}
             cell={cell}
+            mini={mini}
+            active={activity ? activity.x == x && activity.y == y : false}
             onCommand={onCommand}
           />
         );
