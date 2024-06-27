@@ -26,12 +26,8 @@ pub mod command {
             return Err(GameError::PlayerIsNotPayer.into());
         }
 
-        // Check that the player command cooldown has elapsed
-        let slot = Clock::get()?.slot;
-        if slot < player.action_next_slot {
-            return Err(GameError::PlayerNeedsToWait.into());
-        }
-        player.action_next_slot = player.action_next_slot + 1; // TODO(vbrunet) - maybe need to remove this constraint ?
+        // Save player action
+        player.last_action_slot = Clock::get()?.slot;
 
         // Read the cells involved in the transaction
         let source_cell_before = game.get_cell(args.source_x, args.source_y)?;

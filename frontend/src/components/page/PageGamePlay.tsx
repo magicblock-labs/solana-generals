@@ -17,6 +17,7 @@ import { GamePlayer } from "../game/GamePlayer";
 import { gameListen } from "../../states/gameListen";
 import { gameSystemTick } from "../../states/gameSystemTick";
 import { gameSystemCommand } from "../../states/gameSystemCommand";
+import { gameSystemFinish } from "../../states/gameSystemFinish";
 
 import "./PageGamePlay.scss";
 
@@ -67,9 +68,8 @@ export function PageGamePlay() {
       <div className="Title"> Game: {params.id.toString()}</div>
       <div className="Players">
         {game.players.map((_: any, playerIndex: number) => (
-          <div className="Player">
+          <div className="Player" key={playerIndex}>
             <GamePlayer
-              key={playerIndex}
               playerIndex={playerIndex}
               entityPda={entityPda}
               game={game}
@@ -106,13 +106,18 @@ function onPageStartup(
   if (game.status.generate || game.status.lobby) {
     return navigate("/game/lobby/" + entityPda.toBase58());
   }
-  // If the game has started playing, we need to run the ticks
+  // If the game has started playing, we need to run the logic on intervals
   if (game.status.playing) {
-    const interval = setInterval(async () => {
+    const intervalTick = setInterval(async () => {
       await gameSystemTick(engine, entityPda);
     }, 5000);
+    const intervalFinish = setInterval(async () => {
+      await gameSystemFinish(engine, entityPda, 0);
+      await gameSystemFinish(engine, entityPda, 1);
+    }, 5000);
     return () => {
-      clearInterval(interval);
+      clearInterval(intervalTick);
+      clearInterval(intervalFinish);
     };
   }
 }
@@ -152,17 +157,22 @@ function PageGamePlayMap({
           break;
         }
 
-        const attack = computeAttack(engine, game, sourceX, sourceY);
-        if (attack !== undefined) {
+        const attackSource = computeAttackSource(
+          engine,
+          game,
+          sourceX,
+          sourceY
+        );
+        if (attackSource !== undefined) {
           gameSystemCommand(
             engine,
             entityPda,
-            attack.playerIndex,
+            attackSource.playerIndex,
             sourceX,
             sourceY,
             targetX,
             targetY,
-            attack.strength
+            attackSource.strength
           )
             .catch(console.error)
             .then(() => {
@@ -183,7 +193,7 @@ function PageGamePlayMap({
   if (command.active) {
     const sourceX = command.sourceX;
     const sourceY = command.sourceY;
-    if (computeAttack(engine, game, sourceX, sourceY) !== undefined) {
+    if (computeAttackSource(engine, game, sourceX, sourceY) !== undefined) {
       activity = { x: sourceX, y: sourceY };
     }
   }
@@ -200,7 +210,7 @@ function PageGamePlayMap({
   );
 }
 
-function computeAttack(
+function computeAttackSource(
   engine: MagicBlockEngine,
   game: any,
   sourceX: number,

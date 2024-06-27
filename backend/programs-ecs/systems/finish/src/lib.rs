@@ -18,6 +18,7 @@ pub mod finish {
         }
 
         // The standard win condition is when a user is the last one standing
+        let mut finished = false;
         for x in 0..game.size_x {
             for y in 0..game.size_y {
                 let cell = game.get_cell(x, y)?;
@@ -26,13 +27,15 @@ pub mod finish {
                     GameCellOwner::Nobody => false,
                 };
                 if anyone_else {
-                    return Err(GameError::PlayerHasNotYetWon.into());
+                    finished = true;
                 }
             }
         }
 
-        // If we got there, the player is the last one standing, mark finished
-        game.status = GameStatus::Finished;
+        // Mark game finished
+        if finished {
+            game.status = GameStatus::Finished;
+        }
 
         Ok(ctx.accounts)
     }

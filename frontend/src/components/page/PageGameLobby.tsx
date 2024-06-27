@@ -53,19 +53,6 @@ export function PageGameLobby() {
   if (!game) {
     return <></>;
   }
-
-  // Hint on game status
-  let status = "?";
-  if (game.status.lobby) {
-    status = "Waiting for players to join";
-  }
-  if (game.status.playing) {
-    status = "Game is playing";
-  }
-  if (game.status.finished) {
-    status = "Game is finished";
-  }
-
   return (
     <div className="PageGameLobby VStack">
       <div className="Title">Game {params.id.toString()}</div>
@@ -110,7 +97,7 @@ function PageGameLobbyPlayer({
           onClickJoin(engine, entityPda, playerIndex, true);
         }}
       >
-        <div>Join</div>
+        Join
       </button>
     );
   } else if (player.authority.equals(engine.getSessionPayer())) {
@@ -121,7 +108,7 @@ function PageGameLobbyPlayer({
           onClickJoin(engine, entityPda, playerIndex, false);
         }}
       >
-        <div>Leave</div>
+        Leave
       </button>
     );
   } else {
@@ -148,17 +135,11 @@ function onClickJoin(
   join: boolean
 ) {
   gameSystemJoin(engine, entityPda, playerIndex, join)
-    .catch(console.error)
+    .catch((error) => {
+      console.error("Failed to join", error);
+    })
     .then(() => {
       console.log("Join done");
-    });
-}
-
-function onClickStart(engine: MagicBlockEngine, entityPda: PublicKey) {
-  gameSystemStart(engine, entityPda)
-    .catch(console.error)
-    .then(() => {
-      console.log("Start done");
     });
 }
 

@@ -26,7 +26,7 @@ pub enum GameStatus {
 pub struct GamePlayer {
     pub ready: bool,
     pub authority: Pubkey,
-    pub action_next_slot: u64,
+    pub last_action_slot: u64,
 }
 
 #[component_deserialize]

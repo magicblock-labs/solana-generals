@@ -7,9 +7,7 @@ import {
 
 import { MagicBlockEngine } from "../engine/MagicBlockEngine";
 
-import { getComponentGame } from "./gamePrograms";
-
-const WORLD_PDA = new PublicKey("12MArv4fDwYMJNFXtPjQWuWJaVmKCqLyqz8fZmDQArpd");
+import { WORLD_PDA, getComponentGame } from "./gamePrograms";
 
 export async function gameCreate(engine: MagicBlockEngine) {
   /*

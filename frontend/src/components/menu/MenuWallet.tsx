@@ -25,6 +25,7 @@ function MenuWalletConnected() {
     });
   });
 
+  const walletAbbreviation = walletPayer.toBase58().substring(0, 8);
   const walletBalance =
     walletLamports !== undefined
       ? (walletLamports / 1_000_000_000).toFixed(3)
@@ -38,10 +39,7 @@ function MenuWalletConnected() {
           navigator.clipboard.writeText(walletPayer.toBase58());
         }}
       >
-        <div>Wallet:</div>
-        <div>
-          🔗 {walletPayer.toBase58().substring(0, 8)}... ({walletBalance} SOL)
-        </div>
+        Wallet: 🔗 {walletAbbreviation}... ({walletBalance} SOL)
       </button>
       <button
         className="Disconnect"
@@ -49,7 +47,7 @@ function MenuWalletConnected() {
           engine.selectWalletAdapter(null);
         }}
       >
-        <div>X</div>
+        X
       </button>
     </div>
   );

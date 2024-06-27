@@ -28,7 +28,6 @@ function onPageStartup(navigate: NavigateFunction, engine: MagicBlockEngine) {
   const timeout = setTimeout(async () => {
     try {
       const entityPda = await gameCreate(engine);
-      console.log("created", entityPda.toBase58());
       return navigate("/game/lobby/" + entityPda.toBase58());
     } catch (error) {
       console.log("create-error", error);
