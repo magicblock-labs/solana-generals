@@ -109,11 +109,19 @@ function onPageStartup(
   // If the game has started playing, we need to run the logic on intervals
   if (game.status.playing) {
     const intervalTick = setInterval(async () => {
-      await gameSystemTick(engine, entityPda);
+      try {
+        await gameSystemTick(engine, entityPda);
+      } catch (error) {
+        console.error("failed to tick the game", error);
+      }
     }, 5000);
     const intervalFinish = setInterval(async () => {
-      await gameSystemFinish(engine, entityPda, 0);
-      await gameSystemFinish(engine, entityPda, 1);
+      try {
+        await gameSystemFinish(engine, entityPda, 0);
+        await gameSystemFinish(engine, entityPda, 1);
+      } catch (error) {
+        console.error("failed to finish the game", error);
+      }
     }, 5000);
     return () => {
       clearInterval(intervalTick);

@@ -18,7 +18,7 @@ pub mod finish {
         }
 
         // The standard win condition is when a user is the last one standing
-        let mut finished = false;
+        let mut finished = true;
         for x in 0..game.size_x {
             for y in 0..game.size_y {
                 let cell = game.get_cell(x, y)?;
@@ -27,12 +27,12 @@ pub mod finish {
                     GameCellOwner::Nobody => false,
                 };
                 if anyone_else {
-                    finished = true;
+                    finished = false;
                 }
             }
         }
 
-        // Mark game finished
+        // Mark game finished only if didnt find anything against it
         if finished {
             game.status = GameStatus::Finished;
         }

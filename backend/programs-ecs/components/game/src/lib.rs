@@ -138,8 +138,6 @@ pub enum GameError {
     PlayerIsNotReady,
     #[msg("The player needs to wait the cooldown time before doing this action")]
     PlayerNeedsToWait,
-    #[msg("The player claiming victory has not won yet")]
-    PlayerHasNotYetWon,
     #[msg("The cell's position is out of bounds")]
     CellIsOutOfBounds,
     #[msg("The cells specified are not adjacent")]

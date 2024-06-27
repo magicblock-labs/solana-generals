@@ -121,7 +121,7 @@ describe("Backend", () => {
     await logGameCells();
   });
 
-  it("Player 1 makes a move (#1)", async () => {
+  it("Player 1 makes a move", async () => {
     await tryApplySystemOnGame({
       systemId: systemCommand.programId,
       args: {
@@ -137,7 +137,17 @@ describe("Backend", () => {
     await logGameCells();
   });
 
-  it("Player 2 makes a move (#1)", async () => {
+  it("Player 2 tries to claim victory, it should have no effect", async () => {
+    await tryApplySystemOnGame({
+      systemId: systemFinish.programId,
+      args: {
+        player_index: 1,
+      },
+    });
+    await logGameInfos();
+  });
+
+  it("Player 2 makes a move", async () => {
     await tryApplySystemOnGame({
       systemId: systemCommand.programId,
       args: {
@@ -151,17 +161,6 @@ describe("Backend", () => {
     });
     await logGameInfos();
     await logGameCells();
-  });
-
-  it("Player 2 tries to claim victory, it should fail", async () => {
-    await tryApplySystemOnGame({
-      systemId: systemFinish.programId,
-      args: {
-        player_index: 1,
-      },
-      expectedError: "PlayerHasNotYetWon",
-    });
-    await logGameInfos();
   });
 
   async function tryApplySystemOnGame({
