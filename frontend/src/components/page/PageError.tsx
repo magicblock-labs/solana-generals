@@ -5,23 +5,23 @@ import { useNavigate, useParams } from "react-router-dom";
 import "./PageError.scss";
 
 function ErrorSessionFail() {
-  return <div className="Title">Failed to fetch on-chain accounts</div>;
+  return <div className="Message">Failed to fetch on-chain accounts</div>;
 }
 
 function ErrorNoGame() {
-  return <div className="Title">Failed to find the game</div>;
+  return <div className="Message">Failed to find the game</div>;
 }
 
 function ErrorNotGenerated() {
-  return <div className="Title">Game wasn't properly initialized</div>;
+  return <div className="Message">Game wasn't properly initialized</div>;
 }
 
 function ErrorCreate() {
-  return <div className="Title">Failed to create the game</div>;
+  return <div className="Message">Failed to create the game</div>;
 }
 
 function ErrorUnknown() {
-  return <div className="Title">Unknown error</div>;
+  return <div className="Message">Unknown error</div>;
 }
 
 function PageErrorInner({ code }: { code: string }) {
