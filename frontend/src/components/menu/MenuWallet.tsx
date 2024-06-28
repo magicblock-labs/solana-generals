@@ -29,7 +29,7 @@ function MenuWalletConnected() {
   const walletBalance =
     walletLamports !== undefined
       ? (walletLamports / 1_000_000_000).toFixed(3)
-      : "????";
+      : "?????";
 
   return (
     <div className="MenuWalletConnected HStack">

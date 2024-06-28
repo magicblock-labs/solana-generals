@@ -22,9 +22,8 @@ export async function gameSystemStart(
       },
     ],
   });
-  await engine.processSessionTransaction(
+  await engine.processSessionEphemeralTransaction(
     "SystemStart",
-    applySystem.transaction,
-    true
+    applySystem.transaction
   );
 }

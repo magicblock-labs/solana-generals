@@ -45,7 +45,7 @@ export function MenuSession() {
   const sessionBalance =
     sessionLamports !== undefined
       ? (sessionLamports / 1_000_000_000).toFixed(3)
-      : "????";
+      : "?????";
 
   return (
     <div className="MenuSession HStack">

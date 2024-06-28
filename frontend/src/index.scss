@@ -35,6 +35,7 @@ body {
 
 .Content {
   align-items: center;
+  justify-content: center;
   flex-grow: 1;
 }
 
@@ -90,5 +91,9 @@ button {
 .Title {
   text-align: center;
   font-weight: bold;
+  word-break: break-word;
+}
+.Hint {
+  text-align: center;
   word-break: break-word;
 }

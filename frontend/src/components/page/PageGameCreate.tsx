@@ -17,18 +17,24 @@ export function PageGameCreate() {
   const [logs, setLogs] = React.useState([]);
 
   React.useEffect(() => {
+    const lastLogs: string[] = [];
     return onPageStartup(navigate, engine, (log) => {
-      setLogs([...logs, log]);
+      lastLogs.push(log);
+      setLogs([...lastLogs]);
     });
-  }, [engine]);
+  }, [navigate, engine]);
 
   return (
     <div className="PageGameCreate VStack">
       <div className="Title">Creating a new game</div>
-      <div>This can take a few moments...</div>
-      <div className="Logs Container VStack">
-        {logs.map((log: string) => {
-          return <div key={log}>{log}...</div>;
+      <div className="Hint">This can take a few moments...</div>
+      <div className="Logs Container">
+        {logs.map((log: string, index: number) => {
+          return (
+            <div key={index} className="Log">
+              {log}...
+            </div>
+          );
         })}
       </div>
     </div>
@@ -50,7 +56,7 @@ function onPageStartup(
       console.log("create-error", error);
       return navigate("/error/create-error");
     }
-  }, 100);
+  }, 1000);
   return () => {
     clearTimeout(timeout);
   };

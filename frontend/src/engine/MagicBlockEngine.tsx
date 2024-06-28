@@ -1,7 +1,6 @@
 import * as React from "react";
 import { Idl, Program } from "@coral-xyz/anchor";
 import {
-  Wallet,
   WalletContextState,
   WalletProvider,
   useWallet,
@@ -60,7 +59,10 @@ export class MagicBlockEngine {
     this.sessionConfig = sessionConfig;
   }
 
-  getProgram<T extends Idl>(idl: {}): Program<T> {
+  getProgramChain<T extends Idl>(idl: {}): Program<T> {
+    return new Program<T>(idl as T, { connection: connectionChain });
+  }
+  getProgramEphemeral<T extends Idl>(idl: {}): Program<T> {
     return new Program<T>(idl as T, { connection: connectionEphemeral });
   }
 
@@ -98,18 +100,25 @@ export class MagicBlockEngine {
     return signature;
   }
 
-  async processSessionTransaction(
+  async processSessionChainTransaction(
     name: string,
-    transaction: Transaction,
-    routedToEphemeral: boolean // TODO(vbrunet) - clean that up, it should be automatic
+    transaction: Transaction
   ): Promise<string> {
-    const connection = routedToEphemeral
-      ? connectionEphemeral
-      : connectionChain;
-    const signature = await connection.sendTransaction(transaction, [
+    const signature = await connectionChain.sendTransaction(transaction, [
       this.sessionKey,
     ]);
-    await this.waitSignatureConfirmation(connection, name, signature);
+    await this.waitSignatureConfirmation(connectionChain, name, signature);
+    return signature;
+  }
+
+  async processSessionEphemeralTransaction(
+    name: string,
+    transaction: Transaction
+  ): Promise<string> {
+    const signature = await connectionEphemeral.sendTransaction(transaction, [
+      this.sessionKey,
+    ]);
+    await this.waitSignatureConfirmation(connectionEphemeral, name, signature);
     return signature;
   }
 
@@ -161,7 +170,7 @@ export class MagicBlockEngine {
     if (accountInfo && accountInfo.lamports > 0) {
       const transferableLamports =
         accountInfo.lamports - TRANSACTION_COST_LAMPORTS;
-      await this.processSessionTransaction(
+      await this.processSessionChainTransaction(
         "DefundSession",
         new Transaction().add(
           SystemProgram.transfer({
@@ -169,8 +178,7 @@ export class MagicBlockEngine {
             toPubkey: this.getWalletPayer(),
             lamports: transferableLamports,
           })
-        ),
-        false
+        )
       );
     }
   }

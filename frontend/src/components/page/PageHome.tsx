@@ -35,7 +35,7 @@ export function PageHome() {
       >
         + Create a new game +
       </button>
-      {games ? (
+      {games && games.length ? (
         <>
           <div className="Title">Latest games</div>
           {games.map(
