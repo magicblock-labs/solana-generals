@@ -12,7 +12,7 @@ export async function gameSystemCommand(
   sourceY: number,
   targetX: number,
   targetY: number,
-  strength: number
+  strengthPercent: number
 ) {
   const applySystem = await ApplySystem({
     authority: engine.getSessionPayer(),
@@ -33,12 +33,12 @@ export async function gameSystemCommand(
       source_y: sourceY,
       target_x: targetX,
       target_y: targetY,
-      strength: strength,
+      strength_percent: strengthPercent,
     },
   });
   await engine.processSessionTransaction(
     "SystemCommand",
     applySystem.transaction,
-    false
+    true
   );
 }

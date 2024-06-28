@@ -7,9 +7,9 @@ import { MagicBlockEngineProvider } from "./engine/MagicBlockEngine";
 import { MenuBar } from "./components/menu/MenuBar";
 
 import { PageHome } from "./components/page/PageHome";
-import { PageGamePlay } from "./components/page/PageGamePlay";
-import { PageGameLobby } from "./components/page/PageGameLobby";
 import { PageGameCreate } from "./components/page/PageGameCreate";
+import { PageGameLobby } from "./components/page/PageGameLobby";
+import { PageGamePlay } from "./components/page/PageGamePlay";
 import { PageError } from "./components/page/PageError";
 
 import "./index.scss";
@@ -20,13 +20,15 @@ function App() {
       <MagicBlockEngineProvider>
         <MenuBar />
         <div className="Content">
-          <Routes>
-            <Route path="/" element={<PageHome />} />
-            <Route path="/game/create" element={<PageGameCreate />} />
-            <Route path="/game/lobby/:id" element={<PageGameLobby />} />
-            <Route path="/game/play/:id" element={<PageGamePlay />} />
-            <Route path="/error/:code" element={<PageError />} />
-          </Routes>
+          <div className="Container" style={{ maxWidth: 1024 }}>
+            <Routes>
+              <Route path="/" element={<PageHome />} />
+              <Route path="/game/create" element={<PageGameCreate />} />
+              <Route path="/game/lobby/:id" element={<PageGameLobby />} />
+              <Route path="/game/play/:id" element={<PageGamePlay />} />
+              <Route path="/error/:code" element={<PageError />} />
+            </Routes>
+          </div>
         </div>
       </MagicBlockEngineProvider>
     </HashRouter>

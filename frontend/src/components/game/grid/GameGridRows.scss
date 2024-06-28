@@ -1,5 +1,6 @@
 .GameGridRows {
   > .Row {
     flex-direction: row;
+    flex-wrap: nowrap;
   }
 }

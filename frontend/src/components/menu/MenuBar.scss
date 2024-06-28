@@ -1,11 +1,14 @@
 .MenuBar {
   > .TitleBar {
-    > .Title {
-      font-size: 20px;
-      font-weight: bold;
-      text-align: center;
-      vertical-align: middle;
-    }
+    cursor: pointer;
+    font-size: 20px;
+    font-weight: bold;
+    background: linear-gradient(
+      90deg,
+      #8802ff 9.81%,
+      #e101ff 56.17%,
+      #e101ff 93.64%
+    );
   }
 
   > .KeysBar {

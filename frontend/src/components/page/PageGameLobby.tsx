@@ -53,30 +53,9 @@ export function PageGameLobby() {
   if (!game) {
     return <></>;
   }
-
-  let canStart = !!game.status.lobby;
-  game.players.forEach((player: any) => {
-    if (!player.ready) {
-      canStart = false;
-    }
-  });
-
-  // Hint on game status
-  let status = "?";
-  if (game.status.lobby) {
-    status = "Waiting for players to join";
-  }
-  if (game.status.playing) {
-    status = "Game is playing";
-  }
-  if (game.status.finished) {
-    status = "Game is finished";
-  }
-
   return (
-    <div className="PageGameLobby">
-      <button className="Title">Game ID: {params.id.toString()}</button>
-      Players:
+    <div className="PageGameLobby VStack">
+      <div className="Title">Game {params.id.toString()}</div>
       <div className="Players">
         {game.players.map((_: any, playerIndex: number) => (
           <PageGameLobbyPlayer
@@ -87,9 +66,11 @@ export function PageGameLobby() {
           />
         ))}
       </div>
-      Map:
+      <div className="Title">Map Preview</div>
       <div className="Map">
-        <GameGridRows mini={true} game={game} />
+        <div className="Grid">
+          <GameGridRows mini={true} game={game} />
+        </div>
       </div>
     </div>
   );
@@ -116,7 +97,7 @@ function PageGameLobbyPlayer({
           onClickJoin(engine, entityPda, playerIndex, true);
         }}
       >
-        <div>Join</div>
+        Join
       </button>
     );
   } else if (player.authority.equals(engine.getSessionPayer())) {
@@ -127,7 +108,7 @@ function PageGameLobbyPlayer({
           onClickJoin(engine, entityPda, playerIndex, false);
         }}
       >
-        <div>X</div>
+        Leave
       </button>
     );
   } else {
@@ -135,7 +116,7 @@ function PageGameLobbyPlayer({
   }
 
   return (
-    <div className="Player HStack">
+    <div className="Player">
       <GamePlayer
         key={playerIndex}
         playerIndex={playerIndex}
@@ -154,17 +135,11 @@ function onClickJoin(
   join: boolean
 ) {
   gameSystemJoin(engine, entityPda, playerIndex, join)
-    .catch(console.error)
+    .catch((error) => {
+      console.error("Failed to join", error);
+    })
     .then(() => {
       console.log("Join done");
-    });
-}
-
-function onClickStart(engine: MagicBlockEngine, entityPda: PublicKey) {
-  gameSystemStart(engine, entityPda)
-    .catch(console.error)
-    .then(() => {
-      console.log("Start done");
     });
 }
 
@@ -183,14 +158,26 @@ function onPageStartup(
   if (game === null) {
     return navigate("/error/lobby-no-game");
   }
+  // If the game hasn't been generated yet
+  if (game.status.generate) {
+    return navigate("/error/lobby-not-generated");
+  }
   // If the game has started playing, go to play mode
-  if (game.status.playing) {
+  if (game.status.playing || game.status.finished) {
     return navigate("/game/play/" + entityPda.toBase58());
   }
-  // If the game hasn't been generated yet, generate it
-  if (game.status.generate) {
+  // If the game needs starting, do it
+  if (game.status.lobby) {
     const timeout = setTimeout(async () => {
-      await gameSystemGenerate(engine, entityPda);
+      let canStart = !!game.status.lobby;
+      game.players.forEach((player: any) => {
+        if (!player.ready) {
+          canStart = false;
+        }
+      });
+      if (canStart) {
+        await gameSystemStart(engine, entityPda);
+      }
     }, 100);
     return () => {
       clearTimeout(timeout);

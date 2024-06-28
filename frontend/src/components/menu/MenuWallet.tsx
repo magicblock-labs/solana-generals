@@ -18,16 +18,19 @@ function MenuWalletConnected() {
 
   const walletPayer = engine.getWalletPayer();
 
-  const [walletLamports, setWalletLamports] = React.useState(0);
+  const [walletLamports, setWalletLamports] = React.useState(undefined);
   React.useEffect(() => {
     return engine.subscribeToAccountInfo(walletPayer, (accountInfo) => {
       setWalletLamports(accountInfo?.lamports);
     });
   });
 
-  const walletBalance = walletLamports
-    ? (walletLamports / 1_000_000_000).toFixed(3)
-    : "????";
+  const walletAbbreviation = walletPayer.toBase58().substring(0, 8);
+  const walletBalance =
+    walletLamports !== undefined
+      ? (walletLamports / 1_000_000_000).toFixed(3)
+      : "????";
+
   return (
     <div className="MenuWalletConnected HStack">
       <button
@@ -36,10 +39,7 @@ function MenuWalletConnected() {
           navigator.clipboard.writeText(walletPayer.toBase58());
         }}
       >
-        <div>Wallet:</div>
-        <div>
-          🔗 {walletPayer.toBase58().substring(0, 8)}... ({walletBalance} SOL)
-        </div>
+        Wallet: 🔗 {walletAbbreviation}... ({walletBalance} SOL)
       </button>
       <button
         className="Disconnect"
@@ -47,7 +47,7 @@ function MenuWalletConnected() {
           engine.selectWalletAdapter(null);
         }}
       >
-        <div>X</div>
+        X
       </button>
     </div>
   );
@@ -79,7 +79,7 @@ function MenuWalletDisconnected() {
           })}{" "}
         </>
       ) : (
-        <div className="Placeholder">No web wallet detected</div>
+        <div className="Placeholder Container">No web wallet detected</div>
       )}
     </div>
   );

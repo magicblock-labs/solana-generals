@@ -19,29 +19,27 @@ pub mod tick {
         }
 
         // Check that the game tick cooldown has elapsed
-        let slot = Clock::get()?.slot;
-        if slot < game.growth_next_slot {
-            return Err(GameError::PlayerNeedsToWait.into());
-        }
-        game.growth_next_slot = game.growth_next_slot + 1;
+        if Clock::get()?.slot >= game.tick_next_slot {
+            game.tick_next_slot = game.tick_next_slot + 1;
 
-        // Loop over all cell and increment its strength if someone is occupying
-        for x in 0..game.size_x {
-            for y in 0..game.size_y {
-                let mut cell = game.get_cell(x, y)?.clone();
-                if cell.owner == GameCellOwner::Nobody {
-                    continue;
+            // Loop over all cell and increment its strength if someone is occupying
+            for x in 0..game.size_x {
+                for y in 0..game.size_y {
+                    let mut cell = game.get_cell(x, y)?.clone();
+                    if cell.owner == GameCellOwner::Nobody {
+                        continue;
+                    }
+                    if game.tick_next_slot % 20 == 0 && cell.kind == GameCellKind::Capital {
+                        cell.strength = cell.strength.saturating_add(1);
+                    }
+                    if game.tick_next_slot % 40 == 0 && cell.kind == GameCellKind::City {
+                        cell.strength = cell.strength.saturating_add(1);
+                    }
+                    if game.tick_next_slot % 200 == 0 && cell.kind == GameCellKind::Field {
+                        cell.strength = cell.strength.saturating_add(1);
+                    }
+                    game.set_cell(x, y, cell)?;
                 }
-                if cell.kind == GameCellKind::Capital {
-                    cell.strength = cell.strength.saturating_add(5);
-                }
-                if cell.kind == GameCellKind::City {
-                    cell.strength = cell.strength.saturating_add(2);
-                }
-                if cell.kind == GameCellKind::Field {
-                    cell.strength = cell.strength.saturating_add(1);
-                }
-                game.set_cell(x, y, cell)?;
             }
         }
 

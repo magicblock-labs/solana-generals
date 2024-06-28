@@ -1,3 +1,5 @@
+import { PublicKey } from "@solana/web3.js";
+
 import { MagicBlockEngine } from "../engine/MagicBlockEngine";
 
 import { Game } from "../../../backend/target/types/game";
@@ -14,7 +16,11 @@ import * as JoinIdl from "../../../backend/target/idl/join.json";
 import * as StartIdl from "../../../backend/target/idl/start.json";
 import * as CommandIdl from "../../../backend/target/idl/command.json";
 import * as TickIdl from "../../../backend/target/idl/tick.json";
-import * as FinishIdl from "../../../backend/target/idl/tick.json";
+import * as FinishIdl from "../../../backend/target/idl/finish.json";
+
+export const WORLD_PDA = new PublicKey(
+  "12MArv4fDwYMJNFXtPjQWuWJaVmKCqLyqz8fZmDQArpd"
+);
 
 export function getComponentGame(engine: MagicBlockEngine) {
   return engine.getProgram<Game>(GameIdl);

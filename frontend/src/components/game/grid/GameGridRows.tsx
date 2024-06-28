@@ -36,13 +36,12 @@ export function GameGridRows({
     for (let y = 0; y < game.sizeY; y++) {
       const cells = [];
       for (let x = 0; x < game.sizeX; x++) {
-        const cell = game.cells[y * game.sizeX + x];
         cells.push(
           <GameGridCell
             key={x}
             x={x}
             y={y}
-            cell={cell}
+            game={game}
             mini={mini}
             active={activity ? activity.x == x && activity.y == y : false}
             onCommand={onCommand}
@@ -61,13 +60,12 @@ export function GameGridRows({
     for (let x = 0; x < game.sizeX; x++) {
       const cells = [];
       for (let y = game.sizeY - 1; y >= 0; y--) {
-        const cell = game.cells[y * game.sizeX + x];
         cells.push(
           <GameGridCell
             key={y}
             x={x}
             y={y}
-            cell={cell}
+            game={game}
             mini={mini}
             active={activity ? activity.x == x && activity.y == y : false}
             onCommand={onCommand}

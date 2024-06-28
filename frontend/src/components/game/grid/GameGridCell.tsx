@@ -6,35 +6,41 @@ import GameGridCellCapital from "./GameGridCellCapital.png";
 import GameGridCellMountain from "./GameGridCellMountain.png";
 
 import "./GameGridCell.scss";
+import { useMagicBlockEngine } from "../../../engine/MagicBlockEngine";
 
 export function GameGridCell({
   x,
   y,
-  cell,
+  game,
   mini,
   active,
   onCommand,
 }: {
   x: number;
   y: number;
-  cell: any;
+  game: any;
   mini: boolean;
   active: boolean;
   onCommand?: (x: number, y: number, type: string) => void;
 }) {
+  const engine = useMagicBlockEngine();
+  const cell = game.cells[y * game.sizeX + x];
+
   let rootClassNames = ["GameGridCell"];
 
   if (cell.owner.player) {
-    rootClassNames.push("Player" + cell.owner.player[0]);
+    const playerIndex = cell.owner.player[0];
+    rootClassNames.push("Player" + playerIndex);
+    const player = game.players[playerIndex];
+    if (onCommand && player.authority.equals(engine.getSessionPayer())) {
+      rootClassNames.push("Interactive");
+    }
   }
   if (mini) {
     rootClassNames.push("Mini");
   }
   if (active) {
     rootClassNames.push("Active");
-  }
-  if (onCommand) {
-    rootClassNames.push("Interactive");
   }
 
   let image = "";

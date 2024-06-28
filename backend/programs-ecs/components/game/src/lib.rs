@@ -9,7 +9,7 @@ pub struct Game {
     pub size_y: u8,
     pub players: [GamePlayer; 2],
     pub cells: [GameCell; 128], // max grid size is 16x8=128
-    pub growth_next_slot: u64,  // TODO(vbrunet) - use more precise clock
+    pub tick_next_slot: u64,    // TODO(vbrunet) - use more precise clock
 }
 
 #[component_deserialize]
@@ -26,7 +26,7 @@ pub enum GameStatus {
 pub struct GamePlayer {
     pub ready: bool,
     pub authority: Pubkey,
-    pub action_next_slot: u64,
+    pub last_action_slot: u64,
 }
 
 #[component_deserialize]
@@ -64,7 +64,7 @@ impl Default for Game {
             size_y: 8,
             players: [GamePlayer::default(); 2],
             cells: [GameCell::field(); 128],
-            growth_next_slot: 0,
+            tick_next_slot: 0,
         })
     }
 }
@@ -136,10 +136,6 @@ pub enum GameError {
     PlayerIsNotPayer,
     #[msg("The player in this slot is not ready to start")]
     PlayerIsNotReady,
-    #[msg("The player needs to wait the cooldown time before doing this action")]
-    PlayerNeedsToWait,
-    #[msg("The player claiming victory has not won yet")]
-    PlayerHasNotYetWon,
     #[msg("The cell's position is out of bounds")]
     CellIsOutOfBounds,
     #[msg("The cells specified are not adjacent")]

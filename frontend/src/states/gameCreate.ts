@@ -1,4 +1,4 @@
-import { PublicKey, Transaction } from "@solana/web3.js";
+import { Transaction } from "@solana/web3.js";
 import {
   AddEntity,
   InitializeComponent,
@@ -7,13 +7,16 @@ import {
 
 import { MagicBlockEngine } from "../engine/MagicBlockEngine";
 
-import { getComponentGame } from "./gamePrograms";
+import { WORLD_PDA, getComponentGame } from "./gamePrograms";
 
-const WORLD_PDA = new PublicKey("12MArv4fDwYMJNFXtPjQWuWJaVmKCqLyqz8fZmDQArpd");
+import { gameSystemGenerate } from "./gameSystemGenerate";
 
-export async function gameCreate(engine: MagicBlockEngine) {
-  /*
+export async function gameCreate(
+  engine: MagicBlockEngine,
+  log: (log: string) => void
+) {
   // Create a new Entity
+  log("Creating a new entity");
   const addEntity = await AddEntity({
     connection: engine.getConnectionChain(),
     payer: engine.getSessionPayer(),
@@ -25,6 +28,7 @@ export async function gameCreate(engine: MagicBlockEngine) {
     false
   );
   // Initialize the game component
+  log("Initializing a new component");
   const initializeComponent = await InitializeComponent({
     payer: engine.getSessionPayer(),
     entity: addEntity.entityPda,
@@ -35,19 +39,11 @@ export async function gameCreate(engine: MagicBlockEngine) {
     initializeComponent.transaction,
     false
   );
-  */
-
-  const entityPda = new PublicKey(
-    "35r6ab7MAVhJwpbvf7eUcXeopSK5cQA775rCU9zCMZRP"
-  );
-  const componentPda = new PublicKey(
-    "2e6fSpyGvMfLgFJQxbZ397MsmRDB4fNbFcx33GqFQmW5"
-  );
-
   // Delegate the game component
+  log("Delegating the component to Ephemeral rollups");
   const delegateComponentInstruction = createDelegateInstruction({
-    entity: entityPda,
-    account: componentPda,
+    entity: addEntity.entityPda,
+    account: initializeComponent.componentPda,
     ownerProgram: getComponentGame(engine).programId,
     payer: engine.getSessionPayer(),
   });
@@ -56,6 +52,9 @@ export async function gameCreate(engine: MagicBlockEngine) {
     new Transaction().add(delegateComponentInstruction),
     false
   );
+  // Generate the map (this should warm up the ephemeral rollup)
+  log("Generate the game's map");
+  await gameSystemGenerate(engine, addEntity.entityPda);
   // Entity PDA for later use
-  return entityPda;
+  return addEntity.entityPda;
 }

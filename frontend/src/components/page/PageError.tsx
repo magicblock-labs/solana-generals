@@ -1,19 +1,23 @@
 import * as React from "react";
 
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
 import "./PageError.scss";
 
 function ErrorSessionFail() {
-  return <div>Failed to fetch on-chain information</div>;
+  return <div className="Title">Failed to fetch on-chain information</div>;
 }
 
 function ErrorNoGame() {
-  return <div>Failed to find the game</div>;
+  return <div className="Title">Failed to find the game</div>;
 }
 
 function ErrorCreate() {
-  return <div>Failed to create the game</div>;
+  return <div className="Title">Failed to create the game</div>;
+}
+
+function ErrorUnknown() {
+  return <div className="Title">Unknown error</div>;
 }
 
 function PageErrorInner({ code }: { code: string }) {
@@ -27,15 +31,25 @@ function PageErrorInner({ code }: { code: string }) {
     case "create-error":
       return <ErrorCreate />;
     default:
-      return <div>Unknown error</div>;
+      return <ErrorUnknown />;
   }
 }
 
 export function PageError() {
+  const navigate = useNavigate();
   const params = useParams();
   return (
-    <div className="PageError">
+    <div className="PageError VStack">
+      <div className="Title">Error</div>
       <PageErrorInner code={params.code} />
+      <button
+        className="Soft"
+        onClick={() => {
+          navigate("/");
+        }}
+      >
+        Go home
+      </button>
     </div>
   );
 }

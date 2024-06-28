@@ -23,15 +23,8 @@ pub mod start {
             }
         }
 
-        let slot = Clock::get()?.slot;
-
-        // Mark all players as ready to take action
-        for player in &mut game.players {
-            player.action_next_slot = slot;
-        }
-
         // Mark the game as ready to tick
-        game.growth_next_slot = slot;
+        game.tick_next_slot = Clock::get()?.slot;
 
         // Mark the game as started
         ctx.accounts.game.status = GameStatus::Playing;

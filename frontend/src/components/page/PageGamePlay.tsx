@@ -17,6 +17,7 @@ import { GamePlayer } from "../game/GamePlayer";
 import { gameListen } from "../../states/gameListen";
 import { gameSystemTick } from "../../states/gameSystemTick";
 import { gameSystemCommand } from "../../states/gameSystemCommand";
+import { gameSystemFinish } from "../../states/gameSystemFinish";
 
 import "./PageGamePlay.scss";
 
@@ -67,18 +68,22 @@ export function PageGamePlay() {
       <div className="Title"> Game: {params.id.toString()}</div>
       <div className="Players">
         {game.players.map((_: any, playerIndex: number) => (
-          <GamePlayer
-            key={playerIndex}
-            playerIndex={playerIndex}
-            entityPda={entityPda}
-            game={game}
-          />
+          <div className="Player" key={playerIndex}>
+            <GamePlayer
+              playerIndex={playerIndex}
+              entityPda={entityPda}
+              game={game}
+            />
+          </div>
         ))}
       </div>
+      <div className="Title">Drag and drop your army on the map</div>
       <div className="Map">
-        <PageGamePlayMap entityPda={entityPda} game={game} />
+        <div className="Grid">
+          <PageGamePlayMap entityPda={entityPda} game={game} />
+        </div>
       </div>
-      <div className="Status">{status}</div>
+      <div className="Title">{status}</div>
     </div>
   );
 }
@@ -102,13 +107,26 @@ function onPageStartup(
   if (game.status.generate || game.status.lobby) {
     return navigate("/game/lobby/" + entityPda.toBase58());
   }
-  // If the game has started playing, we need to run the ticks
+  // If the game has started playing, we need to run the logic on intervals
   if (game.status.playing) {
-    const interval = setInterval(async () => {
-      //await gameSystemTick(engine, entityPda);
-    }, 1000);
+    const intervalTick = setInterval(async () => {
+      try {
+        await gameSystemTick(engine, entityPda);
+      } catch (error) {
+        console.error("failed to tick the game", error);
+      }
+    }, 2000);
+    const intervalFinish = setInterval(async () => {
+      try {
+        await gameSystemFinish(engine, entityPda, 0);
+        await gameSystemFinish(engine, entityPda, 1);
+      } catch (error) {
+        console.error("failed to finish the game", error);
+      }
+    }, 5000);
     return () => {
-      clearInterval(interval);
+      clearInterval(intervalTick);
+      clearInterval(intervalFinish);
     };
   }
 }
@@ -148,17 +166,22 @@ function PageGamePlayMap({
           break;
         }
 
-        const attack = computeAttack(engine, game, sourceX, sourceY);
-        if (attack !== undefined) {
+        const attackSource = computeAttackSource(
+          engine,
+          game,
+          sourceX,
+          sourceY
+        );
+        if (attackSource !== undefined) {
           gameSystemCommand(
             engine,
             entityPda,
-            attack.playerIndex,
+            attackSource.playerIndex,
             sourceX,
             sourceY,
             targetX,
             targetY,
-            attack.strength
+            attackSource.strengthPercent
           )
             .catch(console.error)
             .then(() => {
@@ -179,7 +202,7 @@ function PageGamePlayMap({
   if (command.active) {
     const sourceX = command.sourceX;
     const sourceY = command.sourceY;
-    if (computeAttack(engine, game, sourceX, sourceY) !== undefined) {
+    if (computeAttackSource(engine, game, sourceX, sourceY) !== undefined) {
       activity = { x: sourceX, y: sourceY };
     }
   }
@@ -196,12 +219,16 @@ function PageGamePlayMap({
   );
 }
 
-function computeAttack(
+function computeAttackSource(
   engine: MagicBlockEngine,
   game: any,
   sourceX: number,
   sourceY: number
 ) {
+  if (!game.status.playing) {
+    return undefined;
+  }
+
   const sourceCell = game.cells[sourceY * game.sizeX + sourceX];
   if (!sourceCell.owner.player) {
     return undefined;
@@ -220,6 +247,6 @@ function computeAttack(
 
   return {
     playerIndex: sourcePlayerIndex,
-    strength: sourceStrength,
+    strengthPercent: 100,
   };
 }

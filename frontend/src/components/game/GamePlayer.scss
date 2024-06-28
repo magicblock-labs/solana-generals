@@ -2,8 +2,11 @@
   flex-direction: row;
   flex-grow: 1;
 
+  > * {
+    font-size: 14px;
+  }
+
   color: white;
-  height: 36px;
 
   border: 2px solid rgba(255, 255, 255, 0.3);
 

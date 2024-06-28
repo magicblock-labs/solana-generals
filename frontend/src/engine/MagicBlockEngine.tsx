@@ -17,10 +17,12 @@ import {
 import { WalletName } from "@solana/wallet-adapter-base";
 
 const ENDPOINT_CHAIN_RPC = "https://api.devnet.solana.com";
-const ENDPOINT_CHAIN_WS = "ws://api.devnet.solana.com";
+const ENDPOINT_CHAIN_WS = "wss://api.devnet.solana.com";
 
-const ENDPOINT_EPHEMERAL_RPC = "https://devnet.magicblock.app";
-const ENDPOINT_EPHEMERAL_WS = "wss://devnet.magicblock.app:8900";
+//const ENDPOINT_EPHEMERAL_RPC = "https://devnet.magicblock.app";
+//const ENDPOINT_EPHEMERAL_WS = "wss://devnet.magicblock.app:8900";
+const ENDPOINT_EPHEMERAL_RPC = "http://localhost:8899";
+const ENDPOINT_EPHEMERAL_WS = "ws://localhost:8900";
 
 const SESSION_LOCAL_STORAGE = "magicblock-session-key";
 const SESSION_MIN_LAMPORTS = 0.01 * 1_000_000_000;
@@ -61,7 +63,7 @@ export class MagicBlockEngine {
   }
 
   getProgram<T extends Idl>(idl: {}): Program<T> {
-    return new Program<T>(idl as T, { connection: connectionChain });
+    return new Program<T>(idl as T, { connection: connectionEphemeral });
   }
 
   getConnectionChain(): Connection {
