@@ -114,7 +114,7 @@ function onPageStartup(
       } catch (error) {
         console.error("failed to tick the game", error);
       }
-    }, 50);
+    }, 2000);
     const intervalFinish = setInterval(async () => {
       try {
         await gameSystemFinish(engine, entityPda, 0);
@@ -224,6 +224,10 @@ function computeAttackSource(
   sourceX: number,
   sourceY: number
 ) {
+  if (!game.status.playing) {
+    return undefined;
+  }
+
   const sourceCell = game.cells[sourceY * game.sizeX + sourceX];
   if (!sourceCell.owner.player) {
     return undefined;

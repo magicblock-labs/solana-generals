@@ -136,8 +136,6 @@ pub enum GameError {
     PlayerIsNotPayer,
     #[msg("The player in this slot is not ready to start")]
     PlayerIsNotReady,
-    #[msg("The player needs to wait the cooldown time before doing this action")]
-    PlayerNeedsToWait,
     #[msg("The cell's position is out of bounds")]
     CellIsOutOfBounds,
     #[msg("The cells specified are not adjacent")]
