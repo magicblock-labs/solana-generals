@@ -1,5 +1,5 @@
 const path = require("path");
-const webpack = require('webpack');
+const webpack = require("webpack");
 const HTMLWebpackPlugin = require("html-webpack-plugin");
 const { CleanWebpackPlugin } = require("clean-webpack-plugin");
 
@@ -37,17 +37,11 @@ module.exports = (env, argv) => {
         },
         {
           test: /\.scss$/,
-          use: [
-            "style-loader",
-            "css-loader",
-            "sass-loader",
-          ],
+          use: ["style-loader", "css-loader", "sass-loader"],
         },
         {
           test: /\.(png|jpe?g|gif|svg)$/,
-          use: [
-            "file-loader",
-          ],
+          use: ["file-loader"],
         },
       ],
     },
@@ -59,8 +53,8 @@ module.exports = (env, argv) => {
       }),
       // Shims necessary
       new webpack.ProvidePlugin({
-        Buffer: ['buffer', 'Buffer'],
-        process: 'process/browser',
+        Buffer: ["buffer", "Buffer"],
+        process: "process/browser",
       }),
     ],
   };

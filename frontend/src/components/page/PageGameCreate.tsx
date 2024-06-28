@@ -1,6 +1,5 @@
 import * as React from "react";
 import { NavigateFunction, useNavigate } from "react-router-dom";
-import { PublicKey } from "@solana/web3.js";
 
 import {
   MagicBlockEngine,
@@ -19,7 +18,12 @@ export function PageGameCreate() {
     return onPageStartup(navigate, engine);
   }, [engine]);
 
-  return <div className="PageGameCreate">Creating a new game...</div>;
+  return (
+    <div className="PageGameCreate VStack">
+      <div className="Title">Creating a new game</div>
+      <div>This can take a few moments...</div>
+    </div>
+  );
 }
 
 function onPageStartup(navigate: NavigateFunction, engine: MagicBlockEngine) {

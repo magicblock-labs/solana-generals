@@ -25,6 +25,6 @@ export async function gameSystemGenerate(
   await engine.processSessionTransaction(
     "SystemGenerate",
     applySystem.transaction,
-    false
+    true
   );
 }

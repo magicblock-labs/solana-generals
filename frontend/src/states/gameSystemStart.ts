@@ -25,6 +25,6 @@ export async function gameSystemStart(
   await engine.processSessionTransaction(
     "SystemStart",
     applySystem.transaction,
-    false
+    true
   );
 }

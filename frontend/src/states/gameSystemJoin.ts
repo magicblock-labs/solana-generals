@@ -31,6 +31,6 @@ export async function gameSystemJoin(
   await engine.processSessionTransaction(
     "SystemJoin",
     applySystem.transaction,
-    false
+    true
   );
 }

@@ -114,7 +114,7 @@ function onPageStartup(
       } catch (error) {
         console.error("failed to tick the game", error);
       }
-    }, 5000);
+    }, 50);
     const intervalFinish = setInterval(async () => {
       try {
         await gameSystemFinish(engine, entityPda, 0);
@@ -180,7 +180,7 @@ function PageGamePlayMap({
             sourceY,
             targetX,
             targetY,
-            attackSource.strength
+            attackSource.strengthPercent
           )
             .catch(console.error)
             .then(() => {
@@ -242,6 +242,6 @@ function computeAttackSource(
 
   return {
     playerIndex: sourcePlayerIndex,
-    strength: sourceStrength,
+    strengthPercent: 100,
   };
 }

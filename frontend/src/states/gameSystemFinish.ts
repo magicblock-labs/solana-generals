@@ -29,6 +29,6 @@ export async function gameSystemFinish(
   await engine.processSessionTransaction(
     "SystemFinish",
     applySystem.transaction,
-    false
+    true
   );
 }

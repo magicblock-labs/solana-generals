@@ -158,18 +158,13 @@ function onPageStartup(
   if (game === null) {
     return navigate("/error/lobby-no-game");
   }
-  // If the game has started playing, go to play mode
-  if (game.status.playing) {
-    return navigate("/game/play/" + entityPda.toBase58());
-  }
-  // If the game hasn't been generated yet, generate it
+  // If the game hasn't been generated yet
   if (game.status.generate) {
-    const timeout = setTimeout(async () => {
-      await gameSystemGenerate(engine, entityPda);
-    }, 100);
-    return () => {
-      clearTimeout(timeout);
-    };
+    return navigate("/error/lobby-not-generated");
+  }
+  // If the game has started playing, go to play mode
+  if (game.status.playing || game.status.finished) {
+    return navigate("/game/play/" + entityPda.toBase58());
   }
   // If the game needs starting, do it
   if (game.status.lobby) {

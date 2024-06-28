@@ -9,7 +9,7 @@ pub struct Game {
     pub size_y: u8,
     pub players: [GamePlayer; 2],
     pub cells: [GameCell; 128], // max grid size is 16x8=128
-    pub growth_next_slot: u64,  // TODO(vbrunet) - use more precise clock
+    pub tick_next_slot: u64,    // TODO(vbrunet) - use more precise clock
 }
 
 #[component_deserialize]
@@ -64,7 +64,7 @@ impl Default for Game {
             size_y: 8,
             players: [GamePlayer::default(); 2],
             cells: [GameCell::field(); 128],
-            growth_next_slot: 0,
+            tick_next_slot: 0,
         })
     }
 }

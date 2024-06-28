@@ -25,6 +25,6 @@ export async function gameSystemTick(
   await engine.processSessionTransaction(
     "SystemTick",
     applySystem.transaction,
-    false
+    true
   );
 }

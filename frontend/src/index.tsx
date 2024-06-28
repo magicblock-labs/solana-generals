@@ -7,9 +7,9 @@ import { MagicBlockEngineProvider } from "./engine/MagicBlockEngine";
 import { MenuBar } from "./components/menu/MenuBar";
 
 import { PageHome } from "./components/page/PageHome";
-import { PageGamePlay } from "./components/page/PageGamePlay";
-import { PageGameLobby } from "./components/page/PageGameLobby";
 import { PageGameCreate } from "./components/page/PageGameCreate";
+import { PageGameLobby } from "./components/page/PageGameLobby";
+import { PageGamePlay } from "./components/page/PageGamePlay";
 import { PageError } from "./components/page/PageError";
 
 import "./index.scss";
