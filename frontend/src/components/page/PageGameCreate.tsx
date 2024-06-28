@@ -17,8 +17,10 @@ export function PageGameCreate() {
   const [logs, setLogs] = React.useState([]);
 
   React.useEffect(() => {
+    const lastLogs: string[] = [];
     return onPageStartup(navigate, engine, (log) => {
-      setLogs([...logs, log]);
+      lastLogs.push(log);
+      setLogs([...lastLogs]);
     });
   }, [navigate, engine]);
 
@@ -26,7 +28,7 @@ export function PageGameCreate() {
     <div className="PageGameCreate VStack">
       <div className="Title">Creating a new game</div>
       <div>This can take a few moments...</div>
-      <div className="Logs Container VStack">
+      <div className="Logs Container">
         {logs.map((log: string, index: number) => {
           return (
             <div key={index} className="Log">

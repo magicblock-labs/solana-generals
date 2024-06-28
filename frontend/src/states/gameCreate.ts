@@ -56,5 +56,6 @@ export async function gameCreate(
   log("Generate the game's map");
   await gameSystemGenerate(engine, addEntity.entityPda);
   // Entity PDA for later use
+  log("Game is ready!");
   return addEntity.entityPda;
 }
