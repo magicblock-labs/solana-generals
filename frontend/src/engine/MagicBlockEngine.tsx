@@ -60,7 +60,10 @@ export class MagicBlockEngine {
     this.sessionConfig = sessionConfig;
   }
 
-  getProgram<T extends Idl>(idl: {}): Program<T> {
+  getProgramChain<T extends Idl>(idl: {}): Program<T> {
+    return new Program<T>(idl as T, { connection: connectionChain });
+  }
+  getProgramEphemeral<T extends Idl>(idl: {}): Program<T> {
     return new Program<T>(idl as T, { connection: connectionEphemeral });
   }
 

@@ -23,29 +23,29 @@ export const WORLD_PDA = new PublicKey(
 );
 
 export function getComponentGame(engine: MagicBlockEngine) {
-  return engine.getProgram<Game>(GameIdl);
+  return engine.getProgramEphemeral<Game>(GameIdl);
 }
 
 export function getSystemGenerate(engine: MagicBlockEngine) {
-  return engine.getProgram<Generate>(GenerateIdl);
+  return engine.getProgramEphemeral<Generate>(GenerateIdl);
 }
 
 export function getSystemJoin(engine: MagicBlockEngine) {
-  return engine.getProgram<Join>(JoinIdl);
+  return engine.getProgramEphemeral<Join>(JoinIdl);
 }
 
 export function getSystemStart(engine: MagicBlockEngine) {
-  return engine.getProgram<Start>(StartIdl);
+  return engine.getProgramEphemeral<Start>(StartIdl);
 }
 
 export function getSystemCommand(engine: MagicBlockEngine) {
-  return engine.getProgram<Command>(CommandIdl);
+  return engine.getProgramEphemeral<Command>(CommandIdl);
 }
 
 export function getSystemTick(engine: MagicBlockEngine) {
-  return engine.getProgram<Tick>(TickIdl);
+  return engine.getProgramEphemeral<Tick>(TickIdl);
 }
 
 export function getSystemFinish(engine: MagicBlockEngine) {
-  return engine.getProgram<Finish>(FinishIdl);
+  return engine.getProgramEphemeral<Finish>(FinishIdl);
 }
