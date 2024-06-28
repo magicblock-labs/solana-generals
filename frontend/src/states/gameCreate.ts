@@ -22,10 +22,9 @@ export async function gameCreate(
     payer: engine.getSessionPayer(),
     world: WORLD_PDA,
   });
-  await engine.processSessionTransaction(
+  await engine.processSessionChainTransaction(
     "AddEntity",
-    addEntity.transaction,
-    false
+    addEntity.transaction
   );
   // Initialize the game component
   log("Initializing a new component");
@@ -34,10 +33,9 @@ export async function gameCreate(
     entity: addEntity.entityPda,
     componentId: getComponentGame(engine).programId,
   });
-  await engine.processSessionTransaction(
+  await engine.processSessionChainTransaction(
     "InitializeComponent",
-    initializeComponent.transaction,
-    false
+    initializeComponent.transaction
   );
   // Delegate the game component
   log("Delegating the component to Ephemeral rollups");
@@ -47,10 +45,9 @@ export async function gameCreate(
     ownerProgram: getComponentGame(engine).programId,
     payer: engine.getSessionPayer(),
   });
-  await engine.processSessionTransaction(
+  await engine.processSessionChainTransaction(
     "DelegateComponent",
-    new Transaction().add(delegateComponentInstruction),
-    false
+    new Transaction().add(delegateComponentInstruction)
   );
   // Generate the map (this should warm up the ephemeral rollup)
   log("Generate the game's map");

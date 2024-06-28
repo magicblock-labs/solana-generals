@@ -36,9 +36,8 @@ export async function gameSystemCommand(
       strength_percent: strengthPercent,
     },
   });
-  await engine.processSessionTransaction(
+  await engine.processSessionEphemeralTransaction(
     "SystemCommand",
-    applySystem.transaction,
-    true
+    applySystem.transaction
   );
 }
