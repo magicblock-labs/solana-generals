@@ -11,8 +11,12 @@ import { WORLD_PDA, getComponentGame } from "./gamePrograms";
 
 import { gameSystemGenerate } from "./gameSystemGenerate";
 
-export async function gameCreate(engine: MagicBlockEngine) {
+export async function gameCreate(
+  engine: MagicBlockEngine,
+  log: (log: string) => void
+) {
   // Create a new Entity
+  log("Creating a new entity");
   const addEntity = await AddEntity({
     connection: engine.getConnectionChain(),
     payer: engine.getSessionPayer(),
@@ -24,6 +28,7 @@ export async function gameCreate(engine: MagicBlockEngine) {
     false
   );
   // Initialize the game component
+  log("Initializing a new component");
   const initializeComponent = await InitializeComponent({
     payer: engine.getSessionPayer(),
     entity: addEntity.entityPda,
@@ -35,6 +40,7 @@ export async function gameCreate(engine: MagicBlockEngine) {
     false
   );
   // Delegate the game component
+  log("Delegating the component to Ephemeral rollups");
   const delegateComponentInstruction = createDelegateInstruction({
     entity: addEntity.entityPda,
     account: initializeComponent.componentPda,
@@ -47,6 +53,7 @@ export async function gameCreate(engine: MagicBlockEngine) {
     false
   );
   // Generate the map (this should warm up the ephemeral rollup)
+  log("Generate the game's map");
   await gameSystemGenerate(engine, addEntity.entityPda);
   // Entity PDA for later use
   return addEntity.entityPda;

@@ -77,6 +77,7 @@ export function PageGamePlay() {
           </div>
         ))}
       </div>
+      <div className="Title">Drag and drop your army on the map</div>
       <div className="Map">
         <div className="Grid">
           <PageGamePlayMap entityPda={entityPda} game={game} />
