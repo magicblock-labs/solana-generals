@@ -115,7 +115,7 @@ function onPageStartup(
       } catch (error) {
         console.error("failed to tick the game", error);
       }
-    }, 2000);
+    }, 500);
     const intervalFinish = setInterval(async () => {
       try {
         await gameSystemFinish(engine, entityPda, 0);
@@ -123,7 +123,7 @@ function onPageStartup(
       } catch (error) {
         console.error("failed to finish the game", error);
       }
-    }, 5000);
+    }, 2000);
     return () => {
       clearInterval(intervalTick);
       clearInterval(intervalFinish);

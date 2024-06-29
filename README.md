@@ -8,7 +8,9 @@ This repository contains an example for a fully featured game running 100% serve
 Run the frontend that should already be pointing to solana's testnet:
 
 ```bash
-cd frontend
+cd backend
+bolt build
+cd ../frontend
 npm install
 npm run dev
 ```
