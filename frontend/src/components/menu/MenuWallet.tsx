@@ -39,7 +39,7 @@ function MenuWalletConnected() {
           navigator.clipboard.writeText(walletPayer.toBase58());
         }}
       >
-        Wallet: 🔗 {walletAbbreviation}... ({walletBalance} SOL)
+        Wallet: {walletAbbreviation}... {walletBalance} SOL
       </button>
       <button
         className="Disconnect"

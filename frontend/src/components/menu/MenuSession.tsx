@@ -55,7 +55,7 @@ export function MenuSession() {
           navigator.clipboard.writeText(sessionPayer.toBase58());
         }}
       >
-        Player: 🔗 {sessionAbbreviation}... ({sessionBalance} SOL)
+        Player: {sessionAbbreviation}... {sessionBalance} SOL
       </button>
       {extras}
     </div>
