@@ -15,6 +15,8 @@ import {
 } from "@solana/web3.js";
 import { WalletName } from "@solana/wallet-adapter-base";
 
+import * as _Phantom from "@solana/wallet-adapter-phantom";
+
 const ENDPOINT_CHAIN_RPC = "https://api.testnet.solana.com";
 const ENDPOINT_CHAIN_WS = "wss://api.testnet.solana.com";
 
