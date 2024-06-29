@@ -168,6 +168,7 @@ function onPageStartup(
   }
   // If the game needs starting, do it
   if (game.status.lobby) {
+    // If the game hasn't change for a bit, check if it can be started
     const timeout = setTimeout(async () => {
       let canStart = !!game.status.lobby;
       game.players.forEach((player: any) => {
@@ -178,7 +179,7 @@ function onPageStartup(
       if (canStart) {
         await gameSystemStart(engine, entityPda);
       }
-    }, 100);
+    }, 1000);
     return () => {
       clearTimeout(timeout);
     };

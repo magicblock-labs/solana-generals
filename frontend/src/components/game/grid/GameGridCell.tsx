@@ -33,7 +33,7 @@ export function GameGridCell({
     rootClassNames.push("Player" + playerIndex);
     const player = game.players[playerIndex];
     if (onCommand && player.authority.equals(engine.getSessionPayer())) {
-      rootClassNames.push("Interactive");
+      rootClassNames.push("Owned");
     }
   }
   if (mini) {

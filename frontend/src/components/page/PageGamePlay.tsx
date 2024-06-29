@@ -49,6 +49,11 @@ export function PageGamePlay() {
     return onPageStartup(navigate, engine, entityPda, gamePda, game);
   }, [navigate, engine, entityPda, gamePda, game]);
 
+  // Run a ticker (the ticker doesnt depend on game state)
+  React.useEffect(() => {
+    return onPageCrank(engine, entityPda);
+  }, [engine, entityPda]);
+
   // Render the game
   if (game == null) {
     return <></>;
@@ -88,6 +93,121 @@ export function PageGamePlay() {
   );
 }
 
+function PageGamePlayMap({
+  entityPda,
+  game,
+}: {
+  entityPda: PublicKey;
+  game: any;
+}) {
+  const engine = useMagicBlockEngine();
+
+  const [command, setCommand] = React.useState({
+    active: false,
+    sourceX: 0,
+    sourceY: 0,
+    sourcePlayerIndex: 0,
+  });
+
+  const onCommand = (targetX: number, targetY: number, type: string) => {
+    switch (type) {
+      case "start": {
+        if (!game.status.playing) {
+          return;
+        }
+        const targetCell = game.cells[targetY * game.sizeX + targetX];
+        if (!targetCell) {
+          return;
+        }
+        if (!targetCell.owner.player) {
+          return;
+        }
+        const targetPlayerIndex = targetCell.owner.player[0];
+        const targetPlayer = game.players[targetPlayerIndex];
+        if (!targetPlayer.authority.equals(engine.getSessionPayer())) {
+          return;
+        }
+        console.log("onCommand.start");
+        return setCommand({
+          active: true,
+          sourceX: targetX,
+          sourceY: targetY,
+          sourcePlayerIndex: targetPlayerIndex,
+        });
+      }
+      case "end": {
+        if (!command.active) {
+          return;
+        }
+        console.log("onCommand.end");
+        return setCommand({ ...command, active: false });
+      }
+      case "move": {
+        if (!command.active) {
+          return;
+        }
+        const sourceX = command.sourceX;
+        const sourceY = command.sourceY;
+        if (sourceX === targetX && sourceY === targetY) {
+          return;
+        }
+        const sourcePlayerIndex = command.sourcePlayerIndex;
+        console.log(
+          "onCommand.attack",
+          sourceX + "x" + sourceY,
+          targetX + "x" + targetY
+        );
+        gameSystemCommand(
+          engine,
+          entityPda,
+          sourcePlayerIndex,
+          sourceX,
+          sourceY,
+          targetX,
+          targetY,
+          100
+        )
+          .catch((error) => {
+            console.log(
+              "onCommand.fail",
+              sourceX + "x" + sourceY,
+              targetX + "x" + targetY
+            );
+          })
+          .then(() => {
+            console.log(
+              "onCommand.success",
+              sourceX + "x" + sourceY,
+              targetX + "x" + targetY
+            );
+          });
+        return setCommand({
+          active: true,
+          sourceX: targetX,
+          sourceY: targetY,
+          sourcePlayerIndex: sourcePlayerIndex,
+        });
+      }
+    }
+  };
+
+  let activity = undefined;
+  if (command.active) {
+    activity = { x: command.sourceX, y: command.sourceY };
+  }
+
+  return (
+    <div className="GameGridRoot">
+      <GameGridRows
+        game={game}
+        mini={false}
+        activity={activity}
+        onCommand={onCommand}
+      />
+    </div>
+  );
+}
+
 function onPageStartup(
   navigate: NavigateFunction,
   engine: MagicBlockEngine,
@@ -107,15 +227,9 @@ function onPageStartup(
   if (game.status.generate || game.status.lobby) {
     return navigate("/game/lobby/" + entityPda.toBase58());
   }
-  // If the game has started playing, we need to run the logic on intervals
+  // If the game has started playing, we need to run some logic
   if (game.status.playing) {
-    const intervalTick = setInterval(async () => {
-      try {
-        await gameSystemTick(engine, entityPda);
-      } catch (error) {
-        console.error("failed to tick the game", error);
-      }
-    }, 500);
+    // If the game has been stale for a while, check if the game is finished
     const intervalFinish = setInterval(async () => {
       try {
         await gameSystemFinish(engine, entityPda, 0);
@@ -123,130 +237,26 @@ function onPageStartup(
       } catch (error) {
         console.error("failed to finish the game", error);
       }
-    }, 2000);
+    }, 1000);
     return () => {
-      clearInterval(intervalTick);
       clearInterval(intervalFinish);
     };
   }
 }
 
-function PageGamePlayMap({
-  entityPda,
-  game,
-}: {
-  entityPda: PublicKey;
-  game: any;
-}) {
-  const engine = useMagicBlockEngine();
-
-  const [command, setCommand] = React.useState({
-    active: false,
-    sourceX: 0,
-    sourceY: 0,
-  });
-  const onCommand = (targetX: number, targetY: number, type: string) => {
-    switch (type) {
-      case "start": {
-        setCommand({ active: true, sourceX: targetX, sourceY: targetY });
-        break;
-      }
-      case "end": {
-        setCommand({ active: false, sourceX: targetX, sourceY: targetY });
-        break;
-      }
-      case "move": {
-        if (!command.active) {
-          break;
-        }
-
-        const sourceX = command.sourceX;
-        const sourceY = command.sourceY;
-        if (sourceX === targetX && sourceY === targetY) {
-          break;
-        }
-
-        const attackSource = computeAttackSource(
-          engine,
-          game,
-          sourceX,
-          sourceY
-        );
-        if (attackSource !== undefined) {
-          gameSystemCommand(
-            engine,
-            entityPda,
-            attackSource.playerIndex,
-            sourceX,
-            sourceY,
-            targetX,
-            targetY,
-            attackSource.strengthPercent
-          )
-            .catch(console.error)
-            .then(() => {
-              console.log("Command success");
-            });
-        }
-
-        setCommand({
-          active: true,
-          sourceX: targetX,
-          sourceY: targetY,
-        });
+function onPageCrank(engine: MagicBlockEngine, entityPda: PublicKey) {
+  let running = true;
+  (async () => {
+    while (running) {
+      try {
+        console.log("tick");
+        await gameSystemTick(engine, entityPda);
+      } catch (error) {
+        console.error("failed to tick the game", error);
       }
     }
-  };
-
-  let activity = undefined;
-  if (command.active) {
-    const sourceX = command.sourceX;
-    const sourceY = command.sourceY;
-    if (computeAttackSource(engine, game, sourceX, sourceY) !== undefined) {
-      activity = { x: sourceX, y: sourceY };
-    }
-  }
-
-  return (
-    <div className="GameGridRoot">
-      <GameGridRows
-        game={game}
-        mini={false}
-        activity={activity}
-        onCommand={onCommand}
-      />
-    </div>
-  );
-}
-
-function computeAttackSource(
-  engine: MagicBlockEngine,
-  game: any,
-  sourceX: number,
-  sourceY: number
-) {
-  if (!game.status.playing) {
-    return undefined;
-  }
-
-  const sourceCell = game.cells[sourceY * game.sizeX + sourceX];
-  if (!sourceCell.owner.player) {
-    return undefined;
-  }
-
-  const sourcePlayerIndex = sourceCell.owner.player[0];
-  const sourceAuthority = game.players[sourcePlayerIndex].authority;
-  if (!engine.getSessionPayer().equals(sourceAuthority)) {
-    return undefined;
-  }
-
-  const sourceStrength = sourceCell.strength - 1;
-  if (sourceStrength <= 0) {
-    return undefined;
-  }
-
-  return {
-    playerIndex: sourcePlayerIndex,
-    strengthPercent: 100,
+  })();
+  return () => {
+    running = false;
   };
 }

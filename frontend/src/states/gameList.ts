@@ -28,6 +28,7 @@ export async function gameList(engine: MagicBlockEngine, count: number) {
       entity: entityPda,
     });
     const game = await componentGame.account.game.fetchNullable(gamePda);
+    console.log("Check game", entityId.toString(), game);
     if (game) {
       found.push({
         entityPda,

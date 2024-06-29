@@ -49,13 +49,18 @@
     }
   }
 
-  &.Interactive {
+  &.Owned {
     cursor: pointer;
   }
-  &.Interactive:hover {
+  &.Owned:hover {
     border-color: grey;
   }
-  &.Interactive.Active {
+
+  &.Active {
+    cursor: pointer;
+  }
+  &.Active,
+  &.Owned.Active {
     border-color: yellow;
   }
 }

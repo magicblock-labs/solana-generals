@@ -115,9 +115,11 @@ export class MagicBlockEngine {
     name: string,
     transaction: Transaction
   ): Promise<string> {
-    const signature = await connectionEphemeral.sendTransaction(transaction, [
-      this.sessionKey,
-    ]);
+    const signature = await connectionEphemeral.sendTransaction(
+      transaction,
+      [this.sessionKey],
+      { skipPreflight: true }
+    );
     await this.waitSignatureConfirmation(connectionEphemeral, name, signature);
     return signature;
   }
@@ -131,7 +133,7 @@ export class MagicBlockEngine {
     return new Promise((resolve, reject) => {
       const subscription = connection.onSignature(signature, (result) => {
         connection.removeSignatureListener(subscription);
-        console.log("transaction finilized:", name, signature, result.err);
+        console.log("transaction finalized:", name, signature, result.err);
         if (result.err) {
           reject(result.err);
         } else {
