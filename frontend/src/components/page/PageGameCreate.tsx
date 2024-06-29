@@ -28,7 +28,7 @@ export function PageGameCreate() {
     <div className="PageGameCreate VStack">
       <div className="Title">Creating a new game</div>
       <div className="Hint">This can take a few moments...</div>
-      <div className="Logs Container">
+      <div className="Logs Container VStack">
         {logs.map((log: string, index: number) => {
           return (
             <div key={index} className="Log">

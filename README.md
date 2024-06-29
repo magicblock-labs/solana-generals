@@ -1,7 +1,19 @@
 
 # MagicBlock Engine Example
 
-This repository contains an example for a fully featured game running 100% serverless using Solana's devnet and MagicBlock's devnet.
+This repository contains an example for a fully featured game running 100% serverless using Solana's testnet and MagicBlock's testnet.
+
+# Demo
+
+Run the frontend that should already be pointing to solana's testnet:
+
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
+You can then head to: https://www.testnetfaucet.org/ to get some testnet SOL you can use to fund your player's account to start testing.
 
 # Code organization
 
@@ -9,12 +21,7 @@ This repository contains an example for a fully featured game running 100% serve
 
 The `backend` folder contains all smart contract code, it uses MagicBlock's BOLT.
 
-The smart contracts should already be deployed on devnet. But you can deploy them locally or on a different cluster using:
-
-```bash
-cd backend
-bolt deploy
-```
+The smart contracts should already be deployed on testnet.
 
 You can also locally run the integration tests:
 
@@ -32,14 +39,6 @@ Some of the important code pieces are:
 ## Frontend
 
 The `frontend` folder contains an implementation for a React based web UI to interact with the smart contracts.
-
-You can try it locally by running:
-
-```bash
-cd frontend
-npm install
-npm run dev
-```
 
 Some of the important pieces of code are:
 

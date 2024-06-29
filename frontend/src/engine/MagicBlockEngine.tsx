@@ -15,11 +15,11 @@ import {
 } from "@solana/web3.js";
 import { WalletName } from "@solana/wallet-adapter-base";
 
-const ENDPOINT_CHAIN_RPC = "https://api.devnet.solana.com";
-const ENDPOINT_CHAIN_WS = "wss://api.devnet.solana.com";
+const ENDPOINT_CHAIN_RPC = "https://api.testnet.solana.com";
+const ENDPOINT_CHAIN_WS = "wss://api.testnet.solana.com";
 
-const ENDPOINT_EPHEMERAL_RPC = "https://devnet.magicblock.app";
-const ENDPOINT_EPHEMERAL_WS = "wss://devnet.magicblock.app:8900";
+const ENDPOINT_EPHEMERAL_RPC = "https://testnet.magicblock.app";
+const ENDPOINT_EPHEMERAL_WS = "wss://testnet.magicblock.app:8900";
 
 const SESSION_LOCAL_STORAGE = "magicblock-session-key";
 const SESSION_MIN_LAMPORTS = 0.01 * 1_000_000_000;
