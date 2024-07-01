@@ -5,11 +5,6 @@
   width: 40px;
   height: 40px;
   border: 2px solid rgba(255, 255, 255, 0.3);
-  &.Mini {
-    width: 34px;
-    height: 34px;
-    border: 1px solid rgba(255, 255, 255, 0.3);
-  }
 
   > .Type {
     position: absolute;
@@ -29,11 +24,6 @@
   > .Strength {
     font-size: 16px;
   }
-  &.Mini {
-    > .Strength {
-      font-size: 14px;
-    }
-  }
 
   > .Strength {
     background-color: rgba(127, 127, 127, 0.3);
@@ -49,15 +39,13 @@
     }
   }
 
-  &.Owned {
-    cursor: pointer;
-  }
-  &.Owned:hover {
-    border-color: grey;
-  }
-
+  &.Owned,
   &.Active {
     cursor: pointer;
+  }
+
+  &.Owned:hover {
+    border-color: grey;
   }
   &.Active,
   &.Owned.Active {

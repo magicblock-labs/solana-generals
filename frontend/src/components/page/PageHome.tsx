@@ -25,19 +25,18 @@ export function PageHome() {
   }, [engine]);
 
   return (
-    <div className="PageHome VStack">
-      <div className="Title">Home</div>
+    <div className="PageHome Container Centered">
+      <div className="Text Title">Home</div>
       <button
-        className="Create"
         onClick={() => {
           navigate("/game/create");
         }}
       >
-        + Create a new game +
+        <div className="Text">+ Create a new game +</div>
       </button>
       {games && games.length ? (
         <>
-          <div className="Title">Latest games</div>
+          <div className="Text Title">Latest games</div>
           {games.map(
             ({
               entityPda,
@@ -48,8 +47,6 @@ export function PageHome() {
               entityId: number;
               game: any;
             }) => {
-              const code = entityPda.toBase58();
-
               let status = "?";
               if (game.status.generate) {
                 status = "🥚";
@@ -64,6 +61,7 @@ export function PageHome() {
                 status = "☠️";
               }
 
+              const code = entityPda.toBase58();
               const num = entityId.toString().padStart(8, "0");
 
               return (
@@ -74,7 +72,9 @@ export function PageHome() {
                     navigate("/game/lobby/" + code);
                   }}
                 >
-                  {status} Game {code} (#{num})
+                  <div className="Text">
+                    {status} Game {code} (#{num})
+                  </div>
                 </button>
               );
             }

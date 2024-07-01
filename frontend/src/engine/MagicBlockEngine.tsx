@@ -18,8 +18,8 @@ import { WalletName } from "@solana/wallet-adapter-base";
 const ENDPOINT_CHAIN_RPC = "https://api.testnet.solana.com";
 const ENDPOINT_CHAIN_WS = "wss://api.testnet.solana.com";
 
-const ENDPOINT_EPHEMERAL_RPC = "https://testnet.magicblock.app";
-const ENDPOINT_EPHEMERAL_WS = "wss://testnet.magicblock.app:8900";
+const ENDPOINT_EPHEMERAL_RPC = "http://localhost:8899";
+const ENDPOINT_EPHEMERAL_WS = "ws://localhost:8900";
 
 const SESSION_LOCAL_STORAGE = "magicblock-session-key";
 const SESSION_MIN_LAMPORTS = 0.01 * 1_000_000_000;
@@ -115,7 +115,7 @@ export class MagicBlockEngine {
     name: string,
     transaction: Transaction
   ): Promise<string> {
-    console.log("transaction sending", name);
+    console.log("transaction sending", name); // TODO(vbrunet) - there should be a queue that helps guarantee the ordering of transactions
     const signature = await connectionEphemeral.sendTransaction(
       transaction,
       [this.sessionKey],
@@ -132,8 +132,7 @@ export class MagicBlockEngine {
   ): Promise<void> {
     console.log("transaction started:", name, signature);
     return new Promise((resolve, reject) => {
-      const subscription = connection.onSignature(signature, (result) => {
-        connection.removeSignatureListener(subscription);
+      connection.onSignature(signature, (result) => {
         console.log("transaction finalized:", name, signature, result.err);
         if (result.err) {
           reject(result.err);

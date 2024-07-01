@@ -14,7 +14,7 @@ export function MenuSession() {
     return engine.subscribeToAccountInfo(sessionPayer, (accountInfo) => {
       setSessionLamports(accountInfo?.lamports);
     });
-  });
+  }, [engine]);
 
   const needsFunding =
     sessionLamports !== undefined
@@ -29,14 +29,15 @@ export function MenuSession() {
       });
     };
     extras.push(
-      <button key="fund" className="Fund" onClick={onFund}>
-        Fund
+      <button key="fund" onClick={onFund}>
+        <div className="Text">Fund</div>
       </button>
     );
-  } else if (needsFunding) {
+  }
+  if (needsFunding) {
     extras.push(
-      <div key="warning" className="Warning">
-        (Needs SOL!)
+      <div key="warning" className="Text Warning">
+        Needs SOL!
       </div>
     );
   }
@@ -48,14 +49,16 @@ export function MenuSession() {
       : "?????";
 
   return (
-    <div className="MenuSession HStack">
+    <div className="MenuSession ContainerInner Centered Horizontal">
       <button
         className="Soft"
         onClick={() => {
           navigator.clipboard.writeText(sessionPayer.toBase58());
         }}
       >
-        Player: {sessionAbbreviation}... {sessionBalance} SOL
+        <div className="Text">
+          Player: {sessionAbbreviation}... {sessionBalance} SOL
+        </div>
       </button>
       {extras}
     </div>

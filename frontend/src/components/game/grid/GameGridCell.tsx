@@ -12,14 +12,12 @@ export function GameGridCell({
   x,
   y,
   game,
-  mini,
   active,
   onCommand,
 }: {
   x: number;
   y: number;
   game: any;
-  mini: boolean;
   active: boolean;
   onCommand?: (x: number, y: number, type: string) => void;
 }) {
@@ -35,9 +33,6 @@ export function GameGridCell({
     if (onCommand && player.authority.equals(engine.getSessionPayer())) {
       rootClassNames.push("Owned");
     }
-  }
-  if (mini) {
-    rootClassNames.push("Mini");
   }
   if (active) {
     rootClassNames.push("Active");

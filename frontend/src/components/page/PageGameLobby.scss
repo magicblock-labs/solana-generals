@@ -1,20 +1,8 @@
 .PageGameLobby {
-  > .Title {
-    background-color: black;
-    color: white;
-    text-align: center;
-  }
-
   > .Players {
+    border: 4px solid rgba(255, 255, 255, 0.3);
     > .Player {
       flex-direction: row;
-    }
-  }
-
-  > .Map {
-    align-items: center;
-    > .Grid {
-      border: 1px solid rgba(255, 255, 255, 0.3);
     }
   }
 }

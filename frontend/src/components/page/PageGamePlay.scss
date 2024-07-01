@@ -1,15 +1,9 @@
 .PageGamePlay {
   .Players {
+    border: 4px solid rgba(255, 255, 255, 0.3);
     flex-direction: row;
-    border: 2px solid rgba(255, 255, 255, 0.3);
     .Player {
       flex-grow: 1;
-    }
-  }
-  .Map {
-    align-items: center;
-    .Grid {
-      border: 2px solid rgba(255, 255, 255, 0.3);
     }
   }
 }

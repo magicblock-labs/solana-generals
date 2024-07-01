@@ -52,7 +52,5 @@ pub mod generate {
     }
 
     #[arguments]
-    struct Args {
-        // map: u64, // TODO(vbrunet) - provide multiple possible maps
-    }
+    struct Args {}
 }

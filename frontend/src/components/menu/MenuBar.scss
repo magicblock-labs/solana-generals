@@ -1,9 +1,10 @@
 .MenuBar {
-  > .TitleBar {
-    margin-top: 0;
-    cursor: pointer;
-    font-size: 20px;
+  > .TopBar {
     font-weight: bold;
+    color: white;
+    padding: 4px;
+    border: 0;
+    border-radius: 0;
     background: linear-gradient(
       90deg,
       #8802ff 9.81%,

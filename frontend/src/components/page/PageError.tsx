@@ -5,23 +5,23 @@ import { useNavigate, useParams } from "react-router-dom";
 import "./PageError.scss";
 
 function ErrorSessionFail() {
-  return <div className="Hint">Failed to fetch on-chain accounts</div>;
+  return <div className="Text">Failed to fetch on-chain accounts</div>;
 }
 
 function ErrorNoGame() {
-  return <div className="Hint">Failed to find the game</div>;
+  return <div className="Text">Failed to find the game</div>;
 }
 
 function ErrorNotGenerated() {
-  return <div className="Hint">Game wasn't properly initialized</div>;
+  return <div className="Text">Game wasn't properly initialized</div>;
 }
 
 function ErrorCreate() {
-  return <div className="Hint">Failed to create the game</div>;
+  return <div className="Text">Failed to create the game</div>;
 }
 
 function ErrorUnknown() {
-  return <div className="Hint">Unknown error</div>;
+  return <div className="Text">Unknown error</div>;
 }
 
 function PageErrorInner({ code }: { code: string }) {
@@ -45,8 +45,8 @@ export function PageError() {
   const navigate = useNavigate();
   const params = useParams();
   return (
-    <div className="PageError VStack">
-      <div className="Title">Something went wrong</div>
+    <div className="PageError Container Centered">
+      <div className="Text Title">Something went wrong</div>
       <PageErrorInner code={params.code} />
       <button
         className="Soft"
@@ -54,7 +54,7 @@ export function PageError() {
           navigate("/");
         }}
       >
-        Go home
+        <div className="Text">Go home</div>
       </button>
     </div>
   );

@@ -30,12 +30,15 @@ export function GamePlayer({
 
   return (
     <div
-      className={["GamePlayer", "Container", "HStack", "P" + playerIndex].join(
-        " "
-      )}
+      className={[
+        "GamePlayer",
+        "Horizontal",
+        "Centered",
+        "P" + playerIndex,
+      ].join(" ")}
     >
-      <div className="Name">{name}</div>
-      <div className="Description">({description})</div>
+      <div className="Text">{name}</div>
+      <div className="Text Description">({description})</div>
     </div>
   );
 }

@@ -69,8 +69,8 @@ export function PageGamePlay() {
   }
 
   return (
-    <div className="PageGamePlay VStack">
-      <div className="Title"> Game: {params.id.toString()}</div>
+    <div className="PageGamePlay Container">
+      <div className="Text Title"> Game: {params.id.toString()}</div>
       <div className="Players">
         {game.players.map((_: any, playerIndex: number) => (
           <div className="Player" key={playerIndex}>
@@ -82,13 +82,9 @@ export function PageGamePlay() {
           </div>
         ))}
       </div>
-      <div className="Hint">Drag and drop your army on the map</div>
-      <div className="Map">
-        <div className="Grid">
-          <PageGamePlayMap entityPda={entityPda} game={game} />
-        </div>
-      </div>
-      <div className="Hint">{status}</div>
+      <div className="Text">Drag and drop your army on the map</div>
+      <PageGamePlayMap entityPda={entityPda} game={game} />
+      <div className="Text">{status}</div>
     </div>
   );
 }
@@ -196,16 +192,7 @@ function PageGamePlayMap({
     activity = { x: command.sourceX, y: command.sourceY };
   }
 
-  return (
-    <div className="GameGridRoot">
-      <GameGridRows
-        game={game}
-        mini={false}
-        activity={activity}
-        onCommand={onCommand}
-      />
-    </div>
-  );
+  return <GameGridRows game={game} activity={activity} onCommand={onCommand} />;
 }
 
 function onPageStartup(
@@ -253,9 +240,10 @@ function onPageStartup(
 function onPageCrank(engine: MagicBlockEngine, entityPda: PublicKey) {
   let running = true;
   (async () => {
+    console.log("start crank");
     while (running) {
+      console.log("tick");
       try {
-        console.log("tick");
         await gameSystemTick(engine, entityPda);
       } catch (error) {
         console.error("failed to tick the game", error);
@@ -263,6 +251,7 @@ function onPageCrank(engine: MagicBlockEngine, entityPda: PublicKey) {
     }
   })();
   return () => {
+    console.log("stop crank");
     running = false;
   };
 }

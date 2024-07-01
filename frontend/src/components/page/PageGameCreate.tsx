@@ -25,18 +25,20 @@ export function PageGameCreate() {
   }, [navigate, engine]);
 
   return (
-    <div className="PageGameCreate VStack">
-      <div className="Title">Creating a new game</div>
-      <div className="Hint">This can take a few moments...</div>
-      <div className="Logs Container">
-        {logs.map((log: string, index: number) => {
-          return (
-            <div key={index} className="Log">
-              {log}...
-            </div>
-          );
-        })}
-      </div>
+    <div className="PageGameCreate Container Centered">
+      <div className="Text Title">Creating a new game</div>
+      <div className="Text">This can take a few moments...</div>
+      {logs.length ? (
+        <div className="Logs Container">
+          {logs.map((log: string, index: number) => {
+            return (
+              <div key={index} className="Text">
+                {log}
+              </div>
+            );
+          })}
+        </div>
+      ) : undefined}
     </div>
   );
 }

@@ -20,7 +20,7 @@ function App() {
       <MagicBlockEngineProvider>
         <MenuBar />
         <div className="Content">
-          <div className="Container" style={{ maxWidth: 1024 }}>
+          <div style={{ maxWidth: 1024 }}>
             <Routes>
               <Route path="/" element={<PageHome />} />
               <Route path="/game/create" element={<PageGameCreate />} />

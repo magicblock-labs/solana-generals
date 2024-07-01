@@ -53,8 +53,8 @@ export function PageGameLobby() {
     return <></>;
   }
   return (
-    <div className="PageGameLobby VStack">
-      <div className="Title">Game {params.id.toString()}</div>
+    <div className="PageGameLobby Container">
+      <div className="Text Title">Game {params.id.toString()}</div>
       <div className="Players">
         {game.players.map((_: any, playerIndex: number) => (
           <PageGameLobbyPlayer
@@ -65,12 +65,8 @@ export function PageGameLobby() {
           />
         ))}
       </div>
-      <div className="Title">Map Preview</div>
-      <div className="Map">
-        <div className="Grid">
-          <GameGridRows mini={true} game={game} />
-        </div>
-      </div>
+      <div className="Text">Map Preview</div>
+      <GameGridRows game={game} />
     </div>
   );
 }
@@ -96,7 +92,7 @@ function PageGameLobbyPlayer({
           onClickJoin(engine, entityPda, playerIndex, true);
         }}
       >
-        Join
+        <div className="Text">Join</div>
       </button>
     );
   } else if (player.authority.equals(engine.getSessionPayer())) {
@@ -107,7 +103,7 @@ function PageGameLobbyPlayer({
           onClickJoin(engine, entityPda, playerIndex, false);
         }}
       >
-        Leave
+        <div className="Text">Leave</div>
       </button>
     );
   } else {

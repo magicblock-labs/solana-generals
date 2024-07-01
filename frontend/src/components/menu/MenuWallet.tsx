@@ -23,7 +23,7 @@ function MenuWalletConnected() {
     return engine.subscribeToAccountInfo(walletPayer, (accountInfo) => {
       setWalletLamports(accountInfo?.lamports);
     });
-  });
+  }, [engine]);
 
   const walletAbbreviation = walletPayer.toBase58().substring(0, 8);
   const walletBalance =
@@ -32,22 +32,23 @@ function MenuWalletConnected() {
       : "?????";
 
   return (
-    <div className="MenuWalletConnected HStack">
+    <div className="MenuWalletConnected ContainerInner Centered Horizontal">
       <button
         className="Soft"
         onClick={() => {
           navigator.clipboard.writeText(walletPayer.toBase58());
         }}
       >
-        Wallet: {walletAbbreviation}... {walletBalance} SOL
+        <div className="Text">
+          Wallet: {walletAbbreviation}... {walletBalance} SOL
+        </div>
       </button>
       <button
-        className="Disconnect"
         onClick={() => {
           engine.selectWalletAdapter(null);
         }}
       >
-        X
+        <div className="Text">X</div>
       </button>
     </div>
   );
@@ -59,27 +60,27 @@ function MenuWalletDisconnected() {
   const walletAdapters = engine.listWalletAdapters();
 
   return (
-    <div className="MenuWalletDisconnected HStack">
+    <div className="MenuWalletDisconnected ContainerInner Centered Horizontal">
       {walletAdapters.length > 0 ? (
         <>
-          <div className="Label">Connect:</div>
+          <div className="Text">Connect:</div>
           {walletAdapters.map((walletAdapter) => {
             return (
               <button
                 key={walletAdapter.name}
-                className="Adapter"
+                className="Adapter Horizontal"
                 onClick={() => {
                   engine.selectWalletAdapter(walletAdapter);
                 }}
               >
                 <img className="Icon" src={walletAdapter.icon} />
-                <div className="Name">{walletAdapter.name.toString()}</div>
+                <div className="Text">{walletAdapter.name.toString()}</div>
               </button>
             );
           })}{" "}
         </>
       ) : (
-        <div className="Placeholder Container">No web wallet detected</div>
+        <div className="Text">No web wallet detected</div>
       )}
     </div>
   );

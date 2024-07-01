@@ -1,14 +1,7 @@
 .GamePlayer {
-  flex-direction: row;
   flex-grow: 1;
 
-  > * {
-    font-size: 14px;
-  }
-
   color: white;
-
-  border: 2px solid rgba(255, 255, 255, 0.3);
 
   &.P0 {
     background-color: rgba(0, 0, 255, 0.3);

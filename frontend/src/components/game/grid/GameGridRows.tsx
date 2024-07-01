@@ -8,12 +8,10 @@ const HORIZONTAL_WIDTH = 804;
 
 export function GameGridRows({
   game,
-  mini,
   activity,
   onCommand,
 }: {
   game: any;
-  mini: boolean;
   activity?: { x: number; y: number };
   onCommand?: (x: number, y: number, type: string) => void;
 }) {
@@ -42,7 +40,6 @@ export function GameGridRows({
             x={x}
             y={y}
             game={game}
-            mini={mini}
             active={activity ? activity.x == x && activity.y == y : false}
             onCommand={onCommand}
           />
@@ -66,7 +63,6 @@ export function GameGridRows({
             x={x}
             y={y}
             game={game}
-            mini={mini}
             active={activity ? activity.x == x && activity.y == y : false}
             onCommand={onCommand}
           />
@@ -80,5 +76,9 @@ export function GameGridRows({
     }
   }
 
-  return <div className="GameGridRows">{rows}</div>;
+  return (
+    <div className="GameGridRows">
+      <div className="Rows">{rows}</div>
+    </div>
+  );
 }
