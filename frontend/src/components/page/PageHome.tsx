@@ -17,7 +17,7 @@ export function PageHome() {
   const [games, setGames] = React.useState(undefined);
   React.useEffect(() => {
     const timeout = setTimeout(async () => {
-      setGames(await gameList(engine, 12));
+      setGames(await gameList(engine, 10));
     }, 100);
     return () => {
       clearTimeout(timeout);

@@ -15,7 +15,6 @@ import { GamePlayer } from "../game/GamePlayer";
 import { GameGridRows } from "../game/grid/GameGridRows";
 
 import { gameListen } from "../../states/gameListen";
-import { gameSystemGenerate } from "../../states/gameSystemGenerate";
 import { gameSystemJoin } from "../../states/gameSystemJoin";
 import { gameSystemStart } from "../../states/gameSystemStart";
 
@@ -166,9 +165,8 @@ function onPageStartup(
   if (game.status.playing || game.status.finished) {
     return navigate("/game/play/" + entityPda.toBase58());
   }
-  // If the game needs starting, do it
+  // If the game needs starting, start it after a timeout
   if (game.status.lobby) {
-    // If the game hasn't change for a bit, check if it can be started
     const timeout = setTimeout(async () => {
       let canStart = !!game.status.lobby;
       game.players.forEach((player: any) => {

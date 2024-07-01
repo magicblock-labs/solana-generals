@@ -15,6 +15,7 @@
   line-height: 1.5;
   font-size: 16px;
   font-family: "Courier New", monospace;
+  word-break: break-word;
 }
 
 html,
@@ -91,7 +92,6 @@ button {
 .Title {
   text-align: center;
   font-weight: bold;
-  word-break: break-word;
 }
 .Hint {
   text-align: center;

@@ -115,6 +115,7 @@ export class MagicBlockEngine {
     name: string,
     transaction: Transaction
   ): Promise<string> {
+    console.log("transaction sending", name);
     const signature = await connectionEphemeral.sendTransaction(
       transaction,
       [this.sessionKey],

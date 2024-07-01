@@ -229,17 +229,23 @@ function onPageStartup(
   }
   // If the game has started playing, we need to run some logic
   if (game.status.playing) {
-    // If the game has been stale for a while, check if the game is finished
-    const intervalFinish = setInterval(async () => {
-      try {
-        await gameSystemFinish(engine, entityPda, 0);
-        await gameSystemFinish(engine, entityPda, 1);
-      } catch (error) {
-        console.error("failed to finish the game", error);
+    let running = true;
+    (async () => {
+      while (true) {
+        await new Promise((resolve) => setTimeout(resolve, 5000));
+        if (!running) {
+          return;
+        }
+        try {
+          await gameSystemFinish(engine, entityPda, 0);
+          await gameSystemFinish(engine, entityPda, 1);
+        } catch (error) {
+          console.error("failed to finish the game", error);
+        }
       }
-    }, 1000);
+    })();
     return () => {
-      clearInterval(intervalFinish);
+      running = false;
     };
   }
 }
