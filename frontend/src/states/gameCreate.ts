@@ -7,7 +7,7 @@ import {
 
 import { MagicBlockEngine } from "../engine/MagicBlockEngine";
 
-import { WORLD_PDA, getComponentGame } from "./gamePrograms";
+import { COMPONENT_GAME_PROGRAM_ID, WORLD_PDA } from "./gamePrograms";
 import { gameSystemGenerate } from "./gameSystemGenerate";
 
 export async function gameCreate(
@@ -31,20 +31,19 @@ export async function gameCreate(
   const initializeComponent = await InitializeComponent({
     payer: engine.getSessionPayer(),
     entity: addEntity.entityPda,
-    componentId: getComponentGame(engine).programId,
+    componentId: COMPONENT_GAME_PROGRAM_ID,
   });
   await engine.processSessionChainTransaction(
     "InitializeComponent",
     initializeComponent.transaction,
     "confirmed"
   );
-  console.log("Component ready", initializeComponent.componentPda.toBase58());
   // Delegate the game component
   log("Delegating to Ephemeral rollups");
   const delegateComponentInstruction = createDelegateInstruction({
     entity: addEntity.entityPda,
     account: initializeComponent.componentPda,
-    ownerProgram: getComponentGame(engine).programId,
+    ownerProgram: COMPONENT_GAME_PROGRAM_ID,
     payer: engine.getSessionPayer(),
   });
   await engine.processSessionChainTransaction(
@@ -52,10 +51,6 @@ export async function gameCreate(
     new Transaction().add(delegateComponentInstruction),
     "finalized"
   );
-
-  log("Await some times");
-  await new Promise((resolve) => setTimeout(resolve, 5000));
-
   // Generate the game
   log("Generate the game");
   await gameSystemGenerate(engine, addEntity.entityPda);

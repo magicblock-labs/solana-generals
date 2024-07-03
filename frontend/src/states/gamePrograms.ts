@@ -22,30 +22,24 @@ export const WORLD_PDA = new PublicKey(
   "JBupPMmv4zaXa5c8EdubsCPvoHZwCK7mwnDfmfs8dC5Y"
 );
 
-export function getComponentGame(engine: MagicBlockEngine) {
-  return engine.getProgramEphemeral<Game>(GameIdl);
-}
+const componentGame = GameIdl as Game;
 
-export function getSystemGenerate(engine: MagicBlockEngine) {
-  return engine.getProgramEphemeral<Generate>(GenerateIdl);
-}
+const systemGenerate = GenerateIdl as Generate;
+const systemJoin = JoinIdl as Join;
+const systemStart = StartIdl as Start;
+const systemCommand = CommandIdl as Command;
+const systemTick = TickIdl as Tick;
+const systemFinish = FinishIdl as Finish;
 
-export function getSystemJoin(engine: MagicBlockEngine) {
-  return engine.getProgramEphemeral<Join>(JoinIdl);
-}
+export const COMPONENT_GAME_PROGRAM_ID = new PublicKey(componentGame.address);
 
-export function getSystemStart(engine: MagicBlockEngine) {
-  return engine.getProgramEphemeral<Start>(StartIdl);
-}
+export const SYSTEM_GENERATE_PROGRAM_ID = new PublicKey(systemGenerate.address);
+export const SYSTEM_JOIN_PROGRAM_ID = new PublicKey(systemJoin.address);
+export const SYSTEM_START_PROGRAM_ID = new PublicKey(systemStart.address);
+export const SYSTEM_COMMAND_PROGRAM_ID = new PublicKey(systemCommand.address);
+export const SYSTEM_TICK_PROGRAM_ID = new PublicKey(systemTick.address);
+export const SYSTEM_FINISH_PROGRAM_ID = new PublicKey(systemFinish.address);
 
-export function getSystemCommand(engine: MagicBlockEngine) {
-  return engine.getProgramEphemeral<Command>(CommandIdl);
-}
-
-export function getSystemTick(engine: MagicBlockEngine) {
-  return engine.getProgramEphemeral<Tick>(TickIdl);
-}
-
-export function getSystemFinish(engine: MagicBlockEngine) {
-  return engine.getProgramEphemeral<Finish>(FinishIdl);
+export function getComponentGameOnEphemeral(engine: MagicBlockEngine) {
+  return engine.getProgramOnEphemeral<Game>(componentGame);
 }

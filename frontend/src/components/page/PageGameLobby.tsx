@@ -9,7 +9,7 @@ import {
   useMagicBlockEngine,
 } from "../../engine/MagicBlockEngine";
 
-import { getComponentGame } from "../../states/gamePrograms";
+import { COMPONENT_GAME_PROGRAM_ID } from "../../states/gamePrograms";
 
 import { GamePlayer } from "../game/GamePlayer";
 import { GameGridRows } from "../game/grid/GameGridRows";
@@ -33,7 +33,7 @@ export function PageGameLobby() {
       entityPda,
       gamePda: FindComponentPda({
         entity: entityPda,
-        componentId: getComponentGame(engine).programId,
+        componentId: COMPONENT_GAME_PROGRAM_ID,
       }),
     };
   }, [params]);
