@@ -2,7 +2,10 @@ import { PublicKey } from "@solana/web3.js";
 import { ApplySystem } from "@magicblock-labs/bolt-sdk";
 
 import { MagicBlockEngine } from "../engine/MagicBlockEngine";
-import { getComponentGame, getSystemFinish } from "./gamePrograms";
+import {
+  SYSTEM_FINISH_PROGRAM_ID,
+  COMPONENT_GAME_PROGRAM_ID,
+} from "./gamePrograms";
 
 export async function gameSystemFinish(
   engine: MagicBlockEngine,
@@ -11,13 +14,13 @@ export async function gameSystemFinish(
 ) {
   const applySystem = await ApplySystem({
     authority: engine.getSessionPayer(),
-    systemId: getSystemFinish(engine).programId,
+    systemId: SYSTEM_FINISH_PROGRAM_ID,
     entities: [
       {
         entity: entityPda,
         components: [
           {
-            componentId: getComponentGame(engine).programId,
+            componentId: COMPONENT_GAME_PROGRAM_ID,
           },
         ],
       },

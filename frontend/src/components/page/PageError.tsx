@@ -12,10 +12,6 @@ function ErrorNoGame() {
   return <div className="Text">Failed to find the game</div>;
 }
 
-function ErrorNotGenerated() {
-  return <div className="Text">Game wasn't properly initialized</div>;
-}
-
 function ErrorCreate() {
   return <div className="Text">Failed to create the game</div>;
 }
@@ -30,8 +26,6 @@ function PageErrorInner({ code }: { code: string }) {
       return <ErrorCreate />;
     case "lobby-no-game":
       return <ErrorNoGame />;
-    case "lobby-not-generated":
-      return <ErrorNotGenerated />;
     case "play-no-game":
       return <ErrorNoGame />;
     case "session-fail":

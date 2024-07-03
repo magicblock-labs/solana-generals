@@ -7,6 +7,7 @@ import {
 } from "@solana/wallet-adapter-react";
 import {
   AccountInfo,
+  Commitment,
   Connection,
   Keypair,
   PublicKey,
@@ -15,14 +16,14 @@ import {
 } from "@solana/web3.js";
 import { WalletName } from "@solana/wallet-adapter-base";
 
-const ENDPOINT_CHAIN_RPC = "https://api.testnet.solana.com";
-const ENDPOINT_CHAIN_WS = "wss://api.testnet.solana.com";
+const ENDPOINT_CHAIN_RPC = "https://api.devnet.solana.com";
+const ENDPOINT_CHAIN_WS = "wss://api.devnet.solana.com";
 
-const ENDPOINT_EPHEMERAL_RPC = "https://testnet.magicblock.app";
-const ENDPOINT_EPHEMERAL_WS = "wss://testnet.magicblock.app:8900";
+const ENDPOINT_EPHEMERAL_RPC = "https://devnet.magicblock.app";
+const ENDPOINT_EPHEMERAL_WS = "wss://devnet.magicblock.app:8900";
 
 const SESSION_LOCAL_STORAGE = "magicblock-session-key";
-const SESSION_MIN_LAMPORTS = 0.01 * 1_000_000_000;
+const SESSION_MIN_LAMPORTS = 0.02 * 1_000_000_000;
 const SESSION_MAX_LAMPORTS = 0.05 * 1_000_000_000;
 
 const TRANSACTION_COST_LAMPORTS = 5000;
@@ -59,10 +60,10 @@ export class MagicBlockEngine {
     this.sessionConfig = sessionConfig;
   }
 
-  getProgramChain<T extends Idl>(idl: {}): Program<T> {
+  getProgramOnChain<T extends Idl>(idl: {}): Program<T> {
     return new Program<T>(idl as T, { connection: connectionChain });
   }
-  getProgramEphemeral<T extends Idl>(idl: {}): Program<T> {
+  getProgramOnEphemeral<T extends Idl>(idl: {}): Program<T> {
     return new Program<T>(idl as T, { connection: connectionEphemeral });
   }
 
@@ -90,24 +91,38 @@ export class MagicBlockEngine {
 
   async processWalletTransaction(
     name: string,
-    transaction: Transaction
+    transaction: Transaction,
+    commitment?: Commitment
   ): Promise<string> {
     const signature = await this.walletContext.sendTransaction(
       transaction,
       connectionChain
     );
-    await this.waitSignatureConfirmation(connectionChain, name, signature);
+    await this.waitSignatureConfirmation(
+      name,
+      signature,
+      connectionChain,
+      commitment ?? "finalized"
+    );
     return signature;
   }
 
   async processSessionChainTransaction(
     name: string,
-    transaction: Transaction
+    transaction: Transaction,
+    commitment?: Commitment
   ): Promise<string> {
-    const signature = await connectionChain.sendTransaction(transaction, [
-      this.sessionKey,
-    ]);
-    await this.waitSignatureConfirmation(connectionChain, name, signature);
+    const signature = await connectionChain.sendTransaction(
+      transaction,
+      [this.sessionKey],
+      { skipPreflight: true }
+    );
+    await this.waitSignatureConfirmation(
+      name,
+      signature,
+      connectionChain,
+      commitment ?? "finalized"
+    );
     return signature;
   }
 
@@ -121,25 +136,35 @@ export class MagicBlockEngine {
       [this.sessionKey],
       { skipPreflight: true }
     );
-    await this.waitSignatureConfirmation(connectionEphemeral, name, signature);
+    await this.waitSignatureConfirmation(
+      name,
+      signature,
+      connectionEphemeral,
+      "finalized"
+    );
     return signature;
   }
 
   async waitSignatureConfirmation(
-    connection: Connection,
     name: string,
-    signature: string
+    signature: string,
+    connection: Connection,
+    commitment: Commitment
   ): Promise<void> {
-    console.log("transaction started:", name, signature);
+    console.log("transaction subscribed", name, signature);
     return new Promise((resolve, reject) => {
-      connection.onSignature(signature, (result) => {
-        console.log("transaction finalized:", name, signature, result.err);
-        if (result.err) {
-          reject(result.err);
-        } else {
-          resolve();
-        }
-      });
+      connection.onSignature(
+        signature,
+        (result) => {
+          console.log("transaction", commitment, name, signature, result.err);
+          if (result.err) {
+            reject(result.err);
+          } else {
+            resolve();
+          }
+        },
+        commitment
+      );
     });
   }
 

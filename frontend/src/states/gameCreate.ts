@@ -7,8 +7,7 @@ import {
 
 import { MagicBlockEngine } from "../engine/MagicBlockEngine";
 
-import { WORLD_PDA, getComponentGame } from "./gamePrograms";
-
+import { COMPONENT_GAME_PROGRAM_ID, WORLD_PDA } from "./gamePrograms";
 import { gameSystemGenerate } from "./gameSystemGenerate";
 
 export async function gameCreate(
@@ -24,33 +23,36 @@ export async function gameCreate(
   });
   await engine.processSessionChainTransaction(
     "AddEntity",
-    addEntity.transaction
+    addEntity.transaction,
+    "confirmed"
   );
   // Initialize the game component
   log("Initializing a new component");
   const initializeComponent = await InitializeComponent({
     payer: engine.getSessionPayer(),
     entity: addEntity.entityPda,
-    componentId: getComponentGame(engine).programId,
+    componentId: COMPONENT_GAME_PROGRAM_ID,
   });
   await engine.processSessionChainTransaction(
     "InitializeComponent",
-    initializeComponent.transaction
+    initializeComponent.transaction,
+    "confirmed"
   );
   // Delegate the game component
-  log("Delegating the component to Ephemeral rollups");
+  log("Delegating to Ephemeral rollups");
   const delegateComponentInstruction = createDelegateInstruction({
     entity: addEntity.entityPda,
     account: initializeComponent.componentPda,
-    ownerProgram: getComponentGame(engine).programId,
+    ownerProgram: COMPONENT_GAME_PROGRAM_ID,
     payer: engine.getSessionPayer(),
   });
   await engine.processSessionChainTransaction(
     "DelegateComponent",
-    new Transaction().add(delegateComponentInstruction)
+    new Transaction().add(delegateComponentInstruction),
+    "finalized"
   );
-  // Generate the map (this should warm up the ephemeral rollup)
-  log("Generate the game's map");
+  // Generate the game
+  log("Generate the game");
   await gameSystemGenerate(engine, addEntity.entityPda);
   // Entity PDA for later use
   log("Game is ready!");

@@ -9,7 +9,7 @@ import {
   useMagicBlockEngine,
 } from "../../engine/MagicBlockEngine";
 
-import { getComponentGame } from "../../states/gamePrograms";
+import { COMPONENT_GAME_PROGRAM_ID } from "../../states/gamePrograms";
 
 import { GamePlayer } from "../game/GamePlayer";
 import { GameGridRows } from "../game/grid/GameGridRows";
@@ -17,6 +17,7 @@ import { GameGridRows } from "../game/grid/GameGridRows";
 import { gameListen } from "../../states/gameListen";
 import { gameSystemJoin } from "../../states/gameSystemJoin";
 import { gameSystemStart } from "../../states/gameSystemStart";
+import { gameSystemGenerate } from "../../states/gameSystemGenerate";
 
 import "./PageGameLobby.scss";
 
@@ -32,7 +33,7 @@ export function PageGameLobby() {
       entityPda,
       gamePda: FindComponentPda({
         entity: entityPda,
-        componentId: getComponentGame(engine).programId,
+        componentId: COMPONENT_GAME_PROGRAM_ID,
       }),
     };
   }, [params]);
@@ -153,13 +154,18 @@ function onPageStartup(
   if (game === null) {
     return navigate("/error/lobby-no-game");
   }
-  // If the game hasn't been generated yet
-  if (game.status.generate) {
-    return navigate("/error/lobby-not-generated");
-  }
   // If the game has started playing, go to play mode
   if (game.status.playing || game.status.finished) {
     return navigate("/game/play/" + entityPda.toBase58());
+  }
+  // If the game hasn't been generated yet, generate it if we can
+  if (game.status.generate) {
+    const timeout = setTimeout(async () => {
+      await gameSystemGenerate(engine, entityPda);
+    }, 1000);
+    return () => {
+      clearTimeout(timeout);
+    };
   }
   // If the game needs starting, start it after a timeout
   if (game.status.lobby) {
