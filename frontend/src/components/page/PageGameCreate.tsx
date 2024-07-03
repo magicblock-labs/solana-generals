@@ -33,7 +33,7 @@ export function PageGameCreate() {
           {logs.map((log: string, index: number) => {
             return (
               <div key={index} className="Text">
-                {log}
+                {index + 1}) {log}
               </div>
             );
           })}
