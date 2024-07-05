@@ -112,9 +112,11 @@ export class MagicBlockEngine {
     transaction: Transaction,
     commitment?: Commitment
   ): Promise<string> {
-    const signature = await connectionChain.sendTransaction(transaction, [
-      this.sessionKey,
-    ]);
+    const signature = await connectionChain.sendTransaction(
+      transaction,
+      [this.sessionKey],
+      { skipPreflight: true }
+    );
     await this.waitSignatureConfirmation(
       name,
       signature,
