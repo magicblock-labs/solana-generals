@@ -4,8 +4,6 @@ import { GameGridCell } from "./GameGridCell";
 
 import "./GameGridRows.scss";
 
-const HORIZONTAL_WIDTH = 804;
-
 export function GameGridRows({
   game,
   activity,
@@ -17,20 +15,18 @@ export function GameGridRows({
 }) {
   const rows = [];
 
-  // Display the grid horizontally when we have enough space
-  const [horizontal, setHorizontal] = React.useState(
-    window.innerWidth > HORIZONTAL_WIDTH
-  );
+  // Change the display scale and direction depending on window size
+  const [rendering, setRendering] = React.useState(computeRendering(game));
   React.useEffect(() => {
     function onResize() {
-      setHorizontal(window.innerWidth > HORIZONTAL_WIDTH);
+      setRendering(computeRendering(game));
     }
     window.addEventListener("resize", onResize);
     return () => window.removeEventListener("resize", onResize);
-  }, []);
+  }, [game]);
 
   // If we want to render the game horizontally (for laptop/desktop)
-  if (horizontal) {
+  if (rendering.horizontal) {
     for (let y = 0; y < game.sizeY; y++) {
       const cells = [];
       for (let x = 0; x < game.sizeX; x++) {
@@ -39,6 +35,7 @@ export function GameGridRows({
             key={x}
             x={x}
             y={y}
+            size={rendering.size}
             game={game}
             active={activity ? activity.x == x && activity.y == y : false}
             onCommand={onCommand}
@@ -62,6 +59,7 @@ export function GameGridRows({
             key={y}
             x={x}
             y={y}
+            size={rendering.size}
             game={game}
             active={activity ? activity.x == x && activity.y == y : false}
             onCommand={onCommand}
@@ -81,4 +79,29 @@ export function GameGridRows({
       <div className="Rows">{rows}</div>
     </div>
   );
+}
+
+function computeRendering(game: any) {
+  const horizontalSize = computeCellSize(game.sizeX, game.sizeY);
+  const verticalSize = computeCellSize(game.sizeY, game.sizeX);
+  if (verticalSize > horizontalSize) {
+    return {
+      horizontal: false,
+      size: verticalSize,
+    };
+  }
+  return {
+    horizontal: true,
+    size: horizontalSize,
+  };
+}
+
+function computeCellSize(gameSizeX: number, gameSizeY: number) {
+  const spaceX = window.innerWidth;
+  const spaceY = window.innerHeight / 1.75;
+
+  const sizeForX = Math.floor(spaceX / gameSizeX / 4 - 1) * 4;
+  const sizeForY = Math.floor(spaceY / gameSizeY / 4 - 1) * 4;
+
+  return Math.min(Math.min(sizeForX, sizeForY), 64);
 }

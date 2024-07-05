@@ -2,7 +2,10 @@ import * as React from "react";
 
 import { useMagicBlockEngine } from "../../engine/MagicBlockEngine";
 
-import "./MenuSession.scss";
+import { Text } from "../util/Text";
+import { Button } from "../util/Button";
+
+import { MenuBalance } from "./MenuBalance";
 
 export function MenuSession() {
   const engine = useMagicBlockEngine();
@@ -23,43 +26,19 @@ export function MenuSession() {
 
   const extras = [];
   if (engine.getWalletConnected() && needsFunding) {
-    const onFund = () => {
-      engine.fundSession().then(() => {
-        console.log("funded");
-      });
+    const onFund = async () => {
+      await engine.fundSession();
+      console.log("funded");
     };
-    extras.push(
-      <button key="fund" onClick={onFund}>
-        <div className="Text">Fund</div>
-      </button>
-    );
+    extras.push(<Button key="fund" text="Fund" onClick={onFund} />);
   }
   if (needsFunding) {
-    extras.push(
-      <div key="warning" className="Text Warning">
-        Needs SOL!
-      </div>
-    );
+    extras.push(<Text key="warning" value="Need SOL!" isWarning={true} />);
   }
 
-  const sessionAbbreviation = sessionPayer.toBase58().substring(0, 8);
-  const sessionBalance =
-    sessionLamports !== undefined
-      ? (sessionLamports / 1_000_000_000).toFixed(3)
-      : "?????";
-
   return (
-    <div className="MenuSession ContainerInner Centered Horizontal">
-      <button
-        className="Soft"
-        onClick={() => {
-          navigator.clipboard.writeText(sessionPayer.toBase58());
-        }}
-      >
-        <div className="Text">
-          Player: {sessionAbbreviation}... {sessionBalance} SOL
-        </div>
-      </button>
+    <div className="ContainerInner Centered Horizontal">
+      <MenuBalance name="Player" publicKey={sessionPayer} />
       {extras}
     </div>
   );

@@ -1,5 +1,9 @@
 .GamePlayer {
   flex-grow: 1;
+  justify-content: start;
+
+  padding: 0px 4px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
 
   color: white;
 
@@ -8,9 +12,5 @@
   }
   &.P1 {
     background-color: rgba(255, 0, 0, 0.3);
-  }
-
-  > .Description {
-    opacity: 0.5;
   }
 }

@@ -23,7 +23,6 @@ export const WORLD_PDA = new PublicKey(
 );
 
 const componentGame = GameIdl as Game;
-
 const systemGenerate = GenerateIdl as Generate;
 const systemJoin = JoinIdl as Join;
 const systemStart = StartIdl as Start;
@@ -32,7 +31,6 @@ const systemTick = TickIdl as Tick;
 const systemFinish = FinishIdl as Finish;
 
 export const COMPONENT_GAME_PROGRAM_ID = new PublicKey(componentGame.address);
-
 export const SYSTEM_GENERATE_PROGRAM_ID = new PublicKey(systemGenerate.address);
 export const SYSTEM_JOIN_PROGRAM_ID = new PublicKey(systemJoin.address);
 export const SYSTEM_START_PROGRAM_ID = new PublicKey(systemStart.address);

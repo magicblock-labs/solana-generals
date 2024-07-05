@@ -2,8 +2,6 @@
   position: relative;
   user-select: none;
 
-  width: 40px;
-  height: 40px;
   border: 2px solid rgba(255, 255, 255, 0.3);
 
   > .Type {
@@ -14,27 +12,25 @@
 
   > .Strength {
     position: absolute;
-    height: 100%;
-    width: 100%;
+    top: -2px;
+    left: -2px;
+    right: -2px;
+    bottom: -2px;
     text-align: center;
-    justify-content: center;
     font-weight: bold;
-  }
-
-  > .Strength {
     font-size: 16px;
   }
 
-  > .Strength {
+  .Strength {
     background-color: rgba(127, 127, 127, 0.3);
   }
   &.Player0 {
-    > .Strength {
+    .Strength {
       background-color: rgba(0, 0, 255, 0.3);
     }
   }
   &.Player1 {
-    > .Strength {
+    .Strength {
       background-color: rgba(255, 0, 0, 0.3);
     }
   }

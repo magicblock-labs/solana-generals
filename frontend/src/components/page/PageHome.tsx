@@ -1,23 +1,23 @@
 import * as React from "react";
 
-import { PublicKey } from "@solana/web3.js";
-
 import { useNavigate } from "react-router-dom";
 
 import { useMagicBlockEngine } from "../../engine/MagicBlockEngine";
 
-import { gameList } from "../../states/gameList";
+import { ForEach } from "../util/ForEach";
+import { Text } from "../util/Text";
+import { Button } from "../util/Button";
 
-import "./PageHome.scss";
+import { gameList } from "../../states/gameList";
 
 export function PageHome() {
   const navigate = useNavigate();
   const engine = useMagicBlockEngine();
 
-  const [games, setGames] = React.useState(undefined);
+  const [entries, setEntries] = React.useState(undefined);
   React.useEffect(() => {
     const timeout = setTimeout(async () => {
-      setGames(await gameList(engine, 10));
+      setEntries(await gameList(engine, 10));
     }, 100);
     return () => {
       clearTimeout(timeout);
@@ -25,62 +25,48 @@ export function PageHome() {
   }, [engine]);
 
   return (
-    <div className="PageHome Container Centered">
-      <div className="Text Title">Home</div>
-      <button
+    <div className="Container Centered">
+      <Text value="Home" isTitle={true} />
+      <Button
+        text="+ Create a new game +"
         onClick={() => {
-          navigate("/game/create");
+          navigate("/create");
         }}
-      >
-        <div className="Text">+ Create a new game +</div>
-      </button>
-      {games && games.length ? (
-        <>
-          <div className="Text Title">Latest games</div>
-          {games.map(
-            ({
-              entityPda,
-              entityId,
-              game,
-            }: {
-              entityPda: PublicKey;
-              entityId: number;
-              game: any;
-            }) => {
-              let status = "?";
-              if (game.status.generate) {
-                status = "🥚";
-              }
-              if (game.status.lobby) {
-                status = "⏳";
-              }
-              if (game.status.playing) {
-                status = "🪄";
-              }
-              if (game.status.finished) {
-                status = "☠️";
-              }
+      />
+      <ForEach<any>
+        values={entries}
+        before={() => <Text value="Latest games" isTitle={true} />}
+        renderer={(entry) => {
+          const status = entry.game.status;
+          const code = entry.entityPda.toBase58();
+          const num = entry.entityId.toString().padStart(8, "0");
 
-              const code = entityPda.toBase58();
-              const num = entityId.toString().padStart(8, "0");
+          let indicator = "?";
+          if (status.generate) {
+            indicator = "🥚";
+          }
+          if (status.lobby) {
+            indicator = "⏳";
+          }
+          if (status.playing) {
+            indicator = "🪄";
+          }
+          if (status.finished) {
+            indicator = "☠️";
+          }
 
-              return (
-                <button
-                  key={code}
-                  className="Soft"
-                  onClick={() => {
-                    navigate("/game/lobby/" + code);
-                  }}
-                >
-                  <div className="Text">
-                    {status} Game {code} (#{num})
-                  </div>
-                </button>
-              );
-            }
-          )}
-        </>
-      ) : undefined}
+          return (
+            <Button
+              key={code}
+              text={indicator + " Game " + code + " (#" + num + ")"}
+              isSoft={true}
+              onClick={() => {
+                navigate("/play/" + code);
+              }}
+            />
+          );
+        }}
+      />
     </div>
   );
 }

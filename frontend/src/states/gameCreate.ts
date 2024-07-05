@@ -12,10 +12,10 @@ import { gameSystemGenerate } from "./gameSystemGenerate";
 
 export async function gameCreate(
   engine: MagicBlockEngine,
-  log: (log: string) => void
+  onLog: (log: string) => void
 ) {
   // Create a new Entity
-  log("Creating a new entity");
+  onLog("Creating a new entity");
   const addEntity = await AddEntity({
     connection: engine.getConnectionChain(),
     payer: engine.getSessionPayer(),
@@ -27,7 +27,7 @@ export async function gameCreate(
     "confirmed"
   );
   // Initialize the game component
-  log("Initializing a new component");
+  onLog("Initializing a new component");
   const initializeComponent = await InitializeComponent({
     payer: engine.getSessionPayer(),
     entity: addEntity.entityPda,
@@ -39,7 +39,7 @@ export async function gameCreate(
     "confirmed"
   );
   // Delegate the game component
-  log("Delegating to Ephemeral rollups");
+  onLog("Delegating to Ephemeral rollups");
   const delegateComponentInstruction = createDelegateInstruction({
     entity: addEntity.entityPda,
     account: initializeComponent.componentPda,
@@ -52,9 +52,9 @@ export async function gameCreate(
     "finalized"
   );
   // Generate the game
-  log("Generate the game");
+  onLog("Generate the game");
   await gameSystemGenerate(engine, addEntity.entityPda);
   // Entity PDA for later use
-  log("Game is ready!");
+  onLog("Game is ready!");
   return addEntity.entityPda;
 }

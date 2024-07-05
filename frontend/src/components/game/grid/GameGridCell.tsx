@@ -5,18 +5,23 @@ import GameGridCellCity from "./GameGridCellCity.png";
 import GameGridCellCapital from "./GameGridCellCapital.png";
 import GameGridCellMountain from "./GameGridCellMountain.png";
 
-import "./GameGridCell.scss";
 import { useMagicBlockEngine } from "../../../engine/MagicBlockEngine";
+
+import { If } from "../../util/If";
+
+import "./GameGridCell.scss";
 
 export function GameGridCell({
   x,
   y,
+  size,
   game,
   active,
   onCommand,
 }: {
   x: number;
   y: number;
+  size: number;
   game: any;
   active: boolean;
   onCommand?: (x: number, y: number, type: string) => void;
@@ -52,20 +57,32 @@ export function GameGridCell({
     image = GameGridCellMountain;
   }
 
-  let strength = cell.strength ? cell.strength.toString() : "";
+  const onStart = makeEventHandler(x, y, "start", onCommand);
+  const onMove = makeEventHandler(x, y, "move", onCommand);
+  const onEnd = makeEventHandler(x, y, "end", onCommand);
+
+  let fontSize = 6 + Math.floor(size / 4);
 
   return (
     <div
       className={rootClassNames.join(" ")}
-      onTouchStart={makeEventHandler(x, y, "start", onCommand)}
-      onTouchMove={makeEventHandler(x, y, "move", onCommand)}
-      onTouchEnd={makeEventHandler(x, y, "end", onCommand)}
-      onMouseDown={makeEventHandler(x, y, "start", onCommand)}
-      onMouseMove={makeEventHandler(x, y, "move", onCommand)}
-      onMouseUp={makeEventHandler(x, y, "end", onCommand)}
+      onTouchStart={onStart}
+      onTouchMove={onMove}
+      onTouchEnd={onEnd}
+      onMouseDown={onStart}
+      onMouseMove={onMove}
+      onMouseUp={onEnd}
+      style={{ width: size, height: size }}
     >
       <img className="Type" src={image} />
-      {strength ? <div className="Strength">{strength}</div> : undefined}
+      <If
+        value={cell.strength}
+        renderer={(strength) => (
+          <div className="Strength" style={{ fontSize }}>
+            {strength}
+          </div>
+        )}
+      />
     </div>
   );
 }

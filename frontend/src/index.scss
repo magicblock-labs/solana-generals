@@ -10,7 +10,7 @@
   flex-wrap: wrap;
 
   flex-direction: column;
-  justify-content: start;
+  justify-content: center;
   align-items: stretch;
 
   line-height: 1.5;
@@ -37,16 +37,7 @@ head {
 }
 .Content {
   align-items: center;
-  justify-content: center;
   flex-grow: 1;
-}
-
-.Text {
-  padding: 4px 8px;
-  text-align: center;
-}
-.Title {
-  font-weight: bold;
 }
 
 .Container,
@@ -59,37 +50,9 @@ head {
     margin: 4px;
   }
 }
-
 .Centered {
   align-items: center;
 }
 .Horizontal {
   flex-direction: row;
-}
-
-button {
-  cursor: pointer;
-  border-radius: 4px;
-  background-color: white;
-  border: 2px solid white;
-
-  &.Soft {
-    background-color: transparent;
-    color: white;
-    border: 2px solid white;
-  }
-
-  &:hover {
-    opacity: 0.75;
-  }
-  &:active {
-    opacity: 0.5;
-  }
-
-  &.Disabled {
-    cursor: not-allowed;
-    pointer-events: none;
-    touch-action: none;
-    opacity: 0.5;
-  }
 }
