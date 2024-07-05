@@ -7,10 +7,8 @@ import { MagicBlockEngineProvider } from "./engine/MagicBlockEngine";
 import { MenuBar } from "./components/menu/MenuBar";
 
 import { PageHome } from "./components/page/PageHome";
-import { PageGameCreate } from "./components/page/PageGameCreate";
-import { PageGameLobby } from "./components/page/PageGameLobby";
-import { PageGamePlay } from "./components/page/PageGamePlay";
-import { PageError } from "./components/page/PageError";
+import { PageCreate } from "./components/page/PageCreate";
+import { PagePlay } from "./components/page/PagePlay";
 
 import "./index.scss";
 
@@ -20,13 +18,11 @@ function App() {
       <MagicBlockEngineProvider>
         <MenuBar />
         <div className="Content">
-          <div style={{ maxWidth: 1024 }}>
+          <div style={{ maxWidth: 1280 }}>
             <Routes>
               <Route path="/" element={<PageHome />} />
-              <Route path="/game/create" element={<PageGameCreate />} />
-              <Route path="/game/lobby/:id" element={<PageGameLobby />} />
-              <Route path="/game/play/:id" element={<PageGamePlay />} />
-              <Route path="/error/:code" element={<PageError />} />
+              <Route path="/create" element={<PageCreate />} />
+              <Route path="/play/:id" element={<PagePlay />} />
             </Routes>
           </div>
         </div>

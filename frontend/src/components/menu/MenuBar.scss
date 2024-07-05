@@ -4,7 +4,6 @@
     color: white;
     padding: 4px;
     border: 0;
-    border-radius: 0;
     background: linear-gradient(
       90deg,
       #8802ff 9.81%,
@@ -14,6 +13,7 @@
   }
 
   > .KeysBar {
+    justify-content: start;
     > .Separator {
       flex-grow: 1;
       margin: 0;

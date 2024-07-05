@@ -130,12 +130,9 @@ export class MagicBlockEngine {
     name: string,
     transaction: Transaction
   ): Promise<string> {
-    console.log("transaction sending", name); // TODO(vbrunet) - there should be a queue that helps guarantee the ordering of transactions
-    const signature = await connectionEphemeral.sendTransaction(
-      transaction,
-      [this.sessionKey],
-      { skipPreflight: true }
-    );
+    const signature = await connectionEphemeral.sendTransaction(transaction, [
+      this.sessionKey,
+    ]);
     await this.waitSignatureConfirmation(
       name,
       signature,
@@ -151,7 +148,6 @@ export class MagicBlockEngine {
     connection: Connection,
     commitment: Commitment
   ): Promise<void> {
-    console.log("transaction subscribed", name, signature);
     return new Promise((resolve, reject) => {
       connection.onSignature(
         signature,

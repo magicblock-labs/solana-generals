@@ -1,19 +1,19 @@
 import * as React from "react";
-import { PublicKey } from "@solana/web3.js";
+
 import { useMagicBlockEngine } from "../../engine/MagicBlockEngine";
+
+import { Text } from "../util/Text";
 
 import "./GamePlayer.scss";
 
 export function GamePlayer({
   playerIndex,
-  game,
+  player,
 }: {
-  entityPda: PublicKey;
   playerIndex: number;
-  game: any;
+  player: any;
 }) {
   const engine = useMagicBlockEngine();
-  const player = game.players[playerIndex];
 
   const name = "Player " + (playerIndex + 1);
   let description;
@@ -37,8 +37,8 @@ export function GamePlayer({
         "P" + playerIndex,
       ].join(" ")}
     >
-      <div className="Text">{name}</div>
-      <div className="Text Description">({description})</div>
+      <Text value={name} />
+      <Text value={description} isFading={true} />
     </div>
   );
 }
