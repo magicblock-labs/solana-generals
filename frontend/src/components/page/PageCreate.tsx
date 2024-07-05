@@ -11,6 +11,7 @@ import { ForEach } from "../util/ForEach";
 
 import { gameCreate } from "../../states/gameCreate";
 import { GameError } from "../game/GameError";
+import { If } from "../util/If";
 
 export function PageCreate() {
   const navigate = useNavigate();
@@ -46,16 +47,19 @@ export function PageCreate() {
     <div className="Container Centered">
       <Text value="Creating a new game" isTitle={true} />
       <Text value="This can take a few moments..." />
-      {logs.length ? (
-        <div className="Container" style={{ backgroundColor: "grey" }}>
-          <ForEach
-            values={logs}
-            renderer={(log, index) => (
-              <Text key={index} value={(index + 1).toString() + ") " + log} />
-            )}
-          />
-        </div>
-      ) : undefined}
+      <If
+        value={logs}
+        renderer={() => (
+          <div className="Container" style={{ backgroundColor: "grey" }}>
+            <ForEach
+              values={logs}
+              renderer={(log, index) => (
+                <Text key={index} value={(index + 1).toString() + ") " + log} />
+              )}
+            />
+          </div>
+        )}
+      />
     </div>
   );
 }

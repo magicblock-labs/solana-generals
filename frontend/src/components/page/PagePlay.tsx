@@ -39,7 +39,11 @@ export function PagePlay() {
   }, [engine, gamePda]);
 
   if (game === null) {
-    return <GameError message="Unable to fetch the game data" />;
+    return (
+      <div className="Container Centered">
+        <GameError message="Unable to fetch the game data" />
+      </div>
+    );
   }
 
   // Render the game
