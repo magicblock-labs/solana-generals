@@ -61,7 +61,7 @@ export function GameGridCell({
   const onMove = makeEventHandler(x, y, "move", onCommand);
   const onEnd = makeEventHandler(x, y, "end", onCommand);
 
-  let fontSize = 6 + Math.floor(size / 4);
+  let fontSize = 3 + Math.floor(size / 3);
 
   return (
     <div

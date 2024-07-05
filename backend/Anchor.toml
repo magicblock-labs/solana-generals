@@ -4,7 +4,7 @@
 resolution = true
 skip-lint = false
 
-[programs.testnet]
+[programs.devnet]
 command = "EqGdRy5kD3kLhiY1NrNgpv144Z5GcL2FVSQsXDwjPD1o"
 finish = "8ukdUrzW4seE9MUXY5Lwazt3ydw4Wtbr72C6EaFq8jsC"
 game = "DcUL2DdypF14p5TZEBcEtpGSY843LM9vkokyoDahxWhk"
@@ -17,7 +17,7 @@ tick = "EdCEZKUooqVVFxXfk6yHXq5En24ZYtrQQjLPr9x33M4k"
 url = "https://api.apr.dev"
 
 [provider]
-cluster = "testnet"
+cluster = "devnet"
 wallet = "~/.config/solana/id.json"
 
 [workspace]
