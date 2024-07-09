@@ -3,6 +3,8 @@
 
 This repository contains an example for a fully featured game running 100% serverless using Solana's devnet and MagicBlock's devnet.
 
+Demo available [here](https://magicblock-labs.github.io/solana-generals/#/)
+
 # Demo
 
 Run the frontend that should already be pointing to solana's devnet:
