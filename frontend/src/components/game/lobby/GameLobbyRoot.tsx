@@ -2,10 +2,8 @@ import * as React from "react";
 
 import { PublicKey } from "@solana/web3.js";
 
-import {
-  MagicBlockEngine,
-  useMagicBlockEngine,
-} from "../../../engine/MagicBlockEngine";
+import { MagicBlockEngine } from "../../../engine/MagicBlockEngine";
+import { useMagicBlockEngine } from "../../../engine/MagicBlockEngineProvider";
 
 import { Text } from "../../util/Text";
 import { ForEach } from "../../util/ForEach";
@@ -14,21 +12,24 @@ import { GameLobbyPlayer } from "./GameLobbyPlayer";
 
 import { GameGridRows } from "../grid/GameGridRows";
 
+import { gameFetch } from "../../../states/gameFetch";
 import { gameSystemStart } from "../../../states/gameSystemStart";
 import { gameSystemGenerate } from "../../../states/gameSystemGenerate";
 
 export function GameLobbyRoot({
   entityPda,
+  gamePda,
   game,
 }: {
   entityPda: PublicKey;
+  gamePda: PublicKey;
   game: any;
 }) {
   const engine = useMagicBlockEngine();
 
   React.useEffect(() => {
-    scheduleGenerateOrStart(engine, entityPda, game);
-  }, [engine, entityPda, game]);
+    return scheduleGenerateOrStart(engine, entityPda, gamePda);
+  }, [engine, entityPda, gamePda]);
 
   return (
     <>
@@ -51,12 +52,16 @@ export function GameLobbyRoot({
   );
 }
 
-async function scheduleGenerateOrStart(
+function scheduleGenerateOrStart(
   engine: MagicBlockEngine,
   entityPda: PublicKey,
-  game: any
+  gamePda: PublicKey
 ) {
-  const timeout = setTimeout(async () => {
+  const interval = setInterval(async () => {
+    const game = await gameFetch(engine, gamePda);
+    if (!game) {
+      return;
+    }
     if (game.status.generate) {
       await gameSystemGenerate(engine, entityPda);
     }
@@ -71,8 +76,8 @@ async function scheduleGenerateOrStart(
         await gameSystemStart(engine, entityPda);
       }
     }
-  });
+  }, 2000);
   return () => {
-    clearTimeout(timeout);
+    clearInterval(interval);
   };
 }

@@ -2,7 +2,7 @@ import * as React from "react";
 
 import { useNavigate } from "react-router-dom";
 
-import { useMagicBlockEngine } from "../../engine/MagicBlockEngine";
+import { useMagicBlockEngine } from "../../engine/MagicBlockEngineProvider";
 
 import { ForEach } from "../util/ForEach";
 import { Text } from "../util/Text";

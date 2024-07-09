@@ -1,10 +1,5 @@
-import * as React from "react";
 import { Idl, Program } from "@coral-xyz/anchor";
-import {
-  WalletContextState,
-  WalletProvider,
-  useWallet,
-} from "@solana/wallet-adapter-react";
+import { WalletContextState } from "@solana/wallet-adapter-react";
 import {
   AccountInfo,
   Commitment,
@@ -21,10 +16,6 @@ const ENDPOINT_CHAIN_WS = "wss://api.devnet.solana.com";
 
 const ENDPOINT_EPHEMERAL_RPC = "https://devnet.magicblock.app";
 const ENDPOINT_EPHEMERAL_WS = "wss://devnet.magicblock.app:8900";
-
-const SESSION_LOCAL_STORAGE = "magicblock-session-key";
-const SESSION_MIN_LAMPORTS = 0.02 * 1_000_000_000;
-const SESSION_MAX_LAMPORTS = 0.05 * 1_000_000_000;
 
 const TRANSACTION_COST_LAMPORTS = 5000;
 
@@ -46,9 +37,9 @@ interface WalletAdapter {
 }
 
 export class MagicBlockEngine {
-  walletContext: WalletContextState;
-  sessionKey: Keypair;
-  sessionConfig: SessionConfig;
+  private walletContext: WalletContextState;
+  private sessionKey: Keypair;
+  private sessionConfig: SessionConfig;
 
   constructor(
     walletContext: WalletContextState,
@@ -91,8 +82,7 @@ export class MagicBlockEngine {
 
   async processWalletTransaction(
     name: string,
-    transaction: Transaction,
-    commitment?: Commitment
+    transaction: Transaction
   ): Promise<string> {
     const signature = await this.walletContext.sendTransaction(
       transaction,
@@ -102,26 +92,25 @@ export class MagicBlockEngine {
       name,
       signature,
       connectionChain,
-      commitment ?? "finalized"
+      "finalized"
     );
     return signature;
   }
 
   async processSessionChainTransaction(
     name: string,
-    transaction: Transaction,
-    commitment?: Commitment
+    transaction: Transaction
   ): Promise<string> {
     const signature = await connectionChain.sendTransaction(
       transaction,
-      [this.sessionKey],
-      { skipPreflight: true }
+      [this.sessionKey]
+      //{ skipPreflight: true }
     );
     await this.waitSignatureConfirmation(
       name,
       signature,
       connectionChain,
-      commitment ?? "finalized"
+      "finalized"
     );
     return signature;
   }
@@ -130,9 +119,11 @@ export class MagicBlockEngine {
     name: string,
     transaction: Transaction
   ): Promise<string> {
-    const signature = await connectionEphemeral.sendTransaction(transaction, [
-      this.sessionKey,
-    ]);
+    const signature = await connectionEphemeral.sendTransaction(
+      transaction,
+      [this.sessionKey]
+      //{ skipPreflight: true }
+    );
     await this.waitSignatureConfirmation(
       name,
       signature,
@@ -148,12 +139,14 @@ export class MagicBlockEngine {
     connection: Connection,
     commitment: Commitment
   ): Promise<void> {
+    console.log(name, "sent");
     return new Promise((resolve, reject) => {
       connection.onSignature(
         signature,
         (result) => {
-          console.log("transaction", commitment, name, signature, result.err);
+          console.log(name, commitment, signature, result.err);
           if (result.err) {
+            this.debugError(name, signature, connection);
             reject(result.err);
           } else {
             resolve();
@@ -161,6 +154,12 @@ export class MagicBlockEngine {
         },
         commitment
       );
+    });
+  }
+
+  async debugError(name: string, signature: string, connection: Connection) {
+    connection.getParsedTransaction(signature).then((transaction: any) => {
+      console.log("debugError", name, signature, transaction);
     });
   }
 
@@ -206,31 +205,53 @@ export class MagicBlockEngine {
     }
   }
 
-  subscribeToAccountInfo(
+  subscribeToChainAccountInfo(
     address: PublicKey,
     onAccountChange: (accountInfo?: AccountInfo<Buffer>) => void
   ) {
-    let cancelled = false;
-    connectionChain
-      .getAccountInfo(address)
-      .then((accountInfo) => {
-        if (!cancelled) {
-          onAccountChange(accountInfo);
+    return this.subscribeToAccountInfo(
+      connectionChain,
+      address,
+      onAccountChange
+    );
+  }
+
+  subscribeToEphemeralAccountInfo(
+    address: PublicKey,
+    onAccountChange: (accountInfo?: AccountInfo<Buffer>) => void
+  ) {
+    return this.subscribeToAccountInfo(
+      connectionEphemeral,
+      address,
+      onAccountChange
+    );
+  }
+
+  subscribeToAccountInfo(
+    connection: Connection,
+    address: PublicKey,
+    onAccountChange: (accountInfo?: AccountInfo<Buffer>) => void
+  ) {
+    let ignoreFetch = false;
+    connection.getAccountInfo(address).then(
+      (accountInfo) => {
+        if (ignoreFetch) {
+          return;
         }
-      })
-      .catch((error) => {
+        onAccountChange(accountInfo);
+      },
+      (error) => {
         console.log("Error fetching accountInfo", error);
         onAccountChange(undefined);
-      });
-    const subscription = connectionChain.onAccountChange(
-      address,
-      (accountInfo) => {
-        onAccountChange(accountInfo);
       }
     );
+    const subscription = connection.onAccountChange(address, (accountInfo) => {
+      ignoreFetch = true;
+      onAccountChange(accountInfo);
+    });
     return () => {
-      cancelled = true;
-      connectionChain.removeAccountChangeListener(subscription);
+      ignoreFetch = true;
+      connection.removeAccountChangeListener(subscription);
     };
   }
 
@@ -258,60 +279,4 @@ export class MagicBlockEngine {
   getSessionMaximalLamports(): number {
     return this.sessionConfig.maxLamports;
   }
-}
-
-const MagicBlockEngineContext = React.createContext<MagicBlockEngine>(
-  {} as MagicBlockEngine
-);
-
-export function useMagicBlockEngine(): MagicBlockEngine {
-  return React.useContext(MagicBlockEngineContext);
-}
-
-export function MagicBlockEngineProvider({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
-  return (
-    <WalletProvider wallets={[]} autoConnect>
-      <MagicBlockEngineProviderInner>{children}</MagicBlockEngineProviderInner>
-    </WalletProvider>
-  );
-}
-
-function MagicBlockEngineProviderInner({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
-  const walletContext = useWallet();
-
-  const engine = React.useMemo(() => {
-    let sessionKey;
-
-    const sessionKeyString = localStorage.getItem(SESSION_LOCAL_STORAGE);
-    if (sessionKeyString) {
-      sessionKey = Keypair.fromSecretKey(
-        Uint8Array.from(JSON.parse(sessionKeyString))
-      );
-    } else {
-      sessionKey = Keypair.generate();
-      localStorage.setItem(
-        SESSION_LOCAL_STORAGE,
-        JSON.stringify(Array.from(sessionKey.secretKey))
-      );
-    }
-
-    return new MagicBlockEngine(walletContext, sessionKey, {
-      minLamports: SESSION_MIN_LAMPORTS,
-      maxLamports: SESSION_MAX_LAMPORTS,
-    });
-  }, [walletContext]);
-
-  return (
-    <MagicBlockEngineContext.Provider value={engine}>
-      {children}
-    </MagicBlockEngineContext.Provider>
-  );
 }

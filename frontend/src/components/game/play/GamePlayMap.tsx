@@ -2,7 +2,8 @@ import * as React from "react";
 
 import { PublicKey } from "@solana/web3.js";
 
-import { useMagicBlockEngine } from "../../../engine/MagicBlockEngine";
+import { useMagicBlockEngine } from "../../../engine/MagicBlockEngineProvider";
+import { MagicBlockQueue } from "../../../engine/MagicBlockQueue";
 
 import { GameGridRows } from "../grid/GameGridRows";
 
@@ -16,6 +17,10 @@ export function GamePlayMap({
   game: any;
 }) {
   const engine = useMagicBlockEngine();
+
+  const queue = React.useMemo(() => {
+    return new MagicBlockQueue(engine);
+  }, [engine]);
 
   const [command, setCommand] = React.useState({
     active: false,
@@ -73,7 +78,7 @@ export function GamePlayMap({
           targetX + "x" + targetY
         );
         gameSystemCommand(
-          engine,
+          queue,
           entityPda,
           sourcePlayerIndex,
           sourceX,
@@ -81,22 +86,25 @@ export function GamePlayMap({
           targetX,
           targetY,
           100
-        )
-          .catch((reason: any) => {
-            console.log(
-              "onCommand.fail",
-              sourceX + "x" + sourceY,
-              targetX + "x" + targetY,
-              reason
-            );
-          })
-          .then(() => {
+        ).then(
+          (value: string) => {
             console.log(
               "onCommand.success",
               sourceX + "x" + sourceY,
-              targetX + "x" + targetY
+              targetX + "x" + targetY,
+              value
             );
-          });
+          },
+          (reason: any) => {
+            console.warn(
+              "onCommand.fail",
+              sourceX + "x" + sourceY,
+              targetX + "x" + targetY,
+              reason,
+              game
+            );
+          }
+        );
         return setCommand({
           active: true,
           sourceX: targetX,

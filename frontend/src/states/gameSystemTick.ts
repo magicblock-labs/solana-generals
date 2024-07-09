@@ -25,7 +25,7 @@ export async function gameSystemTick(
       },
     ],
   });
-  await engine.processSessionEphemeralTransaction(
+  return await engine.processSessionEphemeralTransaction(
     "SystemTick",
     applySystem.transaction
   );

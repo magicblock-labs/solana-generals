@@ -1,6 +1,6 @@
 import * as React from "react";
 
-import { useMagicBlockEngine } from "../../engine/MagicBlockEngine";
+import { useMagicBlockEngine } from "../../engine/MagicBlockEngineProvider";
 
 import { Text } from "../util/Text";
 import { Button } from "../util/Button";
@@ -14,7 +14,7 @@ export function MenuSession() {
 
   const [sessionLamports, setSessionLamports] = React.useState(undefined);
   React.useEffect(() => {
-    return engine.subscribeToAccountInfo(sessionPayer, (accountInfo) => {
+    return engine.subscribeToChainAccountInfo(sessionPayer, (accountInfo) => {
       setSessionLamports(accountInfo?.lamports);
     });
   }, [engine]);

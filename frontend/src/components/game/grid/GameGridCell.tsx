@@ -5,7 +5,7 @@ import GameGridCellCity from "./GameGridCellCity.png";
 import GameGridCellCapital from "./GameGridCellCapital.png";
 import GameGridCellMountain from "./GameGridCellMountain.png";
 
-import { useMagicBlockEngine } from "../../../engine/MagicBlockEngine";
+import { useMagicBlockEngine } from "../../../engine/MagicBlockEngineProvider";
 
 import { If } from "../../util/If";
 
@@ -66,9 +66,6 @@ export function GameGridCell({
   return (
     <div
       className={rootClassNames.join(" ")}
-      onTouchStart={onStart}
-      onTouchMove={onMove}
-      onTouchEnd={onEnd}
       onMouseDown={onStart}
       onMouseMove={onMove}
       onMouseUp={onEnd}
@@ -77,9 +74,9 @@ export function GameGridCell({
       <img className="Type" src={image} />
       <If
         value={cell.strength}
-        renderer={(strength) => (
+        renderer={() => (
           <div className="Strength" style={{ fontSize }}>
-            {strength}
+            {cell.strength}
           </div>
         )}
       />

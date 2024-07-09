@@ -23,8 +23,7 @@ export async function gameCreate(
   });
   await engine.processSessionChainTransaction(
     "AddEntity",
-    addEntity.transaction,
-    "confirmed"
+    addEntity.transaction
   );
   // Initialize the game component
   onLog("Initializing a new component");
@@ -35,8 +34,7 @@ export async function gameCreate(
   });
   await engine.processSessionChainTransaction(
     "InitializeComponent",
-    initializeComponent.transaction,
-    "confirmed"
+    initializeComponent.transaction
   );
   // Delegate the game component
   onLog("Delegating to Ephemeral rollups");
@@ -48,8 +46,7 @@ export async function gameCreate(
   });
   await engine.processSessionChainTransaction(
     "DelegateComponent",
-    new Transaction().add(delegateComponentInstruction),
-    "finalized"
+    new Transaction().add(delegateComponentInstruction)
   );
   // Generate the game
   onLog("Generate the game");

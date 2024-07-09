@@ -1,6 +1,6 @@
 import * as React from "react";
 import { PublicKey } from "@solana/web3.js";
-import { useMagicBlockEngine } from "../../../engine/MagicBlockEngine";
+import { useMagicBlockEngine } from "../../../engine/MagicBlockEngineProvider";
 import { Button } from "../../util/Button";
 import { GamePlayer } from "../GamePlayer";
 import { gameSystemJoin } from "../../../states/gameSystemJoin";

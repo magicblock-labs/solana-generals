@@ -1,6 +1,6 @@
 import * as React from "react";
 
-import { useMagicBlockEngine } from "../../engine/MagicBlockEngine";
+import { useMagicBlockEngine } from "../../engine/MagicBlockEngineProvider";
 
 import { Button } from "../util/Button";
 import { Text } from "../util/Text";

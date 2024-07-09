@@ -4,7 +4,7 @@ import { useParams } from "react-router-dom";
 import { PublicKey } from "@solana/web3.js";
 import { FindComponentPda } from "@magicblock-labs/bolt-sdk";
 
-import { useMagicBlockEngine } from "../../engine/MagicBlockEngine";
+import { useMagicBlockEngine } from "../../engine/MagicBlockEngineProvider";
 
 import { Text } from "../util/Text";
 
@@ -55,7 +55,13 @@ export function PagePlay() {
           return <></>; // Loading
         }
         if (game.status.generate || game.status.lobby) {
-          return <GameLobbyRoot entityPda={entityPda} game={game} />;
+          return (
+            <GameLobbyRoot
+              entityPda={entityPda}
+              gamePda={gamePda}
+              game={game}
+            />
+          );
         }
         if (game.status.playing || game.status.finished) {
           return (

@@ -1,8 +1,8 @@
 import * as React from "react";
 import { createRoot } from "react-dom/client";
-import { Route, Routes, HashRouter, Link } from "react-router-dom";
+import { Route, Routes, HashRouter } from "react-router-dom";
 
-import { MagicBlockEngineProvider } from "./engine/MagicBlockEngine";
+import { MagicBlockEngineProvider } from "./engine/MagicBlockEngineProvider";
 
 import { MenuBar } from "./components/menu/MenuBar";
 

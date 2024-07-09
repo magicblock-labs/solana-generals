@@ -31,8 +31,8 @@ export async function gameSystemJoin(
       join,
     },
   });
-  await engine.processSessionEphemeralTransaction(
-    "SystemJoin",
+  return await engine.processSessionEphemeralTransaction(
+    "SystemJoin:" + playerIndex,
     applySystem.transaction
   );
 }

@@ -1,14 +1,15 @@
 import { PublicKey } from "@solana/web3.js";
 import { ApplySystem } from "@magicblock-labs/bolt-sdk";
 
-import { MagicBlockEngine } from "../engine/MagicBlockEngine";
 import {
   SYSTEM_COMMAND_PROGRAM_ID,
   COMPONENT_GAME_PROGRAM_ID,
 } from "./gamePrograms";
 
+import { MagicBlockQueue } from "../engine/MagicBlockQueue";
+
 export async function gameSystemCommand(
-  engine: MagicBlockEngine,
+  queue: MagicBlockQueue,
   entityPda: PublicKey,
   playerIndex: number,
   sourceX: number,
@@ -18,7 +19,7 @@ export async function gameSystemCommand(
   strengthPercent: number
 ) {
   const applySystem = await ApplySystem({
-    authority: engine.getSessionPayer(),
+    authority: queue.getSessionPayer(),
     systemId: SYSTEM_COMMAND_PROGRAM_ID,
     entities: [
       {
@@ -39,8 +40,18 @@ export async function gameSystemCommand(
       strength_percent: strengthPercent,
     },
   });
-  await engine.processSessionEphemeralTransaction(
-    "SystemCommand",
+  return await queue.processSessionEphemeralTransaction(
+    "SystemCommand:" +
+      playerIndex +
+      " (" +
+      sourceX +
+      "x" +
+      sourceY +
+      "->" +
+      targetX +
+      "x" +
+      targetY +
+      ")",
     applySystem.transaction
   );
 }

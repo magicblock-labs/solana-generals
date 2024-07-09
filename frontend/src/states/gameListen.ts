@@ -9,20 +9,8 @@ export function gameListen(
 ) {
   const componentGame = getComponentGameOnEphemeral(engine);
 
-  let cancelled = false;
-  componentGame.account.game
-    .fetchNullable(gamePda)
-    .catch(console.error)
-    .then((game) => {
-      if (!cancelled) {
-        setGame(game);
-      }
-    });
-
-  const gameWatcher = componentGame.account.game.subscribe(gamePda);
-  gameWatcher.addListener("change", setGame);
-  return () => {
-    cancelled = true;
-    gameWatcher.removeListener(setGame);
-  };
+  return engine.subscribeToEphemeralAccountInfo(gamePda, (accountInfo) => {
+    const game = componentGame.coder.accounts.decode("game", accountInfo.data);
+    setGame(game);
+  });
 }

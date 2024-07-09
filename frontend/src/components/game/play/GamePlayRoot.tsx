@@ -2,10 +2,8 @@ import * as React from "react";
 
 import { PublicKey } from "@solana/web3.js";
 
-import {
-  MagicBlockEngine,
-  useMagicBlockEngine,
-} from "../../../engine/MagicBlockEngine";
+import { MagicBlockEngine } from "../../../engine/MagicBlockEngine";
+import { useMagicBlockEngine } from "../../../engine/MagicBlockEngineProvider";
 
 import { Text } from "../../util/Text";
 import { ForEach } from "../../util/ForEach";
@@ -75,11 +73,13 @@ function scheduleTick(
   let running = true;
   (async () => {
     const game = await gameFetch(engine, gamePda);
+    if (!game) {
+      return;
+    }
     if (!game.status.playing) {
       return;
     }
     while (running) {
-      console.log("tick");
       try {
         await gameSystemTick(engine, entityPda);
       } catch (error) {
@@ -104,6 +104,9 @@ function scheduleFinish(
   const interval = setInterval(async () => {
     try {
       const game = await gameFetch(engine, gamePda);
+      if (!game) {
+        return;
+      }
       if (!game.status.playing) {
         return;
       }

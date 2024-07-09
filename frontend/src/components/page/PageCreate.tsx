@@ -1,10 +1,8 @@
 import * as React from "react";
 import { NavigateFunction, useNavigate } from "react-router-dom";
 
-import {
-  MagicBlockEngine,
-  useMagicBlockEngine,
-} from "../../engine/MagicBlockEngine";
+import { MagicBlockEngine } from "../../engine/MagicBlockEngine";
+import { useMagicBlockEngine } from "../../engine/MagicBlockEngineProvider";
 
 import { Text } from "../util/Text";
 import { ForEach } from "../util/ForEach";
@@ -48,7 +46,7 @@ export function PageCreate() {
       <Text value="Creating a new game" isTitle={true} />
       <Text value="This can take a few moments..." />
       <If
-        value={logs}
+        value={logs.length > 0}
         renderer={() => (
           <div className="Container" style={{ backgroundColor: "grey" }}>
             <ForEach

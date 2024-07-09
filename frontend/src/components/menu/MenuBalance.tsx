@@ -2,7 +2,7 @@ import * as React from "react";
 
 import { PublicKey } from "@solana/web3.js";
 
-import { useMagicBlockEngine } from "../../engine/MagicBlockEngine";
+import { useMagicBlockEngine } from "../../engine/MagicBlockEngineProvider";
 
 import { Button } from "../util/Button";
 
@@ -17,7 +17,7 @@ export function MenuBalance({
 
   const [lamports, setLamports] = React.useState(undefined);
   React.useEffect(() => {
-    return engine.subscribeToAccountInfo(publicKey, (accountInfo) => {
+    return engine.subscribeToChainAccountInfo(publicKey, (accountInfo) => {
       setLamports(accountInfo?.lamports);
     });
   }, [engine]);
