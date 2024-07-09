@@ -25,7 +25,14 @@ export class MagicBlockQueue {
       try {
         await last;
       } catch (error) {}
-      return await engine.processSessionEphemeralTransaction(name, transaction);
+      const timeout = new Promise<string>((resolve) =>
+        setTimeout(() => resolve(""), 5000)
+      );
+      const process = engine.processSessionEphemeralTransaction(
+        name,
+        transaction
+      );
+      return await Promise.race([timeout, process]);
     })();
     this.last = next;
     return next;

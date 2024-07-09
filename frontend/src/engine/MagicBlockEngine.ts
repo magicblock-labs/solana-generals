@@ -101,11 +101,9 @@ export class MagicBlockEngine {
     name: string,
     transaction: Transaction
   ): Promise<string> {
-    const signature = await connectionChain.sendTransaction(
-      transaction,
-      [this.sessionKey]
-      //{ skipPreflight: true }
-    );
+    const signature = await connectionChain.sendTransaction(transaction, [
+      this.sessionKey,
+    ]);
     await this.waitSignatureConfirmation(
       name,
       signature,
@@ -119,11 +117,9 @@ export class MagicBlockEngine {
     name: string,
     transaction: Transaction
   ): Promise<string> {
-    const signature = await connectionEphemeral.sendTransaction(
-      transaction,
-      [this.sessionKey]
-      //{ skipPreflight: true }
-    );
+    const signature = await connectionEphemeral.sendTransaction(transaction, [
+      this.sessionKey,
+    ]);
     await this.waitSignatureConfirmation(
       name,
       signature,
@@ -141,6 +137,7 @@ export class MagicBlockEngine {
   ): Promise<void> {
     console.log(name, "sent");
     return new Promise((resolve, reject) => {
+      console.log(name, "listen");
       connection.onSignature(
         signature,
         (result) => {
@@ -158,9 +155,8 @@ export class MagicBlockEngine {
   }
 
   async debugError(name: string, signature: string, connection: Connection) {
-    connection.getParsedTransaction(signature).then((transaction: any) => {
-      console.log("debugError", name, signature, transaction);
-    });
+    const transaction = await connection.getParsedTransaction(signature);
+    console.log("debugError", name, signature, transaction);
   }
 
   async fundSession() {
