@@ -16,6 +16,8 @@ import { GameLobbyRoot } from "../game/lobby/GameLobbyRoot";
 import { GamePlayRoot } from "../game/play/GamePlayRoot";
 import { GameError } from "../game/GameError";
 
+import { gameSystemGenerate } from "../../states/gameSystemGenerate";
+
 export function PagePlay() {
   const params = useParams();
   const engine = useMagicBlockEngine();
@@ -35,6 +37,12 @@ export function PagePlay() {
   // Listen to changes on the game PDA's data
   const [game, setGame] = React.useState(undefined);
   React.useEffect(() => {
+    /*
+    gameSystemGenerate(engine, entityPda).then(
+      (value) => console.log("nudge generate success", value),
+      (reason) => console.log("nudge generate fail", reason.toString())
+    );
+    */
     return gameListen(engine, gamePda, setGame);
   }, [engine, gamePda]);
 

@@ -1,16 +1,19 @@
 import { PublicKey } from "@solana/web3.js";
 import { MagicBlockEngine } from "../engine/MagicBlockEngine";
-import { getComponentGameOnEphemeral } from "./gamePrograms";
+import { getComponentGameOnEphem } from "./gamePrograms";
 
 export function gameListen(
   engine: MagicBlockEngine,
   gamePda: PublicKey,
   setGame: (game: any) => void
 ) {
-  const componentGame = getComponentGameOnEphemeral(engine);
+  const componentGame = getComponentGameOnEphem(engine);
 
-  return engine.subscribeToEphemeralAccountInfo(gamePda, (accountInfo) => {
+  return engine.subscribeToEphemAccountInfo(gamePda, (accountInfo) => {
+    if (!accountInfo) {
+      return setGame(null);
+    }
     const game = componentGame.coder.accounts.decode("game", accountInfo.data);
-    setGame(game);
+    return setGame(game);
   });
 }

@@ -1,8 +1,8 @@
 import { PublicKey } from "@solana/web3.js";
 import { MagicBlockEngine } from "../engine/MagicBlockEngine";
-import { getComponentGameOnEphemeral } from "./gamePrograms";
+import { getComponentGameOnEphem } from "./gamePrograms";
 
 export async function gameFetch(engine: MagicBlockEngine, gamePda: PublicKey) {
-  const componentGame = getComponentGameOnEphemeral(engine);
+  const componentGame = getComponentGameOnEphem(engine);
   return componentGame.account.game.fetchNullable(gamePda);
 }

@@ -38,6 +38,10 @@ export const SYSTEM_COMMAND_PROGRAM_ID = new PublicKey(systemCommand.address);
 export const SYSTEM_TICK_PROGRAM_ID = new PublicKey(systemTick.address);
 export const SYSTEM_FINISH_PROGRAM_ID = new PublicKey(systemFinish.address);
 
-export function getComponentGameOnEphemeral(engine: MagicBlockEngine) {
-  return engine.getProgramOnEphemeral<Game>(componentGame);
+export function getComponentGameOnChain(engine: MagicBlockEngine) {
+  return engine.getProgramOnChain<Game>(componentGame);
+}
+
+export function getComponentGameOnEphem(engine: MagicBlockEngine) {
+  return engine.getProgramOnEphem<Game>(componentGame);
 }

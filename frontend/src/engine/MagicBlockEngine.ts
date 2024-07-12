@@ -14,13 +14,16 @@ import { WalletName } from "@solana/wallet-adapter-base";
 const ENDPOINT_CHAIN_RPC = "https://api.devnet.solana.com";
 const ENDPOINT_CHAIN_WS = "wss://api.devnet.solana.com";
 
-const ENDPOINT_EPHEMERAL_RPC = "https://devnet.magicblock.app";
-const ENDPOINT_EPHEMERAL_WS = "wss://devnet.magicblock.app:8900";
+const ENDPOINT_EPHEM_RPC = "https://devnet.magicblock.app";
+const ENDPOINT_EPHEM_WS = "wss://devnet.magicblock.app:8900";
+
+const _ENDPOINT_EPHEM_RPC = "http://localhost:8899";
+const _ENDPOINT_EPHEM_WS = "ws://localhost:8900";
 
 const TRANSACTION_COST_LAMPORTS = 5000;
 
-const connectionEphemeral = new Connection(ENDPOINT_EPHEMERAL_RPC, {
-  wsEndpoint: ENDPOINT_EPHEMERAL_WS,
+const connectionEphem = new Connection(ENDPOINT_EPHEM_RPC, {
+  wsEndpoint: ENDPOINT_EPHEM_WS,
 });
 const connectionChain = new Connection(ENDPOINT_CHAIN_RPC, {
   wsEndpoint: ENDPOINT_CHAIN_WS,
@@ -54,15 +57,15 @@ export class MagicBlockEngine {
   getProgramOnChain<T extends Idl>(idl: {}): Program<T> {
     return new Program<T>(idl as T, { connection: connectionChain });
   }
-  getProgramOnEphemeral<T extends Idl>(idl: {}): Program<T> {
-    return new Program<T>(idl as T, { connection: connectionEphemeral });
+  getProgramOnEphem<T extends Idl>(idl: {}): Program<T> {
+    return new Program<T>(idl as T, { connection: connectionEphem });
   }
 
   getConnectionChain(): Connection {
     return connectionChain;
   }
-  getConnectionEphemeral(): Connection {
-    return connectionEphemeral;
+  getConnectionEphem(): Connection {
+    return connectionEphem;
   }
 
   getWalletConnected() {
@@ -113,17 +116,17 @@ export class MagicBlockEngine {
     return signature;
   }
 
-  async processSessionEphemeralTransaction(
+  async processSessionEphemTransaction(
     name: string,
     transaction: Transaction
   ): Promise<string> {
-    const signature = await connectionEphemeral.sendTransaction(transaction, [
+    const signature = await connectionEphem.sendTransaction(transaction, [
       this.sessionKey,
     ]);
     await this.waitSignatureConfirmation(
       name,
       signature,
-      connectionEphemeral,
+      connectionEphem,
       "finalized"
     );
     return signature;
@@ -212,12 +215,12 @@ export class MagicBlockEngine {
     );
   }
 
-  subscribeToEphemeralAccountInfo(
+  subscribeToEphemAccountInfo(
     address: PublicKey,
     onAccountChange: (accountInfo?: AccountInfo<Buffer>) => void
   ) {
     return this.subscribeToAccountInfo(
-      connectionEphemeral,
+      connectionEphem,
       address,
       onAccountChange
     );

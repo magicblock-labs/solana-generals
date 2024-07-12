@@ -37,7 +37,7 @@ export async function gameCreate(
     initializeComponent.transaction
   );
   // Delegate the game component
-  onLog("Delegating to Ephemeral rollups");
+  onLog("Delegating to Ephem rollups");
   const delegateComponentInstruction = createDelegateInstruction({
     entity: addEntity.entityPda,
     account: initializeComponent.componentPda,

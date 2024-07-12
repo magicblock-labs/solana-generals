@@ -25,7 +25,7 @@ export async function gameSystemGenerate(
       },
     ],
   });
-  return await engine.processSessionEphemeralTransaction(
+  return await engine.processSessionEphemTransaction(
     "SystemGenerate",
     applySystem.transaction
   );

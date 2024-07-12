@@ -29,7 +29,7 @@ export async function gameSystemFinish(
       player_index: playerIndex,
     },
   });
-  return await engine.processSessionEphemeralTransaction(
+  return await engine.processSessionEphemTransaction(
     "SystemFinish:" + playerIndex,
     applySystem.transaction
   );

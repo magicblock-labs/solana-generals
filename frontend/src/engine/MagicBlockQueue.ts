@@ -15,25 +15,29 @@ export class MagicBlockQueue {
     return this.engine.getSessionPayer();
   }
 
-  async processSessionEphemeralTransaction(
+  async processSessionEphemTransaction(
     name: string,
     transaction: Transaction
   ): Promise<string> {
     const engine = this.engine;
     const last = this.last;
+
     const next = (async function () {
       try {
         await last;
-      } catch (error) {}
+      } catch (error) {
+        // The error should be handled by another awaiter (from the return)
+      }
       const timeout = new Promise<string>((resolve) =>
         setTimeout(() => resolve(""), 5000)
       );
-      const process = engine.processSessionEphemeralTransaction(
+      const execution = engine.processSessionEphemTransaction(
         name,
         transaction
       );
-      return await Promise.race([timeout, process]);
+      return await Promise.race([timeout, execution]);
     })();
+
     this.last = next;
     return next;
   }

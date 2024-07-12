@@ -40,7 +40,7 @@ export async function gameSystemCommand(
       strength_percent: strengthPercent,
     },
   });
-  return await queue.processSessionEphemeralTransaction(
+  return await queue.processSessionEphemTransaction(
     "SystemCommand:" +
       playerIndex +
       " (" +

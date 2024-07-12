@@ -6,10 +6,10 @@ import {
 
 import { MagicBlockEngine } from "../engine/MagicBlockEngine";
 
-import { WORLD_PDA, getComponentGameOnEphemeral } from "./gamePrograms";
+import { WORLD_PDA, getComponentGameOnChain } from "./gamePrograms";
 
 export async function gameList(engine: MagicBlockEngine, count: number) {
-  const componentGame = getComponentGameOnEphemeral(engine);
+  const componentGame = getComponentGameOnChain(engine);
 
   const world = await World.fromAccountAddress(
     engine.getConnectionChain(),
