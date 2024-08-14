@@ -27,7 +27,7 @@ export function MenuSession() {
   const extras = [];
   if (engine.getWalletConnected() && needsFunding) {
     const onFund = async () => {
-      await engine.fundSession();
+      await engine.fundSessionFromWallet();
       console.log("funded");
     };
     extras.push(<Button key="fund" text="Fund" onClick={onFund} />);

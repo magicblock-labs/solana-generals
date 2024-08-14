@@ -3,7 +3,7 @@ use game::Game;
 use game::GameError;
 use game::GameStatus;
 
-declare_id!("2WJu82jnjZEYMKBJpo8B6b4JwN2yZfm7LDXzKihFW8FP");
+declare_id!("Cu8JkUA9a5msGWNChAuhBJ9PTE6FdevwHNgPyxbABkUL");
 
 #[system]
 pub mod start {

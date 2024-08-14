@@ -18,10 +18,6 @@ import * as CommandIdl from "../../../backend/target/idl/command.json";
 import * as TickIdl from "../../../backend/target/idl/tick.json";
 import * as FinishIdl from "../../../backend/target/idl/finish.json";
 
-export const WORLD_PDA = new PublicKey(
-  "JBupPMmv4zaXa5c8EdubsCPvoHZwCK7mwnDfmfs8dC5Y"
-);
-
 const componentGame = GameIdl as Game;
 const systemGenerate = GenerateIdl as Generate;
 const systemJoin = JoinIdl as Join;

@@ -4,7 +4,7 @@ use game::GameCell;
 use game::GameError;
 use game::GameStatus;
 
-declare_id!("CqZi8eYYnTp1C58rfZVw8fxr2YZ1yUi3TcTz3zjj7NAu");
+declare_id!("3KFBmeDYJgrB9SB8jfsrXQN5wNvKinneJgNnpa2KgRw7");
 
 #[system]
 pub mod generate {
