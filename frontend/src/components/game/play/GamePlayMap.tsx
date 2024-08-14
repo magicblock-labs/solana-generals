@@ -19,7 +19,7 @@ export function GamePlayMap({
   const engine = useMagicBlockEngine();
 
   const queue = React.useMemo(() => {
-    return new MagicBlockQueue(engine);
+    return new MagicBlockQueue(engine, 100);
   }, [engine]);
 
   const [command, setCommand] = React.useState({
@@ -28,6 +28,14 @@ export function GamePlayMap({
     sourceY: 0,
     sourcePlayerIndex: 0,
   });
+
+  let lastCommand = {
+    sourcePlayerIndex: -1,
+    sourceX: -1,
+    sourceY: -1,
+    targetX: -1,
+    targetY: -1,
+  };
 
   const onCommand = (targetX: number, targetY: number, type: string) => {
     switch (type) {
@@ -66,12 +74,30 @@ export function GamePlayMap({
         if (!command.active) {
           return;
         }
+        const sourcePlayerIndex = command.sourcePlayerIndex;
         const sourceX = command.sourceX;
         const sourceY = command.sourceY;
         if (sourceX === targetX && sourceY === targetY) {
           return;
         }
-        const sourcePlayerIndex = command.sourcePlayerIndex;
+
+        if (
+          lastCommand.sourcePlayerIndex === sourcePlayerIndex &&
+          lastCommand.sourceX === sourceX &&
+          lastCommand.sourceY === sourceY &&
+          lastCommand.targetX === targetX &&
+          lastCommand.targetY === targetY
+        ) {
+          return;
+        }
+        lastCommand = {
+          sourcePlayerIndex,
+          sourceX,
+          sourceY,
+          targetX,
+          targetY,
+        };
+
         console.log(
           "onCommand.attack",
           sourceX + "x" + sourceY,

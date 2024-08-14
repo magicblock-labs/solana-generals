@@ -14,19 +14,19 @@ import { WalletName } from "@solana/wallet-adapter-base";
 const ENDPOINT_CHAIN_RPC = "https://api.devnet.solana.com";
 const ENDPOINT_CHAIN_WS = "wss://api.devnet.solana.com";
 
-const ENDPOINT_EPHEM_RPC = "https://devnet.magicblock.app";
-const ENDPOINT_EPHEM_WS = "wss://devnet.magicblock.app:8900";
+const _ENDPOINT_EPHEM_RPC = "https://devnet.magicblock.app";
+const _ENDPOINT_EPHEM_WS = "wss://devnet.magicblock.app:8900";
 
-const _ENDPOINT_EPHEM_RPC = "http://localhost:8899";
-const _ENDPOINT_EPHEM_WS = "ws://localhost:8900";
+const ENDPOINT_EPHEM_RPC = "http://localhost:8899";
+const ENDPOINT_EPHEM_WS = "ws://localhost:8900";
 
 const TRANSACTION_COST_LAMPORTS = 5000;
 
-const connectionEphem = new Connection(ENDPOINT_EPHEM_RPC, {
-  wsEndpoint: ENDPOINT_EPHEM_WS,
-});
 const connectionChain = new Connection(ENDPOINT_CHAIN_RPC, {
   wsEndpoint: ENDPOINT_CHAIN_WS,
+});
+const connectionEphem = new Connection(ENDPOINT_EPHEM_RPC, {
+  wsEndpoint: ENDPOINT_EPHEM_WS,
 });
 
 interface SessionConfig {
@@ -120,9 +120,11 @@ export class MagicBlockEngine {
     name: string,
     transaction: Transaction
   ): Promise<string> {
-    const signature = await connectionEphem.sendTransaction(transaction, [
-      this.sessionKey,
-    ]);
+    const signature = await connectionEphem.sendTransaction(
+      transaction,
+      [this.sessionKey],
+      { skipPreflight: true } // We don't want to do preflight in most cases
+    );
     await this.waitSignatureConfirmation(
       name,
       signature,
