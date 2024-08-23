@@ -1,6 +1,5 @@
 use bolt_lang::*;
 use game::Game;
-use game::GameCell;
 use game::GameCellKind;
 use game::GameCellOwner;
 use game::GameError;
@@ -42,8 +41,6 @@ pub mod tick {
                 }
             }
         }
-
-        game.set_cell(0, 0, GameCell::city())?; // BLAH
 
         Ok(ctx.accounts)
     }

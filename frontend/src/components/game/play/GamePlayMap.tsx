@@ -19,7 +19,7 @@ export function GamePlayMap({
   const engine = useMagicBlockEngine();
 
   const queue = React.useMemo(() => {
-    return new MagicBlockQueue(engine, 100);
+    return new MagicBlockQueue(engine, 5000);
   }, [engine]);
 
   const [command, setCommand] = React.useState({
@@ -126,8 +126,7 @@ export function GamePlayMap({
               "onCommand.fail",
               sourceX + "x" + sourceY,
               targetX + "x" + targetY,
-              reason,
-              game
+              reason?.message ?? reason
             );
           }
         );

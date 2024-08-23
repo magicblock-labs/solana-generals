@@ -90,6 +90,7 @@ export class MagicBlockEngine {
     name: string,
     transaction: Transaction
   ): Promise<string> {
+    console.log(name, "sending");
     const signature = await this.walletContext.sendTransaction(
       transaction,
       connectionChain
@@ -107,6 +108,7 @@ export class MagicBlockEngine {
     name: string,
     transaction: Transaction
   ): Promise<string> {
+    console.log(name, "sending");
     const signature = await connectionChain.sendTransaction(transaction, [
       this.sessionKey,
     ]);
@@ -123,6 +125,7 @@ export class MagicBlockEngine {
     name: string,
     transaction: Transaction
   ): Promise<string> {
+    console.log(name, "sending");
     const signature = await connectionEphem.sendTransaction(
       transaction,
       [this.sessionKey],

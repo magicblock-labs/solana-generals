@@ -6,6 +6,7 @@ skip-lint = false
 
 [programs.devnet]
 game = "C5iL81s4Fu6SnkQEfixFZpKPRQ32fqVizpotoLVTxA2n"
+
 command = "YGKbhp7S1cCvvheyQ8rcuECKUR1SVpKpHjnqCqdP1cm"
 finish = "HBdGPJycpHjjJ149T3RQGtQWjSC39MVpcKYF6JJvaF6e"
 generate = "3KFBmeDYJgrB9SB8jfsrXQN5wNvKinneJgNnpa2KgRw7"

@@ -80,8 +80,8 @@ function scheduleTick(
       return;
     }
     while (running) {
-      // Wait 1 tick to avoid cloging the main thread
-      await new Promise((resolve) => setTimeout(resolve));
+      // Wait a bit to avoid cloging the main thread
+      await new Promise((resolve) => setTimeout(resolve, 100));
       // Run the tick system and try again as soon as it succeed
       try {
         await gameSystemTick(engine, entityPda);

@@ -9,7 +9,6 @@ declare_id!("YGKbhp7S1cCvvheyQ8rcuECKUR1SVpKpHjnqCqdP1cm");
 
 #[system]
 pub mod command {
-
     pub fn execute(ctx: Context<Components>, args: Args) -> Result<Components> {
         let game = &mut ctx.accounts.game;
 
@@ -72,20 +71,26 @@ pub mod command {
         }
         // If the target cell is not the same player, invade it
         else {
+            // Move the strength out of the source cell
             source_cell_after.strength = source_cell_before.strength - moved_strength;
+            // Some cells are harder to attack
+            let damage_strength = match target_cell_before.kind {
+                GameCellKind::Forest => moved_strength / 2,
+                _ => moved_strength,
+            };
             // If the target cell resists the attack
-            if moved_strength < target_cell_before.strength {
-                target_cell_after.strength = target_cell_before.strength - moved_strength;
+            if damage_strength < target_cell_before.strength {
+                target_cell_after.strength = target_cell_before.strength - damage_strength;
             }
             // If the target cell dies with the attack
-            else if moved_strength == target_cell_before.strength {
+            else if damage_strength == target_cell_before.strength {
                 target_cell_after.owner = GameCellOwner::Nobody;
                 target_cell_after.strength = 0;
             }
             // If the target cell gets conquered
             else {
                 target_cell_after.owner = source_cell_after.owner.clone();
-                target_cell_after.strength = moved_strength - target_cell_before.strength;
+                target_cell_after.strength = damage_strength - target_cell_before.strength;
             }
         }
 

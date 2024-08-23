@@ -24,7 +24,7 @@ export async function gameList(engine: MagicBlockEngine, count: number) {
   while (!entityId.isNeg() && found.length < count) {
     // Create a batch of accounts PDAs to read
     const batch: any[] = [];
-    while (!entityId.isNeg() && batch.length <= 10) {
+    while (!entityId.isNeg() && batch.length <= 100) {
       const entityPda = FindEntityPda({
         worldId: world.id,
         entityId: entityId,

@@ -40,6 +40,16 @@ pub mod generate {
         game.set_cell(1, 1, GameCell::capital(0))?;
         game.set_cell(14, 6, GameCell::capital(1))?;
 
+        /*
+        // Add some mountains in the middle
+        game.set_cell(7, 5, GameCell::mountain())?;
+        game.set_cell(8, 2, GameCell::mountain())?;
+
+        // Add some forest in the the middle
+        game.set_cell(7, 1, GameCell::forest())?;
+        game.set_cell(8, 6, GameCell::forest())?;
+        */
+
         // When done, mark the game as ready to receive players
         ctx.accounts.game.status = GameStatus::Lobby;
 

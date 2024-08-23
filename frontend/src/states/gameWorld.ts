@@ -12,7 +12,11 @@ const EXPECTED_WORLD_PDA = new PublicKey(
 
 export async function gameWorld(engine: MagicBlockEngine): Promise<PublicKey> {
   // If possible, try to get an airdrop for when we are working with devnet/testnet/localnet
-  await engine.fundSessionFromAirdrop();
+  try {
+    await engine.fundSessionFromAirdrop();
+  } catch (error) {
+    console.log("Could not airdrop to fund the session key");
+  }
   // Check if the registry exists, or try to create it
   const registryPda = FindRegistryPda({});
   const registryAccountInfo = await engine.getChainAccountInfo(registryPda);
@@ -25,6 +29,7 @@ export async function gameWorld(engine: MagicBlockEngine): Promise<PublicKey> {
       "InitializeRegistry",
       new Transaction().add(initializeRegistryIx)
     );
+    console.log("Initialized Registry");
   }
   // Check if the world exists, or try to create it
   const worldPda = EXPECTED_WORLD_PDA;
@@ -34,6 +39,7 @@ export async function gameWorld(engine: MagicBlockEngine): Promise<PublicKey> {
       connection: engine.getConnectionChain(),
       payer: engine.getSessionPayer(),
     });
+    console.log("InitializeNewWorld", initializeNewWorld);
     await engine.processSessionChainTransaction(
       "InitializeNewWorld",
       initializeNewWorld.transaction
