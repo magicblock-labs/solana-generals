@@ -130,7 +130,7 @@ describe("Backend", () => {
         source_y: 1,
         target_x: 1,
         target_y: 2,
-        strength: 5,
+        strength_percent: 100,
       },
     });
     await logGameInfos();
@@ -156,7 +156,7 @@ describe("Backend", () => {
         source_y: 6,
         target_x: 13,
         target_y: 6,
-        strength: 3,
+        strength_percent: 100,
       },
     });
     await logGameInfos();
@@ -253,6 +253,8 @@ describe("Backend", () => {
           parts.push(" ");
         } else if (cell.kind.mountain !== undefined) {
           parts.push("M");
+        } else if (cell.kind.forest !== undefined) {
+          parts.push("F");
         } else {
           parts.push("?");
         }
@@ -262,7 +264,7 @@ describe("Backend", () => {
         } else if (cell.strength < 10) {
           parts.push(cell.strength.toString());
         } else {
-          parts.push("#");
+          parts.push("+");
         }
       }
       parts.push("|");

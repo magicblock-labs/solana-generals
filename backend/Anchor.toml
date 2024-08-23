@@ -5,13 +5,14 @@ resolution = true
 skip-lint = false
 
 [programs.devnet]
-command = "EqGdRy5kD3kLhiY1NrNgpv144Z5GcL2FVSQsXDwjPD1o"
-finish = "8ukdUrzW4seE9MUXY5Lwazt3ydw4Wtbr72C6EaFq8jsC"
-game = "DcUL2DdypF14p5TZEBcEtpGSY843LM9vkokyoDahxWhk"
-generate = "CqZi8eYYnTp1C58rfZVw8fxr2YZ1yUi3TcTz3zjj7NAu"
-join = "FB4VQ795oSLE4q7D1RdyofkyA9LZNL4sLdoK4Py7VocG"
-start = "2WJu82jnjZEYMKBJpo8B6b4JwN2yZfm7LDXzKihFW8FP"
-tick = "EdCEZKUooqVVFxXfk6yHXq5En24ZYtrQQjLPr9x33M4k"
+game = "C5iL81s4Fu6SnkQEfixFZpKPRQ32fqVizpotoLVTxA2n"
+
+command = "YGKbhp7S1cCvvheyQ8rcuECKUR1SVpKpHjnqCqdP1cm"
+finish = "HBdGPJycpHjjJ149T3RQGtQWjSC39MVpcKYF6JJvaF6e"
+generate = "3KFBmeDYJgrB9SB8jfsrXQN5wNvKinneJgNnpa2KgRw7"
+join = "3zMXokc8DYYAairrtAKZKPJZKHmWKRdj6G8bm8ZZVi9g"
+start = "Cu8JkUA9a5msGWNChAuhBJ9PTE6FdevwHNgPyxbABkUL"
+tick = "8tKAapRKPrNkxXwcArbSAnBHieYnX6M2WoTxukbCQtTa"
 
 [registry]
 url = "https://api.apr.dev"

@@ -56,6 +56,9 @@ export function GameGridCell({
   if (cell.kind.mountain) {
     image = GameGridCellMountain;
   }
+  if (cell.kind.forest) {
+    image = GameGridCellMountain; // TODO - special icon
+  }
 
   const onStart = makeEventHandler(x, y, "start", onCommand);
   const onMove = makeEventHandler(x, y, "move", onCommand);

@@ -1,6 +1,6 @@
 use bolt_lang::*;
 
-declare_id!("DcUL2DdypF14p5TZEBcEtpGSY843LM9vkokyoDahxWhk");
+declare_id!("C5iL81s4Fu6SnkQEfixFZpKPRQ32fqVizpotoLVTxA2n");
 
 #[component(delegate)]
 pub struct Game {
@@ -44,6 +44,7 @@ pub enum GameCellKind {
     City,
     Capital,
     Mountain,
+    Forest,
 }
 
 #[component_deserialize]
@@ -110,12 +111,19 @@ impl GameCell {
         GameCell {
             kind: GameCellKind::Capital,
             owner: GameCellOwner::Player(player_slot),
-            strength: 1,
+            strength: 10,
         }
     }
     pub fn mountain() -> GameCell {
         GameCell {
             kind: GameCellKind::Mountain,
+            owner: GameCellOwner::Nobody,
+            strength: 0,
+        }
+    }
+    pub fn forest() -> GameCell {
+        GameCell {
+            kind: GameCellKind::Forest,
             owner: GameCellOwner::Nobody,
             strength: 0,
         }

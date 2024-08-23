@@ -6,22 +6,25 @@ import {
 
 import { MagicBlockEngine } from "../engine/MagicBlockEngine";
 
-import { WORLD_PDA, getComponentGameOnChain } from "./gamePrograms";
+import { getComponentGameOnChain } from "./gamePrograms";
+import { gameWorld } from "./gameWorld";
 
 export async function gameList(engine: MagicBlockEngine, count: number) {
   const componentGame = getComponentGameOnChain(engine);
+  const worldPda = await gameWorld(engine);
 
   const world = await World.fromAccountAddress(
     engine.getConnectionChain(),
-    WORLD_PDA
+    worldPda
   );
+
   let entityId = world.entities;
 
   const found: any[] = [];
   while (!entityId.isNeg() && found.length < count) {
     // Create a batch of accounts PDAs to read
     const batch: any[] = [];
-    while (!entityId.isNeg() && batch.length <= 10) {
+    while (!entityId.isNeg() && batch.length <= 100) {
       const entityPda = FindEntityPda({
         worldId: world.id,
         entityId: entityId,

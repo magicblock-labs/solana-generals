@@ -40,7 +40,15 @@ export async function gameSystemCommand(
       strength_percent: strengthPercent,
     },
   });
-  return await queue.processSessionEphemTransaction(
+
+  console.log(
+    "gameSystemCommand.queued:",
+    sourceX + "x" + sourceY,
+    "->",
+    targetX + "x" + targetY
+  );
+
+  const dudu = await queue.processSessionEphemTransaction(
     "SystemCommand:" +
       playerIndex +
       " (" +
@@ -54,4 +62,13 @@ export async function gameSystemCommand(
       ")",
     applySystem.transaction
   );
+
+  console.log(
+    "gameSystemCommand.awaited:",
+    sourceX + "x" + sourceY,
+    "->",
+    targetX + "x" + targetY
+  );
+
+  return dudu;
 }

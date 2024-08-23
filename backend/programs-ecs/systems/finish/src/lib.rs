@@ -4,7 +4,7 @@ use game::GameCellOwner;
 use game::GameError;
 use game::GameStatus;
 
-declare_id!("8ukdUrzW4seE9MUXY5Lwazt3ydw4Wtbr72C6EaFq8jsC");
+declare_id!("HBdGPJycpHjjJ149T3RQGtQWjSC39MVpcKYF6JJvaF6e");
 
 #[system]
 pub mod finish {

@@ -7,19 +7,22 @@ import {
 
 import { MagicBlockEngine } from "../engine/MagicBlockEngine";
 
-import { COMPONENT_GAME_PROGRAM_ID, WORLD_PDA } from "./gamePrograms";
+import { COMPONENT_GAME_PROGRAM_ID } from "./gamePrograms";
 import { gameSystemGenerate } from "./gameSystemGenerate";
+import { gameWorld } from "./gameWorld";
 
 export async function gameCreate(
   engine: MagicBlockEngine,
   onLog: (log: string) => void
 ) {
+  // Choose the world we're using
+  const worldPda = await gameWorld(engine);
   // Create a new Entity
   onLog("Creating a new entity");
   const addEntity = await AddEntity({
     connection: engine.getConnectionChain(),
     payer: engine.getSessionPayer(),
-    world: WORLD_PDA,
+    world: worldPda,
   });
   await engine.processSessionChainTransaction(
     "AddEntity",

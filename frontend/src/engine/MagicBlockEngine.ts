@@ -14,11 +14,14 @@ import { WalletName } from "@solana/wallet-adapter-base";
 const ENDPOINT_CHAIN_RPC = "https://api.devnet.solana.com";
 const ENDPOINT_CHAIN_WS = "wss://api.devnet.solana.com";
 
-const _ENDPOINT_EPHEM_RPC = "https://devnet.magicblock.app";
-const _ENDPOINT_EPHEM_WS = "wss://devnet.magicblock.app:8900";
+const _ENDPOINT_CHAIN_RPC = "http://127.0.0.1:7899";
+const _ENDPOINT_CHAIN_WS = "ws://127.0.0.1:7900";
 
-const ENDPOINT_EPHEM_RPC = "http://localhost:8899";
-const ENDPOINT_EPHEM_WS = "ws://localhost:8900";
+const ENDPOINT_EPHEM_RPC = "https://devnet.magicblock.app";
+const ENDPOINT_EPHEM_WS = "wss://devnet.magicblock.app:8900";
+
+const _ENDPOINT_EPHEM_RPC = "http://localhost:8899";
+const _ENDPOINT_EPHEM_WS = "ws://localhost:8900";
 
 const TRANSACTION_COST_LAMPORTS = 5000;
 
@@ -87,6 +90,7 @@ export class MagicBlockEngine {
     name: string,
     transaction: Transaction
   ): Promise<string> {
+    console.log(name, "sending");
     const signature = await this.walletContext.sendTransaction(
       transaction,
       connectionChain
@@ -104,6 +108,7 @@ export class MagicBlockEngine {
     name: string,
     transaction: Transaction
   ): Promise<string> {
+    console.log(name, "sending");
     const signature = await connectionChain.sendTransaction(transaction, [
       this.sessionKey,
     ]);
@@ -120,6 +125,7 @@ export class MagicBlockEngine {
     name: string,
     transaction: Transaction
   ): Promise<string> {
+    console.log(name, "sending");
     const signature = await connectionEphem.sendTransaction(
       transaction,
       [this.sessionKey],
@@ -164,17 +170,32 @@ export class MagicBlockEngine {
     console.log("debugError", name, signature, transaction);
   }
 
-  async fundSession() {
+  async getSessionFundingMissingLamports() {
     const accountInfo = await connectionChain.getAccountInfo(
       this.getSessionPayer()
     );
-    if (!accountInfo || accountInfo.lamports < this.sessionConfig.minLamports) {
-      const existingLamports = accountInfo?.lamports ?? 0;
-      const missingLamports = this.sessionConfig.maxLamports - existingLamports;
-      console.log("fundSession.existingLamports", existingLamports);
-      console.log("fundSession.missingLamports", missingLamports);
+    const currentLamports = accountInfo?.lamports ?? 0;
+    if (currentLamports < this.sessionConfig.minLamports) {
+      return this.sessionConfig.maxLamports - currentLamports;
+    }
+    return 0;
+  }
+
+  async fundSessionFromAirdrop() {
+    const missingLamports = await this.getSessionFundingMissingLamports();
+    if (missingLamports > 0) {
+      await connectionChain.requestAirdrop(
+        this.sessionKey.publicKey,
+        missingLamports
+      );
+    }
+  }
+
+  async fundSessionFromWallet() {
+    const missingLamports = await this.getSessionFundingMissingLamports();
+    if (missingLamports > 0) {
       await this.processWalletTransaction(
-        "FundSession",
+        "FundSessionFromWallet",
         new Transaction().add(
           SystemProgram.transfer({
             fromPubkey: this.getWalletPayer(),
@@ -186,7 +207,7 @@ export class MagicBlockEngine {
     }
   }
 
-  async defundSession() {
+  async defundSessionBackToWallet() {
     const accountInfo = await connectionChain.getAccountInfo(
       this.getSessionPayer()
     );
@@ -194,7 +215,7 @@ export class MagicBlockEngine {
       const transferableLamports =
         accountInfo.lamports - TRANSACTION_COST_LAMPORTS;
       await this.processSessionChainTransaction(
-        "DefundSession",
+        "DefundSessionBackToWallet",
         new Transaction().add(
           SystemProgram.transfer({
             fromPubkey: this.getSessionPayer(),
@@ -204,6 +225,14 @@ export class MagicBlockEngine {
         )
       );
     }
+  }
+
+  getChainAccountInfo(address: PublicKey) {
+    return connectionChain.getAccountInfo(address);
+  }
+
+  getEphemAccountInfo(address: PublicKey) {
+    return connectionEphem.getAccountInfo(address);
   }
 
   subscribeToChainAccountInfo(
