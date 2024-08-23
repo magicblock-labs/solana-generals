@@ -17,11 +17,11 @@ const ENDPOINT_CHAIN_WS = "wss://api.devnet.solana.com";
 const _ENDPOINT_CHAIN_RPC = "http://127.0.0.1:7899";
 const _ENDPOINT_CHAIN_WS = "ws://127.0.0.1:7900";
 
-const _ENDPOINT_EPHEM_RPC = "https://devnet.magicblock.app";
-const _ENDPOINT_EPHEM_WS = "wss://devnet.magicblock.app:8900";
+const ENDPOINT_EPHEM_RPC = "https://devnet.magicblock.app";
+const ENDPOINT_EPHEM_WS = "wss://devnet.magicblock.app:8900";
 
-const ENDPOINT_EPHEM_RPC = "http://localhost:8899";
-const ENDPOINT_EPHEM_WS = "ws://localhost:8900";
+const _ENDPOINT_EPHEM_RPC = "http://localhost:8899";
+const _ENDPOINT_EPHEM_WS = "ws://localhost:8900";
 
 const TRANSACTION_COST_LAMPORTS = 5000;
 
