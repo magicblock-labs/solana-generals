@@ -4,12 +4,10 @@ import { MagicBlockEngine } from "./MagicBlockEngine";
 
 export class MagicBlockQueue {
   private engine: MagicBlockEngine;
-  private timeout: number;
   private last?: Promise<string>;
 
-  constructor(engine: MagicBlockEngine, timeout: number) {
+  constructor(engine: MagicBlockEngine) {
     this.engine = engine;
-    this.timeout = timeout;
     this.last = undefined;
   }
 
@@ -23,8 +21,6 @@ export class MagicBlockQueue {
   ): Promise<string> {
     const engine = this.engine;
     const last = this.last;
-    const timeout = this.timeout;
-
     const next = (async function () {
       try {
         if (last !== undefined) {
@@ -34,7 +30,7 @@ export class MagicBlockQueue {
         // The error should be handled by another awaiter (from the return)
       }
       const expiration = new Promise<string>((resolve) =>
-        setTimeout(() => resolve(""), timeout)
+        setTimeout(() => resolve(""), 1000)
       );
       const execution = engine.processSessionEphemTransaction(
         name,

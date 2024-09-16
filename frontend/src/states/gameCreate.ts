@@ -41,12 +41,16 @@ export async function gameCreate(
   );
   // Delegate the game component
   onLog("Delegating to Ephem rollups");
-  const delegateComponentInstruction = createDelegateInstruction({
-    entity: addEntity.entityPda,
-    account: initializeComponent.componentPda,
-    ownerProgram: COMPONENT_GAME_PROGRAM_ID,
-    payer: engine.getSessionPayer(),
-  });
+  const delegateComponentInstruction = createDelegateInstruction(
+    {
+      entity: addEntity.entityPda,
+      account: initializeComponent.componentPda,
+      ownerProgram: COMPONENT_GAME_PROGRAM_ID,
+      payer: engine.getSessionPayer(),
+    },
+    undefined,
+    1_000_000_000 // We don't want to auto-commit the state of the game
+  );
   await engine.processSessionChainTransaction(
     "DelegateComponent",
     new Transaction().add(delegateComponentInstruction)

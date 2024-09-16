@@ -111,7 +111,7 @@ impl GameCell {
         GameCell {
             kind: GameCellKind::Capital,
             owner: GameCellOwner::Player(player_slot),
-            strength: 10,
+            strength: 20,
         }
     }
     pub fn mountain() -> GameCell {

@@ -43,6 +43,9 @@ export function GamePlayRoot({
     status = "The game is finished.";
   }
 
+  // Show the slot of the game
+  status += " (tick slot: " + game.tickNextSlot.toString() + ")";
+
   return (
     <>
       <div

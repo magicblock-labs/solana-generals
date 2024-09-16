@@ -99,7 +99,7 @@ export class MagicBlockEngine {
       name,
       signature,
       connectionChain,
-      "finalized"
+      "confirmed"
     );
     return signature;
   }
@@ -109,14 +109,16 @@ export class MagicBlockEngine {
     transaction: Transaction
   ): Promise<string> {
     console.log(name, "sending");
-    const signature = await connectionChain.sendTransaction(transaction, [
-      this.sessionKey,
-    ]);
+    const signature = await connectionChain.sendTransaction(
+      transaction,
+      [this.sessionKey],
+      { skipPreflight: true }
+    );
     await this.waitSignatureConfirmation(
       name,
       signature,
       connectionChain,
-      "finalized"
+      "confirmed"
     );
     return signature;
   }
@@ -126,10 +128,11 @@ export class MagicBlockEngine {
     transaction: Transaction
   ): Promise<string> {
     console.log(name, "sending");
+    transaction.compileMessage;
     const signature = await connectionEphem.sendTransaction(
       transaction,
       [this.sessionKey],
-      { skipPreflight: true } // We don't want to do preflight in most cases
+      { skipPreflight: true }
     );
     await this.waitSignatureConfirmation(
       name,
@@ -146,9 +149,8 @@ export class MagicBlockEngine {
     connection: Connection,
     commitment: Commitment
   ): Promise<void> {
-    console.log(name, "sent");
+    console.log(name, "sent", signature);
     return new Promise((resolve, reject) => {
-      console.log(name, "listen");
       connection.onSignature(
         signature,
         (result) => {

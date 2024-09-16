@@ -19,131 +19,180 @@ export function GamePlayMap({
   const engine = useMagicBlockEngine();
 
   const queue = React.useMemo(() => {
-    return new MagicBlockQueue(engine, 5000);
+    return new MagicBlockQueue(engine);
   }, [engine]);
 
-  const [command, setCommand] = React.useState({
-    active: false,
-    sourceX: 0,
-    sourceY: 0,
-    sourcePlayerIndex: 0,
+  const [activity, setActivity] = React.useState({
+    x: -1,
+    y: -1,
   });
 
-  let lastCommand = {
-    sourcePlayerIndex: -1,
-    sourceX: -1,
-    sourceY: -1,
-    targetX: -1,
-    targetY: -1,
+  const command = React.useRef({
+    active: false,
+    lastX: -1,
+    lastY: -1,
+    playerIndex: -1,
+  });
+
+  const onCommandStart = (targetX: number, targetY: number) => {
+    if (!game.status.playing) {
+      return;
+    }
+    const cell = game.cells[targetY * game.sizeX + targetX];
+    if (!cell) {
+      return;
+    }
+    if (!cell.owner.player) {
+      return;
+    }
+    const playerIndex = cell.owner.player[0];
+    const player = game.players[playerIndex];
+    if (!player.authority.equals(engine.getSessionPayer())) {
+      return;
+    }
+    console.log("onCommand.start", targetX, targetY, playerIndex);
+    command.current = {
+      active: true,
+      lastX: targetX,
+      lastY: targetY,
+      playerIndex,
+    };
+    setActivity({
+      x: targetX,
+      y: targetY,
+    });
+  };
+
+  const onCommandMove = (targetX: number, targetY: number) => {
+    if (!command.current.active) {
+      return;
+    }
+
+    const sourceX = command.current.lastX;
+    const sourceY = command.current.lastY;
+    if (sourceX === targetX && sourceY === targetY) {
+      return;
+    }
+
+    const playerIndex = command.current.playerIndex;
+
+    command.current = {
+      active: true,
+      lastX: targetX,
+      lastY: targetY,
+      playerIndex,
+    };
+    setActivity({
+      x: targetX,
+      y: targetY,
+    });
+
+    onCommandAttackRow(playerIndex, sourceX, sourceY, targetX);
+    onCommandAttackColumn(playerIndex, targetX, sourceY, targetY);
+  };
+
+  const onCommandEnd = () => {
+    if (!command.current.active) {
+      return;
+    }
+    console.log("onCommand.end");
+    command.current = {
+      active: false,
+      lastX: -1,
+      lastY: -1,
+      playerIndex: -1,
+    };
+    setActivity({ x: -1, y: -1 });
+  };
+
+  const onCommandAttackRow = (
+    playerIndex: number,
+    sourceX: number,
+    sourceY: number,
+    targetX: number
+  ) => {
+    if (sourceX < targetX) {
+      for (let originX = sourceX; originX < targetX; originX++) {
+        onCommandAttack(playerIndex, originX, sourceY, originX + 1, sourceY);
+      }
+    } else {
+      for (let originX = sourceX; originX > targetX; originX--) {
+        onCommandAttack(playerIndex, originX, sourceY, originX - 1, sourceY);
+      }
+    }
+  };
+
+  const onCommandAttackColumn = (
+    playerIndex: number,
+    sourceX: number,
+    sourceY: number,
+    targetY: number
+  ) => {
+    if (sourceY < targetY) {
+      for (let originY = sourceY; originY < targetY; originY++) {
+        onCommandAttack(playerIndex, sourceX, originY, sourceX, originY + 1);
+      }
+    } else {
+      for (let originY = sourceY; originY > targetY; originY--) {
+        onCommandAttack(playerIndex, sourceX, originY, sourceX, originY - 1);
+      }
+    }
+  };
+
+  const onCommandAttack = (
+    playerIndex: number,
+    sourceX: number,
+    sourceY: number,
+    targetX: number,
+    targetY: number
+  ) => {
+    console.log(
+      "onCommand.attack",
+      sourceX + "x" + sourceY,
+      targetX + "x" + targetY
+    );
+    gameSystemCommand(
+      queue,
+      entityPda,
+      playerIndex,
+      sourceX,
+      sourceY,
+      targetX,
+      targetY,
+      100
+    ).then(
+      (value: string) => {
+        console.log(
+          "onCommand.success",
+          sourceX + "x" + sourceY,
+          targetX + "x" + targetY,
+          value
+        );
+      },
+      (reason: any) => {
+        console.warn(
+          "onCommand.fail",
+          sourceX + "x" + sourceY,
+          targetX + "x" + targetY,
+          reason?.message ?? reason
+        );
+      }
+    );
   };
 
   const onCommand = (targetX: number, targetY: number, type: string) => {
     switch (type) {
       case "start": {
-        if (!game.status.playing) {
-          return;
-        }
-        const targetCell = game.cells[targetY * game.sizeX + targetX];
-        if (!targetCell) {
-          return;
-        }
-        if (!targetCell.owner.player) {
-          return;
-        }
-        const targetPlayerIndex = targetCell.owner.player[0];
-        const targetPlayer = game.players[targetPlayerIndex];
-        if (!targetPlayer.authority.equals(engine.getSessionPayer())) {
-          return;
-        }
-        console.log("onCommand.start");
-        return setCommand({
-          active: true,
-          sourceX: targetX,
-          sourceY: targetY,
-          sourcePlayerIndex: targetPlayerIndex,
-        });
-      }
-      case "end": {
-        if (!command.active) {
-          return;
-        }
-        console.log("onCommand.end");
-        return setCommand({ ...command, active: false });
+        return onCommandStart(targetX, targetY);
       }
       case "move": {
-        if (!command.active) {
-          return;
-        }
-        const sourcePlayerIndex = command.sourcePlayerIndex;
-        const sourceX = command.sourceX;
-        const sourceY = command.sourceY;
-        if (sourceX === targetX && sourceY === targetY) {
-          return;
-        }
-
-        if (
-          lastCommand.sourcePlayerIndex === sourcePlayerIndex &&
-          lastCommand.sourceX === sourceX &&
-          lastCommand.sourceY === sourceY &&
-          lastCommand.targetX === targetX &&
-          lastCommand.targetY === targetY
-        ) {
-          return;
-        }
-        lastCommand = {
-          sourcePlayerIndex,
-          sourceX,
-          sourceY,
-          targetX,
-          targetY,
-        };
-
-        console.log(
-          "onCommand.attack",
-          sourceX + "x" + sourceY,
-          targetX + "x" + targetY
-        );
-        gameSystemCommand(
-          queue,
-          entityPda,
-          sourcePlayerIndex,
-          sourceX,
-          sourceY,
-          targetX,
-          targetY,
-          100
-        ).then(
-          (value: string) => {
-            console.log(
-              "onCommand.success",
-              sourceX + "x" + sourceY,
-              targetX + "x" + targetY,
-              value
-            );
-          },
-          (reason: any) => {
-            console.warn(
-              "onCommand.fail",
-              sourceX + "x" + sourceY,
-              targetX + "x" + targetY,
-              reason?.message ?? reason
-            );
-          }
-        );
-        return setCommand({
-          active: true,
-          sourceX: targetX,
-          sourceY: targetY,
-          sourcePlayerIndex: sourcePlayerIndex,
-        });
+        return onCommandMove(targetX, targetY);
+      }
+      case "end": {
+        return onCommandEnd();
       }
     }
   };
-
-  let activity = undefined;
-  if (command.active) {
-    activity = { x: command.sourceX, y: command.sourceY };
-  }
 
   return <GameGridRows game={game} activity={activity} onCommand={onCommand} />;
 }
