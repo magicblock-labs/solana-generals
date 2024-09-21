@@ -1,0 +1,154 @@
+.LoadingScreen {
+  display: flex;
+  align-items: center;
+  text-align: center;
+
+  > .GameDescription {
+    font-family: monospace;
+    font-style: normal;
+    font-weight: 400;
+    font-size: 50px;
+    line-height: 60px;
+    color: #faec00;
+    letter-spacing: 4px;
+  }
+
+  > .GameTitle {
+    font-family: monospace;
+    font-style: normal;
+    font-weight: 700;
+    font-size: 250px;
+    letter-spacing: 2px;
+  }
+
+  > .Edition {
+    font-family: monospace;
+    font-style: normal;
+    font-size: 50px;
+    font-weight: 700;
+    line-height: 60px;
+    letter-spacing: 6px;
+    color: #0cabe8;
+  }
+
+  > .ProgressBar {
+    width: 1000px;
+    height: 50px;
+    background-color: #444;
+    border-radius: 10px;
+    overflow: hidden;
+    margin: 20px 0;
+    position: relative;
+
+    > .ProgressBarFill {
+      height: 100%;
+      background-color: #ff0055;
+      border-radius: 10px;
+      transition: width 0.1s ease-in-out;
+    }
+  }
+
+  > .LoaderText {
+    font-family: monospace;
+    font-style: normal;
+    font-weight: 400;
+    font-size: 25px;
+    line-height: 30px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #ffffff;
+    margin-top: 10px;
+  }
+
+  > .CraftedBy {
+    position: fixed;
+    bottom: 50px;
+    font-family: monospace;
+    font-style: normal;
+    font-weight: 400;
+    font-size: 30px;
+    line-height: 36px;
+    color: #ffffff;
+  }
+
+  @media (max-width: 1980px) {
+    > .GameDescription {
+      font-size: 35px;
+    }
+
+    > .GameTitle {
+      font-size: 200px;
+    }
+
+    > .Edition {
+      font-size: 35px;
+    }
+
+    > .ProgressBar {
+      width: 900px;
+      height: 35px;
+    }
+
+    > .LoaderText {
+      font-size: 20px;
+    }
+
+    > .CraftedBy {
+      font-size: 20px;
+    }
+  }
+
+  @media (max-width: 1580px) {
+    > .GameDescription {
+      font-size: 30px;
+    }
+
+    > .GameTitle {
+      font-size: 150px;
+    }
+
+    > .Edition {
+      font-size: 30px;
+    }
+
+    > .ProgressBar {
+      width: 700px;
+      height: 30px;
+    }
+
+    > .LoaderText {
+      font-size: 15px;
+    }
+
+    > .CraftedBy {
+      font-size: 15px;
+    }
+  }
+
+  @media (max-width: 1080px) {
+    > .GameDescription {
+      font-size: 20px;
+    }
+
+    > .GameTitle {
+      font-size: 100px;
+    }
+
+    > .Edition {
+      font-size: 20px;
+    }
+
+    > .ProgressBar {
+      width: 500px;
+      height: 20px;
+    }
+
+    > .LoaderText {
+      font-size: 12px;
+    }
+
+    > .CraftedBy {
+      font-size: 12px;
+    }
+  }
+}
