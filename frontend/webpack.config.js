@@ -50,6 +50,7 @@ module.exports = (env, argv) => {
       new CleanWebpackPlugin(),
       new HTMLWebpackPlugin({
         template: path.join(__dirname, "./src/index.html"),
+        favicon: path.join(__dirname, "./public/favicon.ico"),
       }),
       // Shims necessary
       new webpack.ProvidePlugin({
