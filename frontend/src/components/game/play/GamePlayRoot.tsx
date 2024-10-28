@@ -44,7 +44,7 @@ export function GamePlayRoot({
   }
 
   // Show the slot of the game
-  status += " (tick slot: " + game.tickNextSlot.toString() + ")";
+  const ticks = "(tick slot: " + game.tickNextSlot.toString() + ")";
 
   return (
     <>
@@ -62,6 +62,7 @@ export function GamePlayRoot({
       <Text value="Drag and drop your army on the map" />
       <GamePlayMap entityPda={entityPda} game={game} />
       <Text value={status} />
+      <Text value={ticks} />
     </>
   );
 }
@@ -71,7 +72,7 @@ function scheduleTick(
   entityPda: PublicKey,
   gamePda: PublicKey
 ) {
-  // Run ticks as fast as possible
+  // Run ticks periodically
   console.log("start tick crank");
   let running = true;
   (async () => {
@@ -82,9 +83,9 @@ function scheduleTick(
     if (!game.status.playing) {
       return;
     }
-    while (running) {
+    while (running && false) {
       // Wait a bit to avoid cloging the main thread
-      await new Promise((resolve) => setTimeout(resolve, 100));
+      await new Promise((resolve) => setTimeout(resolve, 500));
       // Run the tick system and try again as soon as it succeed
       try {
         await gameSystemTick(engine, entityPda);

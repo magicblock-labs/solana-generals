@@ -10,6 +10,10 @@ import {
   Transaction,
 } from "@solana/web3.js";
 import { WalletName } from "@solana/wallet-adapter-base";
+import {
+  createDelegateInstruction,
+  DELEGATION_PROGRAM_ID,
+} from "@magicblock-labs/ephemeral-rollups-sdk";
 
 const ENDPOINT_CHAIN_RPC = "https://api.devnet.solana.com";
 const ENDPOINT_CHAIN_WS = "wss://api.devnet.solana.com";
@@ -47,6 +51,8 @@ export class MagicBlockEngine {
   private sessionKey: Keypair;
   private sessionConfig: SessionConfig;
 
+  private ephemeralKey: Keypair;
+
   constructor(
     walletContext: WalletContextState,
     sessionKey: Keypair,
@@ -55,6 +61,8 @@ export class MagicBlockEngine {
     this.walletContext = walletContext;
     this.sessionKey = sessionKey;
     this.sessionConfig = sessionConfig;
+
+    this.ephemeralKey = Keypair.fromSeed(this.sessionKey.publicKey.toBuffer()); // TODO - this is bad
   }
 
   getProgramOnChain<T extends Idl>(idl: {}): Program<T> {
@@ -86,6 +94,10 @@ export class MagicBlockEngine {
     return this.sessionKey.publicKey;
   }
 
+  getEphemeralKey(): PublicKey {
+    return this.ephemeralKey.publicKey;
+  }
+
   async processWalletTransaction(
     name: string,
     transaction: Transaction
@@ -106,12 +118,13 @@ export class MagicBlockEngine {
 
   async processSessionChainTransaction(
     name: string,
-    transaction: Transaction
+    transaction: Transaction,
+    extraSigner?: Keypair
   ): Promise<string> {
     console.log(name, "sending");
     const signature = await connectionChain.sendTransaction(
       transaction,
-      [this.sessionKey],
+      extraSigner ? [this.sessionKey, extraSigner] : [this.sessionKey],
       { skipPreflight: true }
     );
     await this.waitSignatureConfirmation(
@@ -123,15 +136,61 @@ export class MagicBlockEngine {
     return signature;
   }
 
+  async ensureEphemKeyDelegated() {
+    const chainAccountInfo = await this.getChainAccountInfo(
+      this.ephemeralKey.publicKey
+    );
+    const ephemAccountInfo = await this.getEphemAccountInfo(
+      this.ephemeralKey.publicKey
+    );
+    if (ephemAccountInfo) {
+      console.log(
+        "ephemeralKey is funded:",
+        this.ephemeralKey.publicKey.toBase58(),
+        "chain lamports:",
+        chainAccountInfo.lamports,
+        "ephem lamports:",
+        ephemAccountInfo.lamports
+      );
+      return;
+    }
+    console.log(
+      "ephemeralKey needs to be delegated:",
+      this.ephemeralKey.publicKey.toBase58()
+    );
+    const rentExemptionAmount =
+      await connectionEphem.getMinimumBalanceForRentExemption(0);
+    const tx = new Transaction().add(
+      SystemProgram.createAccount({
+        fromPubkey: this.sessionKey.publicKey,
+        newAccountPubkey: this.ephemeralKey.publicKey,
+        lamports: rentExemptionAmount,
+        space: 0,
+        programId: new PublicKey(DELEGATION_PROGRAM_ID),
+      }),
+      createDelegateInstruction({
+        payer: this.sessionKey.publicKey,
+        delegateAccount: this.ephemeralKey.publicKey,
+        ownerProgram: SystemProgram.programId,
+      })
+    );
+    this.processSessionChainTransaction(
+      "EphemKey delegation",
+      tx,
+      this.ephemeralKey
+    );
+  }
+
   async processSessionEphemTransaction(
     name: string,
     transaction: Transaction
   ): Promise<string> {
+    await this.ensureEphemKeyDelegated();
     console.log(name, "sending");
     transaction.compileMessage;
     const signature = await connectionEphem.sendTransaction(
       transaction,
-      [this.sessionKey],
+      [this.ephemeralKey],
       { skipPreflight: true }
     );
     await this.waitSignatureConfirmation(

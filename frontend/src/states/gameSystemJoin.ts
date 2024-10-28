@@ -14,7 +14,7 @@ export async function gameSystemJoin(
   join: boolean
 ) {
   const applySystem = await ApplySystem({
-    authority: engine.getSessionPayer(),
+    authority: engine.getEphemeralKey(),
     systemId: SYSTEM_JOIN_PROGRAM_ID,
     entities: [
       {

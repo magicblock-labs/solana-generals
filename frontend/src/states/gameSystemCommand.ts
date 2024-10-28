@@ -48,7 +48,7 @@ export async function gameSystemCommand(
     targetX + "x" + targetY
   );
 
-  const dudu = await queue.processSessionEphemTransaction(
+  const result = await queue.processSessionEphemTransaction(
     "SystemCommand:" +
       playerIndex +
       " (" +
@@ -70,5 +70,5 @@ export async function gameSystemCommand(
     targetX + "x" + targetY
   );
 
-  return dudu;
+  return result;
 }
