@@ -13,7 +13,7 @@ export async function gameSystemFinish(
   playerIndex: number
 ) {
   const applySystem = await ApplySystem({
-    authority: engine.getEphemeralKey(),
+    authority: engine.getEphemKey(),
     systemId: SYSTEM_FINISH_PROGRAM_ID,
     entities: [
       {

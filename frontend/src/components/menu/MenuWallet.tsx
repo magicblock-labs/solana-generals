@@ -21,7 +21,7 @@ function MenuWalletConnected() {
   const engine = useMagicBlockEngine();
   return (
     <div className="ContainerInner Centered Horizontal">
-      <MenuBalance name="Wallet" publicKey={engine.getWalletPayer()} />
+      <MenuBalance name="Wallet" publicKey={engine.getChainKey()} />
       <Button
         text="X"
         onClick={() => {

@@ -23,7 +23,7 @@ export async function gameWorld(engine: MagicBlockEngine): Promise<PublicKey> {
   if (registryAccountInfo === null) {
     const initializeRegistryIx = createInitializeRegistryInstruction({
       registry: registryPda,
-      payer: engine.getSessionPayer(),
+      payer: engine.getChainKey(),
     });
     await engine.processSessionChainTransaction(
       "InitializeRegistry",
@@ -37,7 +37,7 @@ export async function gameWorld(engine: MagicBlockEngine): Promise<PublicKey> {
   if (worldAccountInfo === null) {
     const initializeNewWorld = await InitializeNewWorld({
       connection: engine.getConnectionChain(),
-      payer: engine.getSessionPayer(),
+      payer: engine.getChainKey(),
     });
     console.log("InitializeNewWorld", initializeNewWorld);
     await engine.processSessionChainTransaction(

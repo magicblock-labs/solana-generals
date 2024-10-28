@@ -26,7 +26,7 @@ export function GameLobbyPlayer({
         }}
       />
     );
-  } else if (player.authority.equals(engine.getSessionPayer())) {
+  } else if (player.authority.equals(engine.getEphemKey())) {
     button = (
       <Button
         text="Leave"

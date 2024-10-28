@@ -12,7 +12,7 @@ export async function gameSystemGenerate(
   entityPda: PublicKey
 ) {
   const applySystem = await ApplySystem({
-    authority: engine.getEphemeralKey(),
+    authority: engine.getEphemKey(),
     systemId: SYSTEM_GENERATE_PROGRAM_ID,
     entities: [
       {

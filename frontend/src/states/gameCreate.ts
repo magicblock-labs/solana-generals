@@ -21,7 +21,7 @@ export async function gameCreate(
   onLog("Creating a new entity");
   const addEntity = await AddEntity({
     connection: engine.getConnectionChain(),
-    payer: engine.getSessionPayer(),
+    payer: engine.getChainKey(),
     world: worldPda,
   });
   await engine.processSessionChainTransaction(
@@ -31,7 +31,7 @@ export async function gameCreate(
   // Initialize the game component
   onLog("Initializing a new component");
   const initializeComponent = await InitializeComponent({
-    payer: engine.getSessionPayer(),
+    payer: engine.getChainKey(),
     entity: addEntity.entityPda,
     componentId: COMPONENT_GAME_PROGRAM_ID,
   });
@@ -46,7 +46,7 @@ export async function gameCreate(
       entity: addEntity.entityPda,
       account: initializeComponent.componentPda,
       ownerProgram: COMPONENT_GAME_PROGRAM_ID,
-      payer: engine.getSessionPayer(),
+      payer: engine.getChainKey(),
     },
     undefined,
     1_000_000_000 // We don't want to auto-commit the state of the game

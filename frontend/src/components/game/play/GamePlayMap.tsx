@@ -47,7 +47,7 @@ export function GamePlayMap({
     }
     const playerIndex = cell.owner.player[0];
     const player = game.players[playerIndex];
-    if (!player.authority.equals(engine.getSessionPayer())) {
+    if (!player.authority.equals(engine.getEphemKey())) {
       return;
     }
     console.log("onCommand.start", targetX, targetY, playerIndex);

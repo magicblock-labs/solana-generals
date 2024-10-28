@@ -10,7 +10,7 @@ import { MenuBalance } from "./MenuBalance";
 export function MenuSession() {
   const engine = useMagicBlockEngine();
 
-  const sessionPayer = engine.getSessionPayer();
+  const sessionPayer = engine.getEphemKey();
 
   const [sessionLamports, setSessionLamports] = React.useState(undefined);
   React.useEffect(() => {

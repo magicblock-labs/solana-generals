@@ -35,7 +35,7 @@ export function GameGridCell({
     const playerIndex = cell.owner.player[0];
     rootClassNames.push("Player" + playerIndex);
     const player = game.players[playerIndex];
-    if (onCommand && player.authority.equals(engine.getSessionPayer())) {
+    if (onCommand && player.authority.equals(engine.getEphemKey())) {
       rootClassNames.push("Owned");
     }
   }

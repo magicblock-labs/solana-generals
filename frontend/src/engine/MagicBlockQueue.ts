@@ -11,8 +11,8 @@ export class MagicBlockQueue {
     this.last = undefined;
   }
 
-  getSessionPayer() {
-    return this.engine.getSessionPayer();
+  getEphemKey() {
+    return this.engine.getEphemKey();
   }
 
   async processSessionEphemTransaction(

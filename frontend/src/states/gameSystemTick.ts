@@ -12,7 +12,7 @@ export async function gameSystemTick(
   entityPda: PublicKey
 ) {
   const applySystem = await ApplySystem({
-    authority: engine.getEphemeralKey(),
+    authority: engine.getEphemKey(),
     systemId: SYSTEM_TICK_PROGRAM_ID,
     entities: [
       {

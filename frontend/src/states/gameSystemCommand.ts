@@ -19,7 +19,7 @@ export async function gameSystemCommand(
   strengthPercent: number
 ) {
   const applySystem = await ApplySystem({
-    authority: queue.getSessionPayer(),
+    authority: queue.getEphemKey(),
     systemId: SYSTEM_COMMAND_PROGRAM_ID,
     entities: [
       {

@@ -27,8 +27,6 @@ const ENDPOINT_EPHEM_WS = "wss://devnet.magicblock.app:8900";
 const _ENDPOINT_EPHEM_RPC = "http://localhost:8899";
 const _ENDPOINT_EPHEM_WS = "ws://localhost:8900";
 
-const TRANSACTION_COST_LAMPORTS = 5000;
-
 const connectionChain = new Connection(ENDPOINT_CHAIN_RPC, {
   wsEndpoint: ENDPOINT_CHAIN_WS,
 });
@@ -79,23 +77,18 @@ export class MagicBlockEngine {
     return connectionEphem;
   }
 
+  getChainKey(): PublicKey {
+    return this.walletContext.publicKey;
+  }
+  getEphemKey(): PublicKey {
+    return this.ephemeralKey.publicKey;
+  }
+
   getWalletConnected() {
     return this.walletContext.connected;
   }
   getWalletConnecting() {
     return this.walletContext.connecting;
-  }
-
-  getWalletPayer(): PublicKey {
-    return this.walletContext.publicKey;
-  }
-
-  getSessionPayer(): PublicKey {
-    return this.sessionKey.publicKey;
-  }
-
-  getEphemeralKey(): PublicKey {
-    return this.ephemeralKey.publicKey;
   }
 
   async processWalletTransaction(
@@ -259,29 +252,9 @@ export class MagicBlockEngine {
         "FundSessionFromWallet",
         new Transaction().add(
           SystemProgram.transfer({
-            fromPubkey: this.getWalletPayer(),
+            fromPubkey: this.getChainKey(),
             toPubkey: this.getSessionPayer(),
             lamports: missingLamports,
-          })
-        )
-      );
-    }
-  }
-
-  async defundSessionBackToWallet() {
-    const accountInfo = await connectionChain.getAccountInfo(
-      this.getSessionPayer()
-    );
-    if (accountInfo && accountInfo.lamports > 0) {
-      const transferableLamports =
-        accountInfo.lamports - TRANSACTION_COST_LAMPORTS;
-      await this.processSessionChainTransaction(
-        "DefundSessionBackToWallet",
-        new Transaction().add(
-          SystemProgram.transfer({
-            fromPubkey: this.getSessionPayer(),
-            toPubkey: this.getWalletPayer(),
-            lamports: transferableLamports,
           })
         )
       );
@@ -291,7 +264,6 @@ export class MagicBlockEngine {
   getChainAccountInfo(address: PublicKey) {
     return connectionChain.getAccountInfo(address);
   }
-
   getEphemAccountInfo(address: PublicKey) {
     return connectionEphem.getAccountInfo(address);
   }
@@ -306,7 +278,6 @@ export class MagicBlockEngine {
       onAccountChange
     );
   }
-
   subscribeToEphemAccountInfo(
     address: PublicKey,
     onAccountChange: (accountInfo?: AccountInfo<Buffer>) => void
