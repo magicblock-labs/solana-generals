@@ -6,6 +6,7 @@ import {
   COMPONENT_GAME_PROGRAM_ID,
   SYSTEM_JOIN_PROGRAM_ID,
 } from "./gamePrograms";
+import { gameWorldGet } from "./gameWorld";
 
 export async function gameSystemJoin(
   engine: MagicBlockEngine,
@@ -13,9 +14,11 @@ export async function gameSystemJoin(
   playerIndex: number,
   join: boolean
 ) {
+  const worldPda = gameWorldGet();
   const applySystem = await ApplySystem({
     authority: engine.getSessionPayer(),
     systemId: SYSTEM_JOIN_PROGRAM_ID,
+    world: worldPda,
     entities: [
       {
         entity: entityPda,

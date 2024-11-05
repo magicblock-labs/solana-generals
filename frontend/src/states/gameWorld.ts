@@ -10,7 +10,13 @@ const EXPECTED_WORLD_PDA = new PublicKey(
   "JBupPMmv4zaXa5c8EdubsCPvoHZwCK7mwnDfmfs8dC5Y"
 );
 
-export async function gameWorld(engine: MagicBlockEngine): Promise<PublicKey> {
+export function gameWorldGet(): PublicKey {
+  return EXPECTED_WORLD_PDA;
+}
+
+export async function gameWorldGetOrCreate(
+  engine: MagicBlockEngine
+): Promise<PublicKey> {
   // If possible, try to get an airdrop for when we are working with devnet/testnet/localnet
   try {
     await engine.fundSessionFromAirdrop();

@@ -7,6 +7,7 @@ import {
 } from "./gamePrograms";
 
 import { MagicBlockQueue } from "../engine/MagicBlockQueue";
+import { gameWorldGet } from "./gameWorld";
 
 export async function gameSystemCommand(
   queue: MagicBlockQueue,
@@ -18,9 +19,11 @@ export async function gameSystemCommand(
   targetY: number,
   strengthPercent: number
 ) {
+  const worldPda = gameWorldGet();
   const applySystem = await ApplySystem({
     authority: queue.getSessionPayer(),
     systemId: SYSTEM_COMMAND_PROGRAM_ID,
+    world: worldPda,
     entities: [
       {
         entity: entityPda,

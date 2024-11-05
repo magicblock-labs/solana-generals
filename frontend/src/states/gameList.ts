@@ -7,11 +7,11 @@ import {
 import { MagicBlockEngine } from "../engine/MagicBlockEngine";
 
 import { getComponentGameOnChain } from "./gamePrograms";
-import { gameWorld } from "./gameWorld";
+import { gameWorldGetOrCreate } from "./gameWorld";
 
 export async function gameList(engine: MagicBlockEngine, count: number) {
   const componentGame = getComponentGameOnChain(engine);
-  const worldPda = await gameWorld(engine);
+  const worldPda = await gameWorldGetOrCreate(engine);
 
   const world = await World.fromAccountAddress(
     engine.getConnectionChain(),

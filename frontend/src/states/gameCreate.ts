@@ -2,6 +2,7 @@ import { Transaction } from "@solana/web3.js";
 import {
   AddEntity,
   InitializeComponent,
+  createAddEntityInstruction,
   createDelegateInstruction,
 } from "@magicblock-labs/bolt-sdk";
 
@@ -9,14 +10,14 @@ import { MagicBlockEngine } from "../engine/MagicBlockEngine";
 
 import { COMPONENT_GAME_PROGRAM_ID } from "./gamePrograms";
 import { gameSystemGenerate } from "./gameSystemGenerate";
-import { gameWorld } from "./gameWorld";
+import { gameWorldGetOrCreate } from "./gameWorld";
 
 export async function gameCreate(
   engine: MagicBlockEngine,
   onLog: (log: string) => void
 ) {
   // Choose the world we're using
-  const worldPda = await gameWorld(engine);
+  const worldPda = await gameWorldGetOrCreate(engine);
   // Create a new Entity
   onLog("Creating a new entity");
   const addEntity = await AddEntity({
@@ -24,10 +25,6 @@ export async function gameCreate(
     payer: engine.getSessionPayer(),
     world: worldPda,
   });
-  await engine.processSessionChainTransaction(
-    "AddEntity",
-    addEntity.transaction
-  );
   // Initialize the game component
   onLog("Initializing a new component");
   const initializeComponent = await InitializeComponent({
@@ -35,10 +32,6 @@ export async function gameCreate(
     entity: addEntity.entityPda,
     componentId: COMPONENT_GAME_PROGRAM_ID,
   });
-  await engine.processSessionChainTransaction(
-    "InitializeComponent",
-    initializeComponent.transaction
-  );
   // Delegate the game component
   onLog("Delegating to Ephem rollups");
   const delegateComponentInstruction = createDelegateInstruction(
@@ -51,9 +44,14 @@ export async function gameCreate(
     undefined,
     1_000_000_000 // We don't want to auto-commit the state of the game
   );
+  // Execute all instructions at once
+  onLog("Processing creation");
   await engine.processSessionChainTransaction(
     "DelegateComponent",
-    new Transaction().add(delegateComponentInstruction)
+    new Transaction()
+      .add(addEntity.instruction)
+      .add(initializeComponent.instruction)
+      .add(delegateComponentInstruction)
   );
   // Generate the game
   onLog("Generate the game");
